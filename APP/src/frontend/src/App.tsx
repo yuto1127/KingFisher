@@ -1,9 +1,9 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './portal/home/page';
-import AboutPage from './portal/about/page';
-import ContactPage from './portal/contact/page';
+import HomePage from './pages/(portal)/page';
+import AboutPage from './pages/(portal)/about/page';
+import ContactPage from './pages/(portal)/contact/page';
 import Header from './components/Header';
 import TestComponent from './components/api/test/TestComponent';
 

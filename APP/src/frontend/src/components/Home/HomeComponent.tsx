@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const HomePage = () => {
+const HomeComponent = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">ホームページ</h1>
@@ -26,4 +26,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage; 
+export default HomeComponent; 
