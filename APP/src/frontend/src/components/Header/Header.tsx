@@ -1,38 +1,67 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Link, useLocation } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 
-const TitleStyle = styled(Link)({
-  color: '#000000',
-  fontSize: '40px',
-  fontWeight: 'bold',
-  textDecoration: 'none',
-});
+interface HeaderProps {
+  role?: 'customer' | 'helpdesk' | 'admin';
+}
 
-const Header = () => {
+const Header: React.FC<HeaderProps> = ({ role }) => {
+  const location = useLocation();
+
+  const getNavigationItems = () => {
+    const commonItems = [
+      { path: '/', label: 'ホーム' },
+      { path: '/floor-map', label: 'フロアマップ' },
+      { path: '/information', label: 'インフォメーション' },
+    ];
+
+    if (role === 'helpdesk' || role === 'admin') {
+      return [
+        ...commonItems,
+        { path: '/qr-reader', label: 'QRリーダー' },
+      ];
+    }
+
+    return commonItems;
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
-    <header className="bg-white shadow-md">
-      <nav className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <TitleStyle to="/">
-            KingFisher
-          </TitleStyle>
-
-          <div className="space-x-4">
-            <Link to="/" className="hover:text-gray-600">
-              ホーム
-            </Link>
-            <Link to="/about" className="hover:text-gray-600">
-              概要
-            </Link>
-            <Link to="/contact" className="hover:text-gray-600">
-              お問い合わせ
-            </Link>
-          </div>
-        </div>
-      </nav>
-    </header>
+    // ヘッダーの背景色を緑色に変更
+    <AppBar position="static" sx={{ backgroundColor: '#009a73' }}>
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: 4 }}>
+          KingFisher
+        </Typography>
+        <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
+          {getNavigationItems().map((item) => (
+            <Button
+              key={item.path}
+              component={Link}
+              to={item.path}
+              color="inherit"
+              sx={{
+                backgroundColor: isActive(item.path) ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
+              }}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </Box>
+        <Box>
+          <Button color="inherit" component={Link} to={`/${role}/login`}>
+            ログアウト
+          </Button>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 
