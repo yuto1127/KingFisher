@@ -31,6 +31,7 @@ const Header: React.FC<HeaderProps> = ({ role }) => {
   };
 
   return (
+    // ヘッダーの背景色を緑色に変更
     <AppBar position="static" sx={{ backgroundColor: '#009a73' }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: 4 }}>
