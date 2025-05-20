@@ -13,7 +13,7 @@ const QRReaderPage = () => <div>QRリーダー</div>;
 
 function App() {
   // 開発用：一時的に認証をスキップ
-  const [currentRole, setCurrentRole] = useState<'customer' | 'helpdesk' | 'admin'>('admin');
+  const [currentRole, setCurrentRole] = useState<'customer' | 'helpdesk' | 'admin'>('customer');
 
   const handleLogin = (role: 'customer' | 'helpdesk' | 'admin') => {
     setCurrentRole(role);
