@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ role }) => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: '#009a73' }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: 4 }}>
           KingFisher
