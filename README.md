@@ -15,7 +15,7 @@
    - MySQLをインストールします。
 
 
-
+```
 my-app/
 ├── public/                  # 静的ファイル（画像、favicon など）
 ├── src/
@@ -42,6 +42,7 @@ my-app/
 ├── .gitignore
 ├── package.json
 └── tsconfig.json
+```
 
 ## 実装機能
 ____
