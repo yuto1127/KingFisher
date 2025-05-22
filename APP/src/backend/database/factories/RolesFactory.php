@@ -22,7 +22,6 @@ class RolesFactory extends Factory
 
         return [
             'id' => $id++, // 連番でidを設定
-            'name' => $this->faker->unique()->randomElement($names), // nameをランダムに選択
         ];
     }
 }

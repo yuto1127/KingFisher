@@ -13,6 +13,13 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        Roles::factory()->count(3)->create();
+        $names = ['管理者', '一般', '顧客'];
+
+        foreach ($names as $index => $name) {
+            Roles::create([
+                'id' => $index + 1, // 1から始まる連番
+                'name' => $name,
+            ]);
+        }
     }
 }
