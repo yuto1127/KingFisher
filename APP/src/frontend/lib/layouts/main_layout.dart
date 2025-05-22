@@ -39,6 +39,7 @@ class MainLayout extends StatelessWidget {
             label: '設定',
           ),
         ],
+        selectedItemColor: Color(0xFF009a73),
       ),
     );
   }

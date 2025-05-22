@@ -11,7 +11,7 @@ class MapPage extends StatelessWidget {
         children: [
           AppBar(
             title: const Text('マップ'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: Color(0xFF009a73),
             foregroundColor: Colors.white,
           ),
           Container(

@@ -11,7 +11,7 @@ final router = GoRouter(
   errorBuilder: (context, state) => Scaffold(
     appBar: AppBar(
       title: const Text('エラー'),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Color(0xFF009a73),
       foregroundColor: Colors.white,
     ),
     body: Center(
