@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Role;
+use App\Models\Roles;
 
 class RolesSeeder extends Seeder
 {
@@ -13,6 +13,6 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::factory()->count(3)->create();
+        Roles::factory()->count(3)->create();
     }
 }
