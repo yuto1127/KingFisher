@@ -36,6 +36,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   go_router: ^14.6.2
+  # QRコード生成用のパッケージ追加
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
