@@ -25,6 +25,14 @@ php artisan make:model Role --factory
 php artisan make:model Role --migration
 php artisan make:model Role --controller
 
+実行コマンド（backend）
+php artisan migrate(実行)
+php artisan migrate:status(状況確認)
+php artisan migrate:rollback(取り消し)
+
+
+
+
 ファクトリーとシーダーは、Laravelでデータベースにデータを挿入するための異なる目的を持つツールです。それぞれの使い分けについて説明します。
 ファクトリー (Factory)
 目的:
