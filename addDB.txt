@@ -34,7 +34,7 @@ php artisan make:model Role --controller
 php artisan migrate(実行)
 php artisan migrate:status(状況確認)
 php artisan migrate:rollback(取り消し)
-
+php artisan migrate:refresh（再実行）
 
 
 
