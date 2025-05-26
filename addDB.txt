@@ -3,6 +3,11 @@
 model
 php artisan make:model テーブル名
 
+
+haseOne(1to1)
+hasMany(1toMany)
+belongsTo(複数レコードに対して種テーブルの一つのレコードが紐づけ)
+
 migrate 
 php artisan make:migration create_テーブル名_table
 
@@ -24,6 +29,14 @@ php artisan db:seed --class=RolesSeeder
 php artisan make:model Role --factory
 php artisan make:model Role --migration
 php artisan make:model Role --controller
+
+実行コマンド（backend）
+php artisan migrate(実行)
+php artisan migrate:status(状況確認)
+php artisan migrate:rollback(取り消し)
+php artisan migrate:refresh（再実行）
+
+
 
 ファクトリーとシーダーは、Laravelでデータベースにデータを挿入するための異なる目的を持つツールです。それぞれの使い分けについて説明します。
 ファクトリー (Factory)
@@ -62,4 +75,4 @@ RolesSeeder
 
 
 
-chmod 400 /Users/akaishiyuuto/Desktop/KingFisher.pem
+/Users/akaishiyuuto/Desktop/KingFisher.pem
