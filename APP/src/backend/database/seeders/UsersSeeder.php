@@ -23,7 +23,7 @@ class UsersSeeder extends Seeder
                 'name' => $name,
                 'gender' => $genders[$index],
                 'barth_day' => $barth_days[$index],
-                'phone_numbers' => $phone_numbers[$index],
+                'phone_number' => $phone_numbers[$index],
             ]);
         }
     }

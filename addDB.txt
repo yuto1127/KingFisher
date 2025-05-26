@@ -75,4 +75,4 @@ RolesSeeder
 
 
 
-chmod 400 /Users/akaishiyuuto/Desktop/KingFisher.pem
+/Users/akaishiyuuto/Desktop/KingFisher.pem
