@@ -12,6 +12,6 @@ class UserPass extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOne(Users::class);
     }
 }

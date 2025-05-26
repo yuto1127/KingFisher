@@ -13,12 +13,15 @@ class UserPassSeeder extends Seeder
      */
     public function run(): void
     {
-        UserPass::create([
-            'user_id' => 1,
-            'email' => 'kingfisher@example.com',
-            'password' => 'password',
-            'created_at' => now(),
-            'updated_at'=> null,
-        ]);
+        $emails = ['kingfisher@example.com', 'general@example.com', 'customer@example.com'];
+        $passwords = ['password', 'password', 'password'];
+
+        foreach ($emails as $index => $email) {
+            UserPass::create([
+                'user_id' => $index + 1,
+                'email' => $email,
+                'password' => $passwords[$index],
+            ]);
+        }
     }
 }

@@ -3,6 +3,11 @@
 model
 php artisan make:model テーブル名
 
+
+haseOne(1to1)
+hasMany(1toMany)
+belongsTo(複数レコードに対して種テーブルの一つのレコードが紐づけ)
+
 migrate 
 php artisan make:migration create_テーブル名_table
 
