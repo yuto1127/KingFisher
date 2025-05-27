@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   int _adminClickCount = 0;
   static const int _requiredClicks = 10;
   final _passwordController = TextEditingController();
-  static const String _adminPassword = 'KingFisher'; // 管理者パスワード
+  static const String _adminPassword = 'cid'; // 管理者パスワード
 
   void _handleAdminClick() {
     setState(() {
@@ -99,7 +99,8 @@ class _HomePageState extends State<HomePage> {
                   child: TextButton(
                     onPressed: _handleAdminClick,
                     child: Text(
-                      '管理者 (${_requiredClicks - _adminClickCount})',
+                      // '管理者 (${_requiredClicks - _adminClickCount})',
+                      '',
                       style: const TextStyle(
                         color: Color(0xFF009a73),
                         fontSize: 16,

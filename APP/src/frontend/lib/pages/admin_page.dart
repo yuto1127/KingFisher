@@ -23,44 +23,81 @@ class AdminPage extends StatelessWidget {
           ),
           // メインコンテンツエリア
           Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.count(
+                crossAxisCount: 3, // 3列のグリッド
+                mainAxisSpacing: 16.0, // 縦方向の間隔
+                crossAxisSpacing: 16.0, // 横方向の間隔
                 children: [
-                  const SizedBox(height: 20), // 垂直方向の余白
-
-                  // 管理者機能のボタン群
-                  ElevatedButton(
+                  _buildAdminButton(
+                    icon: Icons.qr_code_scanner,
+                    label: 'QRコード\nリーダー',
+                    onPressed: () {
+                      // QRコードリーダー機能
+                    },
+                  ),
+                  _buildAdminButton(
+                    icon: Icons.store,
+                    label: '模擬店\n管理',
+                    onPressed: () {
+                      // 模擬店管理機能
+                    },
+                  ),
+                  _buildAdminButton(
+                    icon: Icons.people,
+                    label: 'ユーザー\n管理',
                     onPressed: () {
                       // ユーザー管理機能
                     },
-                    child: const Text('ユーザー管理'),
                   ),
-                  const SizedBox(height: 10),
-
-                  ElevatedButton(
+                  _buildAdminButton(
+                    icon: Icons.content_copy,
+                    label: 'コンテンツ\n管理',
                     onPressed: () {
                       // コンテンツ管理機能
                     },
-                    child: const Text('コンテンツ管理'),
                   ),
-                  const SizedBox(height: 10),
-
-                  ElevatedButton(
+                  _buildAdminButton(
+                    icon: Icons.settings,
+                    label: 'システム\n設定',
                     onPressed: () {
                       // システム設定機能
                     },
-                    child: const Text('システム設定'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // システム設定機能
-                    },
-                    child: const Text('QRコード'),
                   ),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdminButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Color(0xFF009a73),
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.all(16.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 32.0),
+          const SizedBox(height: 8.0),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12.0),
           ),
         ],
       ),
