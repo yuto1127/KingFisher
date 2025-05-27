@@ -20,16 +20,6 @@ class AdminPage extends StatelessWidget {
             title: const Text('管理者ページ'),
             backgroundColor: Color(0xFF009a73), // 緑色のテーマカラー
             foregroundColor: Colors.white, // テキストを白色に
-            actions: [
-              // 管理者QRページへの遷移ボタン
-              IconButton(
-                icon: const Icon(Icons.qr_code),
-                onPressed: () {
-                  context.go('/admin-qr');
-                },
-                tooltip: '管理者QR',
-              ),
-            ],
           ),
           // メインコンテンツエリア
           Expanded(
@@ -37,11 +27,6 @@ class AdminPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ページタイトル
-                  const Text(
-                    '管理者ページ',
-                    style: TextStyle(fontSize: 30),
-                  ),
                   const SizedBox(height: 20), // 垂直方向の余白
 
                   // 管理者機能のボタン群
@@ -66,6 +51,12 @@ class AdminPage extends StatelessWidget {
                       // システム設定機能
                     },
                     child: const Text('システム設定'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // システム設定機能
+                    },
+                    child: const Text('QRコード'),
                   ),
                 ],
               ),

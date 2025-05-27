@@ -9,8 +9,77 @@ import '../layouts/main_layout.dart';
 
 /// アプリケーションのホームページ
 /// メインのナビゲーションとQRコード表示機能を提供
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _adminClickCount = 0;
+  static const int _requiredClicks = 10;
+  final _passwordController = TextEditingController();
+  static const String _adminPassword = 'KingFisher'; // 管理者パスワード
+
+  void _handleAdminClick() {
+    setState(() {
+      _adminClickCount++;
+      if (_adminClickCount >= _requiredClicks) {
+        _showPasswordDialog();
+        _adminClickCount = 0;
+      }
+    });
+  }
+
+  void _showPasswordDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('管理者認証'),
+        content: TextField(
+          controller: _passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: 'パスワード',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _passwordController.clear();
+            },
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (_passwordController.text == _adminPassword) {
+                Navigator.pop(context);
+                _passwordController.clear();
+                context.go('/admin');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('パスワードが正しくありません'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('認証'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +91,24 @@ class HomePage extends StatelessWidget {
             title: const Text('ホーム'),
             backgroundColor: Color(0xFF009a73), // 緑色のテーマカラー
             foregroundColor: Colors.white, // テキストを白色に
+            actions: [
+              // 管理者ページへの遷移ボタン
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextButton(
+                    onPressed: _handleAdminClick,
+                    child: Text(
+                      '管理者 (${_requiredClicks - _adminClickCount})',
+                      style: const TextStyle(
+                        color: Color(0xFF009a73),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           // メインコンテンツエリア
           Expanded(
