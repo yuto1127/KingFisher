@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'router.dart';
+import 'package:provider/provider.dart';
+import 'providers/map_image_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MapImageProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

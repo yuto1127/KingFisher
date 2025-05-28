@@ -1,27 +1,37 @@
 import 'package:flutter/material.dart';
 import '../layouts/main_layout.dart';
+import 'package:provider/provider.dart';
+import '../providers/map_image_provider.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final mapImageBytes = context.watch<MapImageProvider>().imageBytes;
     return MainLayout(
       child: Column(
         children: [
           AppBar(
             title: const Text('マップ'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor: Color(0xFF009a73),
             foregroundColor: Colors.white,
           ),
           Container(
             height: 200,
             color: Colors.grey[300],
-            child: const Center(
-              child: Text(
-                'マップ表示エリア',
-                style: TextStyle(fontSize: 18),
-              ),
+            child: Center(
+              child: mapImageBytes != null
+                  ? Image.memory(
+                      mapImageBytes,
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    )
+                  : const Text(
+                      'マップ表示エリア',
+                      style: TextStyle(fontSize: 18),
+                    ),
             ),
           ),
           Expanded(

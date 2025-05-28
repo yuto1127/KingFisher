@@ -5,13 +5,15 @@ import 'pages/settings_page.dart';
 import 'pages/information_page.dart';
 import 'pages/map_page.dart';
 import 'pages/qr_reader_page.dart';
+import 'pages/admin_page.dart';
+import 'pages/admin_content.dart';
 
 final router = GoRouter(
   initialLocation: '/',
   errorBuilder: (context, state) => Scaffold(
     appBar: AppBar(
       title: const Text('エラー'),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Color(0xFF009a73),
       foregroundColor: Colors.white,
     ),
     body: Center(
@@ -51,6 +53,14 @@ final router = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsPage(),
+    ),
+    GoRoute(
+      path: '/admin',
+      builder: (context, state) => const AdminPage(),
+    ),
+    GoRoute(
+      path: '/admin/content',
+      builder: (context, state) => const AdminContentPage(),
     ),
   ],
 );
