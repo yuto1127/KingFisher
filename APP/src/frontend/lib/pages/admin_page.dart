@@ -6,8 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../layouts/main_layout.dart';
 // コンテンツ管理ページ
 import 'admin_content.dart';
-// QRコードリーダーページ
-import 'admin_qr_reader.dart';
 
 /// アプリケーションの管理者ページ
 /// 管理者向けの機能と設定を提供
@@ -34,16 +32,6 @@ class AdminPage extends StatelessWidget {
                 mainAxisSpacing: 16.0, // 縦方向の間隔
                 crossAxisSpacing: 16.0, // 横方向の間隔
                 children: [
-                  _buildAdminButton(
-                    icon: Icons.qr_code_scanner,
-                    label: 'QRコード\nリーダー',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const AdminQRReader()),
-                      );
-                    },
-                  ),
                   _buildAdminButton(
                     icon: Icons.store,
                     label: '模擬店\n管理',
