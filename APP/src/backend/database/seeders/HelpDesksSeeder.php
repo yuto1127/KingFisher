@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\HelpDesks;
 
-class HelpDesksSeeder extends Seeder
+class HelpdesksSeeder extends Seeder
 {
     /**
      * Run the database seeds.
