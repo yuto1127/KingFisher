@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\HelpDesks;
+use App\Models\HelpDesk;
 
 class HelpdesksSeeder extends Seeder
 {
@@ -18,7 +18,7 @@ class HelpdesksSeeder extends Seeder
         $users = [2,3];
 
         foreach ($roles as $index => $role) {
-            HelpDesks::create([
+            HelpDesk::create([
                 'role_id' => $role,
                 'user_id' => $users[$index],
             ]);

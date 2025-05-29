@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Roles;
 use App\Models\Users;
 
-class HelpDesks extends Model
+class HelpDesk extends Model
 {
     //
     protected $fillable = ['role_id','user_id'];
