@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Roles;
-use App\Models\Users;
+use App\Models\Role;
+use App\Models\User;
 
 class HelpDesk extends Model
 {
@@ -13,11 +13,11 @@ class HelpDesk extends Model
 
     public function role()
     {
-        return $this->hasOne(Roles::class);
+        return $this->hasOne(Role::class);
     }
 
     public function user()
     {
-        return $this->hasOne(Users::class);
+        return $this->hasOne(User::class);
     }
 }
