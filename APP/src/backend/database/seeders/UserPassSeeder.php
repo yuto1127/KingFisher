@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\UserPass;
 
-class UserpassSeeder extends Seeder
+class UserPassSeeder extends Seeder
 {
     /**
      * Run the database seeds.
