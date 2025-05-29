@@ -131,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 20), // 垂直方向の余白
                   QrImageView(
-                    data: 'QRコードを読み込んでくれてありがとう', // QRコードに埋め込むデータ
+                    data: '1', // QRコードに埋め込むデータ
                     version: QrVersions.auto, // QRコードのバージョンを自動選択
                     size: 200.0, // QRコードのサイズ（ピクセル）
                   ),
