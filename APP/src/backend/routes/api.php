@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\CustomersController;
 
 // role
 Route::get('/roles', [RolesController::class, 'index']);
+Route::post('/roles', [RolesController::class, 'store']);
+Route::put('/roles/{id}', [RolesController::class, 'update']);
+Route::delete('/roles/{id}', [RolesController::class, 'destroy']);
 // user
 Route::get('/users', [UsersController::class, 'index']);
 // userpass
