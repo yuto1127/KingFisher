@@ -7,6 +7,7 @@ import 'pages/map_page.dart';
 import 'pages/qr_reader_page.dart';
 import 'pages/admin_page.dart';
 import 'pages/admin_content.dart';
+import 'pages/admin_user.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -61,6 +62,10 @@ final router = GoRouter(
     GoRoute(
       path: '/admin/content',
       builder: (context, state) => const AdminContentPage(),
+    ),
+    GoRoute(
+      path: '/admin/user',
+      builder: (context, state) => const AdminUserPage(),
     ),
   ],
 );
