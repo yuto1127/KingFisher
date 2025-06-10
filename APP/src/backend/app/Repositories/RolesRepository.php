@@ -11,10 +11,10 @@ class RolesRepository
     public function getAll()
     {
 
-        // $data = Role::all();
-        // dd($data);
-        // return $data;
-        return 'test';
+        $data = Role::all();
+        dd($data);
+        return $data;
+        // return 'test';
     }
 
     public function create(array $data)

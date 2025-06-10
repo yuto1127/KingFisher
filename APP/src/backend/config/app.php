@@ -159,9 +159,9 @@ return [
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
+        // App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class, // 必要に応じてコメントを外す
-        App\Providers\EventServiceProvider::class,
+        // App\Providers\EventServiceProvider::class,
         // App\Providers\HorizonServiceProvider::class, // 必要に応じて追加
         // App\Providers\TelescopeServiceProvider::class, // 必要に応じて追加
 
