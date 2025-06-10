@@ -138,24 +138,24 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 20), // 垂直方向の余白
 
                   // 会員登録ページへのナビゲーションボタン
-                  ElevatedButton(
-                    onPressed: () {
-                      context.go('/register');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF009a73),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                    ),
-                    child: const Text(
-                      '新規会員登録',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     context.go('/register');
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: const Color(0xFF009a73),
+                  //     foregroundColor: Colors.white,
+                  //     padding: const EdgeInsets.symmetric(
+                  //       horizontal: 32,
+                  //       vertical: 16,
+                  //     ),
+                  //   ),
+                  //   child: const Text(
+                  //     '新規会員登録',
+                  //     style: TextStyle(fontSize: 16),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 20),
 
                   // 設定ページへのナビゲーションボタン
                   ElevatedButton(
