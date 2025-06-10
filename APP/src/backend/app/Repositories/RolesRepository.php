@@ -1,14 +1,20 @@
 <?php
 
 namespace App\Repositories;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Role;
+
 
 class RolesRepository
 {
     public function getAll()
     {
-        return Role::all();
+
+        // $data = Role::all();
+        // dd($data);
+        // return $data;
+        return 'test';
     }
 
     public function create(array $data)

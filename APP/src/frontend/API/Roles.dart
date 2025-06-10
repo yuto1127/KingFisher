@@ -6,7 +6,7 @@ class RolesAPI {
   final String baseUrl = 'http://localhost:8000/api';
 
   Future<void> getRoles() async {
-    final response = await http.get(Uri.parse('$baseUrl/roles'));
+    final response = await http.get(Uri.parse('$baseUrl/roles'));
     if (response.statusCode == 200) {
       print('GET Roles: ${response.body}');
     } else {
@@ -16,7 +16,7 @@ class RolesAPI {
 
   Future<void> createRole(Map<String, dynamic> roleData) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/roles'),
+      Uri.parse('$baseUrl/roles'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(roleData),
     );
@@ -29,7 +29,7 @@ class RolesAPI {
 
   Future<void> updateRole(int id, Map<String, dynamic> roleData) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/roles/$id'),
+      Uri.parse('$baseUrl/roles/$id'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(roleData),
     );
@@ -41,7 +41,7 @@ class RolesAPI {
   }
 
   Future<void> deleteRole(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/roles/$id'));
+    final response = await http.delete(Uri.parse('$baseUrl/roles/$id'));
     if (response.statusCode == 200) {
       print('Role deleted');
     } else {

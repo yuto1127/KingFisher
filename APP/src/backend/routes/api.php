@@ -24,4 +24,3 @@ Route::get('/help-desks', [HelpDesksController::class, 'index']);
 Route::get('/customers', [CustomersController::class, 'index']);
 
 
-?>
