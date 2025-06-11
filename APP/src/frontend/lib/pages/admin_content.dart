@@ -104,7 +104,7 @@ class _AdminContentPageState extends State<AdminContentPage> {
                   _mapImageBytes!,
                   width: 200,
                   height: 200,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
               ),
             ],
@@ -153,4 +153,4 @@ class _AdminContentPageState extends State<AdminContentPage> {
       ),
     );
   }
-} 
+}

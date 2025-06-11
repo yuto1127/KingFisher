@@ -17,21 +17,55 @@ class MapPage extends StatelessWidget {
             backgroundColor: Color(0xFF009a73),
             foregroundColor: Colors.white,
           ),
-          Container(
+          SizedBox(
             height: 200,
-            color: Colors.grey[300],
-            child: Center(
-              child: mapImageBytes != null
-                  ? Image.memory(
-                      mapImageBytes,
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    )
-                  : const Text(
-                      'マップ表示エリア',
-                      style: TextStyle(fontSize: 18),
+            child: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => Dialog(
+                    insetPadding: EdgeInsets.zero, // 全画面化
+                    backgroundColor: Colors.black,
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: InteractiveViewer(
+                            child: Image.memory(
+                              mapImageBytes!,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 24,
+                          right: 24,
+                          child: IconButton(
+                            icon: Icon(Icons.close,
+                                color: Colors.white, size: 30),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                );
+              },
+              child: Container(
+                color: Colors.grey[300],
+                child: mapImageBytes != null
+                    ? Image.memory(
+                        mapImageBytes,
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                        height: 200,
+                      )
+                    : const Center(
+                        child: Text(
+                          'マップ表示エリア',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+              ),
             ),
           ),
           Expanded(
