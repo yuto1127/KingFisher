@@ -11,8 +11,8 @@ class RolesRepository
     public function getAll()
     {
 
+        dd('test');
         $data = Role::all();
-        dd($data);
         return $data;
         // return 'test';
     }
