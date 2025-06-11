@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
 import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/information_page.dart';
@@ -7,9 +9,42 @@ import 'pages/map_page.dart';
 import 'pages/qr_reader_page.dart';
 import 'pages/admin_page.dart';
 import 'pages/admin_content.dart';
+import 'pages/admin_user.dart';
+import 'pages/registration_page.dart';
+import 'pages/login_page.dart';
 
-final router = GoRouter(
-  initialLocation: '/',
+// 認証が必要なルート
+final _authenticatedRoutes = {
+  '/',
+  '/information',
+  '/map',
+  '/qr-reader',
+  '/settings',
+  '/admin',
+  '/admin/content',
+  '/admin/user',
+};
+
+GoRouter createRouter(AuthProvider authProvider) => GoRouter(
+  initialLocation: '/login',
+  redirect: (context, state) {
+    final isAuthenticated = authProvider.isAuthenticated;
+    final isAuthRoute = _authenticatedRoutes.contains(state.fullPath);
+    final isLoginRoute = state.fullPath == '/login';
+    final isRegisterRoute = state.fullPath == '/register';
+
+    // 未ログインで認証が必要なルートにアクセスした場合
+    if (!isAuthenticated && isAuthRoute) {
+      return '/login';
+    }
+
+    // ログイン済みでログインページにアクセスした場合
+    if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
+      return '/';
+    }
+
+    return null;
+  },
   errorBuilder: (context, state) => Scaffold(
     appBar: AppBar(
       title: const Text('エラー'),
@@ -26,14 +61,22 @@ final router = GoRouter(
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => context.go('/'),
-            child: const Text('ホームに戻る'),
+            onPressed: () => context.go('/login'),
+            child: const Text('ログインページに戻る'),
           ),
         ],
       ),
     ),
   ),
   routes: [
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginPage(),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const RegistrationPage(),
+    ),
     GoRoute(
       path: '/',
       builder: (context, state) => const HomePage(),
@@ -61,6 +104,10 @@ final router = GoRouter(
     GoRoute(
       path: '/admin/content',
       builder: (context, state) => const AdminContentPage(),
+    ),
+    GoRoute(
+      path: '/admin/user',
+      builder: (context, state) => const AdminUserPage(),
     ),
   ],
 );

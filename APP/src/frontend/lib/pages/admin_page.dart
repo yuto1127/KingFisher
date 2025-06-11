@@ -43,7 +43,7 @@ class AdminPage extends StatelessWidget {
                     icon: Icons.people,
                     label: 'ユーザー\n管理',
                     onPressed: () {
-                      // ユーザー管理機能
+                      context.go('/admin/user');
                     },
                   ),
                   _buildAdminButton(
