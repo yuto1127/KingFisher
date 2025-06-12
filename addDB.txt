@@ -27,6 +27,8 @@ php artisan db:seed --class=UsersSeeder
 php artisan db:seed --class=UserPassesSeeder
 php artisan db:seed --class=HelpDesksSeeder
 php artisan db:seed --class=CustomersSeeder
+php artisan db:seed --class=EventsSeeder
+php artisan db:seed --class=EntryStatusesSeeder
 
 
 （同時作成）
