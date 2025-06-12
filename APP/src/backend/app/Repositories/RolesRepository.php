@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Role;
 
@@ -11,8 +12,8 @@ class RolesRepository
     public function getAll()
     {
 
-        dd('test');
-        $data = Role::all();
+        // dd('test');
+        $data = DB::table('roles')->get();
         return $data;
         // return 'test';
     }
