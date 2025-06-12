@@ -5,8 +5,8 @@ class RolesAPI {
   // final String baseUrl = 'https://your-backend-url.com/api';
   final String baseUrl = 'http://54.165.66.148//api';
 
-  Future<void> getRoles() async {
-    final response = await http.get(Uri.parse('$baseUrl/roles'));
+  Future<void> getAllRoles() async {
+    final response = await http.get(Uri.parse('$baseUrl/all-roles'));
     if (response.statusCode == 200) {
       print('GET Roles: ${response.body}');
     } else {

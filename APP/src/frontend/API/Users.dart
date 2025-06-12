@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class RolesAPI {
+class UsersAPI {
   // final String baseUrl = 'https://your-backend-url.com/api';
   final String baseUrl = 'http://54.165.66.148//api';
 
-  Future<void> getRoles() async {
-    final response = await http.get(Uri.parse('$baseUrl/roles'));
+  Future<void> getAllUsers() async {
+    final response = await http.get(Uri.parse('$baseUrl/all-roles'));
     if (response.statusCode == 200) {
       print('GET Roles: ${response.body}');
     } else {
@@ -14,9 +14,9 @@ class RolesAPI {
     }
   }
 
-  Future<void> createRole(Map<String, dynamic> roleData) async {
+  Future<void> createUser(Map<String, dynamic> roleData) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/roles'),
+      Uri.parse('$baseUrl/create-users'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(roleData),
     );
@@ -27,9 +27,9 @@ class RolesAPI {
     }
   }
 
-  Future<void> updateRole(int id, Map<String, dynamic> roleData) async {
+  Future<void> updateUser(int id, Map<String, dynamic> roleData) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/roles/$id'),
+      Uri.parse('$baseUrl/update-users/$id'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(roleData),
     );
@@ -40,8 +40,8 @@ class RolesAPI {
     }
   }
 
-  Future<void> deleteRole(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/roles/$id'));
+  Future<void> deleteUser(int id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/delete-user/$id'));
     if (response.statusCode == 200) {
       print('Role deleted');
     } else {
