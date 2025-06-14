@@ -13,12 +13,29 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('role_id');
             $table->string('name', 100);
+            $table->string('gender', 10);
+            $table->date('barth_day');
+            $table->string('phone_number', 20);
+            $table->string('postal_code', 8)->nullable();
+            $table->string('prefecture', 10)->nullable();
+            $table->string('city', 50)->nullable();
+            $table->string('address_line1', 100)->nullable();
+            $table->string('address_line2', 100)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamp('last_login_at')->nullable();
             $table->timestamps();
 
-            // インデックス
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+
+            $table->index('role_id');
+            $table->index('name');
+            $table->index('postal_code');
             $table->index('is_active');
             $table->index('last_login_at');
         });

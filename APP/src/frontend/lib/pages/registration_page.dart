@@ -28,7 +28,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   // 入力フィールドのデコレーション
-  InputDecoration _getInputDecoration(String label, {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
+  InputDecoration _getInputDecoration(String label,
+      {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
     return InputDecoration(
       labelText: label,
       border: const OutlineInputBorder(),
@@ -94,6 +95,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     if (value != _model.password) {
       return 'パスワードが一致しません';
+    }
+    return null;
+  }
+
+  // 郵便番号のバリデーション
+  String? _validatePostalCode(String? value) {
+    if (value == null || value.isEmpty) {
+      return '必須項目です';
+    }
+    if (!RegExp(r'^\d{3}-\d{4}$').hasMatch(value)) {
+      return '郵便番号は###-####形式で入力してください';
+    }
+    return null;
+  }
+
+  // 性別のバリデーション
+  String? _validateGender(String? value) {
+    if (value == null || value.isEmpty) {
+      return '必須項目です';
+    }
+    return null;
+  }
+
+  // 生年月日のバリデーション
+  String? _validateBarthDay(String? value) {
+    if (value == null || value.isEmpty) {
+      return '必須項目です';
+    }
+    try {
+      DateTime.parse(value);
+    } catch (e) {
+      return '有効な日付を入力してください';
     }
     return null;
   }
@@ -185,6 +218,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 onSaved: (value) => _model.name = value ?? '',
                               ),
                               const SizedBox(height: 16),
+                              DropdownButtonFormField<String>(
+                                decoration: _getInputDecoration('性別'),
+                                value: _model.gender.isEmpty
+                                    ? null
+                                    : _model.gender,
+                                items: const [
+                                  DropdownMenuItem(
+                                      value: '男性', child: Text('男性')),
+                                  DropdownMenuItem(
+                                      value: '女性', child: Text('女性')),
+                                  DropdownMenuItem(
+                                      value: 'その他', child: Text('その他')),
+                                ],
+                                validator: _validateGender,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _model.gender = value ?? '';
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                decoration:
+                                    _getInputDecoration('生年月日（YYYY-MM-DD）'),
+                                validator: _validateBarthDay,
+                                onSaved: (value) {
+                                  if (value != null && value.isNotEmpty) {
+                                    _model.barthDay = DateTime.parse(value);
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 16),
                               TextFormField(
                                 decoration: _getInputDecoration('メールアドレス'),
                                 keyboardType: TextInputType.emailAddress,
@@ -199,14 +264,60 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
                                 validator: _validatePhone,
-                                onSaved: (value) => _model.phoneNumber = value ?? '',
+                                onSaved: (value) =>
+                                    _model.phoneNumber = value ?? '',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                '住所情報',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
-                                decoration: _getInputDecoration('住所'),
+                                decoration:
+                                    _getInputDecoration('郵便番号（###-####）'),
+                                validator: _validatePostalCode,
+                                onSaved: (value) =>
+                                    _model.postalCode = value ?? '',
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                decoration: _getInputDecoration('都道府県'),
                                 validator: _validateRequired,
-                                onSaved: (value) => _model.address = value ?? '',
-                                maxLines: 2,
+                                onSaved: (value) =>
+                                    _model.prefecture = value ?? '',
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                decoration: _getInputDecoration('市区町村'),
+                                validator: _validateRequired,
+                                onSaved: (value) => _model.city = value ?? '',
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                decoration: _getInputDecoration('番地・建物名'),
+                                validator: _validateRequired,
+                                onSaved: (value) =>
+                                    _model.addressLine1 = value ?? '',
+                              ),
+                              const SizedBox(height: 16),
+                              TextFormField(
+                                decoration: _getInputDecoration('建物名・部屋番号（任意）'),
+                                onSaved: (value) =>
+                                    _model.addressLine2 = value ?? '',
                               ),
                             ],
                           ),
@@ -230,7 +341,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               TextFormField(
                                 decoration: _getInputDecoration(
                                   'パスワード',
-                                  suffixIcon: _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                  suffixIcon: _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   onSuffixIconPressed: () {
                                     setState(() {
                                       _obscurePassword = !_obscurePassword;
@@ -239,7 +352,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                                 obscureText: _obscurePassword,
                                 validator: _validatePassword,
-                                onSaved: (value) => _model.password = value ?? '',
+                                onSaved: (value) =>
+                                    _model.password = value ?? '',
                               ),
                               const SizedBox(height: 8),
                               const Text(
@@ -253,10 +367,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               TextFormField(
                                 decoration: _getInputDecoration(
                                   'パスワード（確認）',
-                                  suffixIcon: _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                  suffixIcon: _obscureConfirmPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   onSuffixIconPressed: () {
                                     setState(() {
-                                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                                      _obscureConfirmPassword =
+                                          !_obscureConfirmPassword;
                                     });
                                   },
                                 ),
@@ -282,7 +399,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : const Text('登録する'),
@@ -297,4 +415,4 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ),
     );
   }
-} 
+}
