@@ -13,9 +13,26 @@ return new class extends Migration
     {
         Schema::create('help_desks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles');
-            $table->foreignId('user_id')->constrained('users');
+            $table->unsignedBigInteger('role_id');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
+
+            // 外部キー制約
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+
+            // インデックス
+            $table->index('role_id');
+            $table->index('user_id');
         });
     }
 

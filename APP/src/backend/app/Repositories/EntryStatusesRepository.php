@@ -20,19 +20,17 @@ class EntryStatusesRepository
 
     public function create(array $data)
     {
-        return DB::table('entry_statuses')->create($data);
+        return DB::table('entry_statuses')->insert($data);
     }
 
     public function update(int $id, array $data)
     {
-        $entryStatus = EntryStatus::findOrFail($id);
-        $entryStatus->update($data);
-        return $entryStatus;
+        DB::table('entry_statuses')->where('id', $id)->update($data);
+        return DB::table('entry_statuses')->where('id', $id)->first();
     }
 
     public function delete(int $id)
     {
-        $entryStatus = EntryStatus::findOrFail($id);
-        return $entryStatus->delete();
+        return DB::table('entry_statuses')->where('id', $id)->delete();
     }
 } 

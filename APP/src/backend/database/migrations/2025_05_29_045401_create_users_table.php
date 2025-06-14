@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('gender');
-            $table->date('barth_day');
-            $table->string('phone_number');
+            $table->string('name', 100);
+            $table->boolean('is_active')->default(true);
+            $table->timestamp('last_login_at')->nullable();
             $table->timestamps();
+
+            // インデックス
+            $table->index('is_active');
+            $table->index('last_login_at');
         });
     }
 

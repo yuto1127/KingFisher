@@ -2,62 +2,62 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'auth.dart';
 
-class UsersApi {
+class HelpDesksApi {
   static const String baseUrl = 'http://54.165.66.148//api';
 
-  // すべてのユーザーを取得
+  // すべてのヘルプデスクを取得
   static Future<List<dynamic>> getAll() async {
     final headers = await AuthApi.getAuthHeaders();
     final response = await http.get(
-      Uri.parse('$baseUrl/users'),
+      Uri.parse('$baseUrl/help-desks'),
       headers: headers,
     );
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('ユーザーの取得に失敗しました');
+      throw Exception('ヘルプデスクの取得に失敗しました');
     }
   }
 
-  // ユーザーを作成
+  // ヘルプデスクを作成
   static Future<void> create(Map<String, dynamic> data) async {
     final headers = await AuthApi.getAuthHeaders();
     final response = await http.post(
-      Uri.parse('$baseUrl/users'),
+      Uri.parse('$baseUrl/help-desks'),
       headers: headers,
       body: jsonEncode(data),
     );
 
     if (response.statusCode != 201) {
-      throw Exception('ユーザーの作成に失敗しました');
+      throw Exception('ヘルプデスクの作成に失敗しました');
     }
   }
 
-  // ユーザーを更新
+  // ヘルプデスクを更新
   static Future<void> update(int id, Map<String, dynamic> data) async {
     final headers = await AuthApi.getAuthHeaders();
     final response = await http.put(
-      Uri.parse('$baseUrl/users/$id'),
+      Uri.parse('$baseUrl/help-desks/$id'),
       headers: headers,
       body: jsonEncode(data),
     );
 
     if (response.statusCode != 200) {
-      throw Exception('ユーザーの更新に失敗しました');
+      throw Exception('ヘルプデスクの更新に失敗しました');
     }
   }
 
-  // ユーザーを削除
+  // ヘルプデスクを削除
   static Future<void> delete(int id) async {
     final headers = await AuthApi.getAuthHeaders();
     final response = await http.delete(
-      Uri.parse('$baseUrl/users/$id'),
+      Uri.parse('$baseUrl/help-desks/$id'),
       headers: headers,
     );
 
     if (response.statusCode != 200) {
-      throw Exception('ユーザーの削除に失敗しました');
+      throw Exception('ヘルプデスクの削除に失敗しました');
     }
   }
 }

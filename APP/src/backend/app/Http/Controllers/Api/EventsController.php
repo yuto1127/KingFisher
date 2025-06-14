@@ -18,25 +18,45 @@ class EventsController extends Controller
 
     public function index()
     {
-        return response()->json($this->eventsService->getAllEvents());
+        return response()->json(
+            $this->eventsService->getAllEvents(),
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
     public function store(Request $request)
     {
         $this->eventsService->createEvent($request->all());
-        return response()->json(['message' => 'Event created successfully']);
+        return response()->json(
+            ['message' => 'イベントを作成しました'],
+            201,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
     public function update(Request $request, $id)
     {
         $this->eventsService->updateEvent($id, $request->all());
-        return response()->json(['message' => 'Event updated successfully']);
+        return response()->json(
+            ['message' => 'イベントを更新しました'],
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
     public function destroy($id)
     {
         $this->eventsService->deleteEvent($id);
-        return response()->json(['message' => 'Event deleted successfully']);
+        return response()->json(
+            ['message' => 'イベントを削除しました'],
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
 

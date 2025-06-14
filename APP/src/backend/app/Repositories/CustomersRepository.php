@@ -11,28 +11,23 @@ class CustomersRepository
 {
     public function getAll()
     {
-
-        // dd('test');
         $data = DB::table('customers')->get();
         return $data;
-        // return 'test';
     }
 
     public function create(array $data)
     {
-        return DB::table('customers')->create($data);
+        return DB::table('customers')->insert($data);
     }
 
     public function update(int $id, array $data)
     {
-        $customer = Customer::findOrFail($id);
-        $customer->update($data);
-        return $customer;
+        DB::table('customers')->where('id', $id)->update($data);
+        return DB::table('customers')->where('id', $id)->first();
     }
 
     public function delete(int $id)
     {
-        $customer = Customer::findOrFail($id);
-        return $customer->delete();
+        return DB::table('customers')->where('id', $id)->delete();
     }
 } 

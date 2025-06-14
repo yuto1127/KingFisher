@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Event;
+use App\Models\User;
 
 class EntryStatus extends Model
 {
@@ -11,7 +13,7 @@ class EntryStatus extends Model
 
     public function event()
     {
-        return $this->belongsTo(Events::class);
+        return $this->belongsTo(Event::class);
     }
 
     public function user()

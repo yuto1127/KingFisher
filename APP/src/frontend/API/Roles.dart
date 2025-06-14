@@ -1,51 +1,63 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'auth.dart';
 
-class RolesAPI {
-  // final String baseUrl = 'https://your-backend-url.com/api';
-  final String baseUrl = 'http://54.165.66.148//api';
+class RolesApi {
+  static const String baseUrl = 'http://54.165.66.148//api';
 
-  Future<void> getAllRoles() async {
-    final response = await http.get(Uri.parse('$baseUrl/all-roles'));
+  // すべてのロールを取得
+  static Future<List<dynamic>> getAll() async {
+    final headers = await AuthApi.getAuthHeaders();
+    final response = await http.get(
+      Uri.parse('$baseUrl/roles'),
+      headers: headers,
+    );
+
     if (response.statusCode == 200) {
-      print('GET Roles: ${response.body}');
+      return jsonDecode(response.body);
     } else {
-      print('Failed to load roles');
+      throw Exception('ロールの取得に失敗しました');
     }
   }
 
-  Future<void> createRole(Map<String, dynamic> roleData) async {
+  // ロールを作成
+  static Future<void> create(Map<String, dynamic> data) async {
+    final headers = await AuthApi.getAuthHeaders();
     final response = await http.post(
       Uri.parse('$baseUrl/roles'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(roleData),
+      headers: headers,
+      body: jsonEncode(data),
     );
-    if (response.statusCode == 201) {
-      print('Role created: ${response.body}');
-    } else {
-      print('Failed to create role');
+
+    if (response.statusCode != 201) {
+      throw Exception('ロールの作成に失敗しました');
     }
   }
 
-  Future<void> updateRole(int id, Map<String, dynamic> roleData) async {
+  // ロールを更新
+  static Future<void> update(int id, Map<String, dynamic> data) async {
+    final headers = await AuthApi.getAuthHeaders();
     final response = await http.put(
       Uri.parse('$baseUrl/roles/$id'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(roleData),
+      headers: headers,
+      body: jsonEncode(data),
     );
-    if (response.statusCode == 200) {
-      print('Role updated: ${response.body}');
-    } else {
-      print('Failed to update role');
+
+    if (response.statusCode != 200) {
+      throw Exception('ロールの更新に失敗しました');
     }
   }
 
-  Future<void> deleteRole(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/roles/$id'));
-    if (response.statusCode == 200) {
-      print('Role deleted');
-    } else {
-      print('Failed to delete role');
+  // ロールを削除
+  static Future<void> delete(int id) async {
+    final headers = await AuthApi.getAuthHeaders();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/roles/$id'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('ロールの削除に失敗しました');
     }
   }
 }

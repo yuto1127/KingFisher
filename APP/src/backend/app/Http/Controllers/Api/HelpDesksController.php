@@ -18,25 +18,45 @@ class HelpDesksController extends Controller
 
     public function index()
     {
-        return response()->json($this->helpDesksService->getAllHelpDesks());
+        return response()->json(
+            $this->helpDesksService->getAllHelpDesks(),
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
     public function store(Request $request)
     {
         $this->helpDesksService->createHelpDesk($request->all());
-        return response()->json(['message' => 'Help desk created successfully']);
+        return response()->json(
+            ['message' => 'ヘルプデスクを作成しました'],
+            201,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
     public function update(Request $request, $id)
     {
         $this->helpDesksService->updateHelpDesk($id, $request->all());
-        return response()->json(['message' => 'Help desk updated successfully']);
+        return response()->json(
+            ['message' => 'ヘルプデスクを更新しました'],
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
     public function destroy($id)
     {
         $this->helpDesksService->deleteHelpDesk($id);
-        return response()->json(['message' => 'Help desk deleted successfully']);
+        return response()->json(
+            ['message' => 'ヘルプデスクを削除しました'],
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 }
 

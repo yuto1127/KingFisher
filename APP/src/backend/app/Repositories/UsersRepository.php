@@ -11,28 +11,23 @@ class UsersRepository
 {
     public function getAll()
     {
-
-        // dd('test');
         $data = DB::table('users')->get();
         return $data;
-        // return 'test';
     }
 
     public function create(array $data)
     {
-        return DB::table('users')->create($data);
+        return DB::table('users')->insert($data);
     }
 
     public function update(int $id, array $data)
     {
-        $user = User::findOrFail($id);
-        $user->update($data);
-        return $user;
+        DB::table('users')->where('id', $id)->update($data);
+        return DB::table('users')->where('id', $id)->first();
     }
 
     public function delete(int $id)
     {
-        $user = User::findOrFail($id);
-        return $user->delete();
+        return DB::table('users')->where('id', $id)->delete();
     }
 } 

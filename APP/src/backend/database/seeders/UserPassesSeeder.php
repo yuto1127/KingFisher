@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\UserPass;
+use Illuminate\Support\Facades\Hash;
 
 class UserPassesSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class UserPassesSeeder extends Seeder
             UserPass::create([
                 'user_id' => $index + 1,
                 'email' => $email,
-                'password' => $passwords[$index],
+                'password' => Hash::make($passwords[$index]),
             ]);
         }
         //

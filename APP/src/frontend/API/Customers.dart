@@ -1,60 +1,63 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'auth.dart';
 
-class CustomersAPI {
-  // final String baseUrl = 'https://your-backend-url.com/api';
-  final String baseUrl = 'http://54.165.66.148//api';
+class CustomersApi {
+  static const String baseUrl = 'http://54.165.66.148//api';
 
-  Future<void> getAllCustomers() async {
-    final response = await http.get(Uri.parse('$baseUrl/all-customers'));
+  // すべての顧客を取得
+  static Future<List<dynamic>> getAll() async {
+    final headers = await AuthApi.getAuthHeaders();
+    final response = await http.get(
+      Uri.parse('$baseUrl/customers'),
+      headers: headers,
+    );
+
     if (response.statusCode == 200) {
-      print('GET Roles: ${response.body}');
+      return jsonDecode(response.body);
     } else {
-      print('Failed to load roles');
+      throw Exception('顧客の取得に失敗しました');
     }
   }
 
-  Future<void> getCustomerUser(int id) async {
-    final response = await http.get(Uri.parse('$baseUrl/customers/$id/user'));
-    if (response.statusCode == 200) {
-      print('GET Roles: ${response.body}');
-    } else {
-      print('Failed to load roles');
-    }
-  }
-
-  Future<void> createCustomer(Map<String, dynamic> roleData) async {
+  // 顧客を作成
+  static Future<void> create(Map<String, dynamic> data) async {
+    final headers = await AuthApi.getAuthHeaders();
     final response = await http.post(
-      Uri.parse('$baseUrl/create-customers'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(roleData),
+      Uri.parse('$baseUrl/customers'),
+      headers: headers,
+      body: jsonEncode(data),
     );
-    if (response.statusCode == 201) {
-      print('Role created: ${response.body}');
-    } else {
-      print('Failed to create role');
+
+    if (response.statusCode != 201) {
+      throw Exception('顧客の作成に失敗しました');
     }
   }
 
-  Future<void> updateCustomer(int id, Map<String, dynamic> roleData) async {
+  // 顧客を更新
+  static Future<void> update(int id, Map<String, dynamic> data) async {
+    final headers = await AuthApi.getAuthHeaders();
     final response = await http.put(
-      Uri.parse('$baseUrl/update-customers/$id'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(roleData),
+      Uri.parse('$baseUrl/customers/$id'),
+      headers: headers,
+      body: jsonEncode(data),
     );
-    if (response.statusCode == 200) {
-      print('Role updated: ${response.body}');
-    } else {
-      print('Failed to update role');
+
+    if (response.statusCode != 200) {
+      throw Exception('顧客の更新に失敗しました');
     }
   }
 
-  Future<void> deleteCustomer(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/delete-customers/$id'));
-    if (response.statusCode == 200) {
-      print('Role deleted');
-    } else {
-      print('Failed to delete role');
+  // 顧客を削除
+  static Future<void> delete(int id) async {
+    final headers = await AuthApi.getAuthHeaders();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/customers/$id'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('顧客の削除に失敗しました');
     }
   }
 }
