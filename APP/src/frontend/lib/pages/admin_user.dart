@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../layouts/main_layout.dart';
 import 'dart:async';
-import '../services/api_client.dart';  // APIクライアントをインポート
+import '../services/users_api.dart';
 
 /// ユーザー管理ページ
 /// 管理者がユーザー情報を管理するためのページ
@@ -56,7 +56,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
   // 重複スキャンをチェック（1秒以内の連続スキャンを防止）
   bool _isDuplicateScan() {
     if (_lastScanTime == null) return false;
-    
+
     final now = DateTime.now();
     final difference = now.difference(_lastScanTime!);
     return difference.inSeconds < 1;
@@ -64,7 +64,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
 
   void _onBarcodeSubmitted(String value) async {
     if (value.isEmpty) return;
-    
+
     // 処理中の場合は新しいスキャンを受け付けない
     if (_isProcessing) {
       _showError('前回のスキャンの処理中です。お待ちください。');
@@ -97,14 +97,13 @@ class _AdminUserPageState extends State<AdminUserPage> {
       });
 
       // APIを呼び出してユーザー情報を取得
-      final userData = await ApiClient.getUser(value);
-      
+      final userData = await UsersApi.findByBarcode(value);
+
       setState(() {
         _lastScannedCode = value;
         _errorMessage = null;
         // TODO: 取得したユーザー情報を表示する処理を追加
       });
-
     } catch (e) {
       _showError('エラーが発生しました: ${e.toString()}');
     } finally {
@@ -205,4 +204,4 @@ class _AdminUserPageState extends State<AdminUserPage> {
       ),
     );
   }
-} 
+}
