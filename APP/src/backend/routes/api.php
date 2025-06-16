@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\AuthController;
 
 // 認証関連のルート（認証不要）
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('users', [UsersController::class, 'store']);
+Route::post('user-passes', [UserPassesController::class, 'store']);
 
 // 認証が必要なルートグループ
 Route::middleware('auth:sanctum')->group(function () {
@@ -31,7 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // user
     Route::prefix('users')->group(function () {
         Route::get('/', [UsersController::class, 'index']);
-        Route::post('/', [UsersController::class, 'store']);
         Route::put('/{id}', [UsersController::class, 'update']);
         Route::delete('/{id}', [UsersController::class, 'destroy']);
     });
@@ -39,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // userpass
     Route::prefix('user-passes')->group(function () {
         Route::get('/', [UserPassesController::class, 'index']);
-        Route::post('/', [UserPassesController::class, 'store']);
         Route::put('/{id}', [UserPassesController::class, 'update']);
         Route::delete('/{id}', [UserPassesController::class, 'destroy']);
         
