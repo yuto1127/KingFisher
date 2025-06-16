@@ -205,7 +205,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                context.go('/login');
+                context.go('#/login');
               },
             ),
             title: const Text('会員登録'),
