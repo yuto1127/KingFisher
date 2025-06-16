@@ -71,7 +71,7 @@ class UsersApi {
       // final headers = await AuthApi.getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/users'),
-        // headers: headers,
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
 

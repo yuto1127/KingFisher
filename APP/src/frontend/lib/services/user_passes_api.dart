@@ -58,7 +58,7 @@ class UserPassesApi {
       // final headers = await AuthApi.getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/user-passes'),
-        // headers: headers,
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
 
