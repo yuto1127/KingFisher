@@ -1,20 +1,16 @@
-import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:http/http.dart' as http;
 
 class NetworkUtils {
   static Future<bool> isConnected() async {
     try {
-      final connectivityResult = await Connectivity().checkConnectivity();
-      if (connectivityResult == ConnectivityResult.none) return false;
-
-      // 実際のインターネット接続を確認
-      final result = await InternetAddress.lookup('54.165.66.148');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+      final response = await http
+          .get(
+            Uri.parse('http://54.165.66.148/api/ping'),
+          )
+          .timeout(const Duration(seconds: 3));
+      return response.statusCode == 200;
     } catch (e) {
       return false;
     }
   }
-
-  static Stream<ConnectivityResult> get connectionStream =>
-      Connectivity().onConnectivityChanged;
 }

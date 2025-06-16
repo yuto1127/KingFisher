@@ -82,6 +82,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::get('/ping', function () {
+    return response()->json(['message' => 'pong'], 200);
+});
+
 
 
 
