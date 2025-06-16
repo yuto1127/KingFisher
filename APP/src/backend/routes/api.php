@@ -13,9 +13,14 @@ use App\Http\Controllers\Api\EntryStatusesController;
 use App\Http\Controllers\Api\AuthController;
 
 // 認証関連のルート（認証不要）
+Route::get('/ping', function () {
+    return response()->json(['message' => 'pong'], 200);
+});
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/users', [UsersController::class, 'store']);
 Route::post('/user-passes', [UserPassesController::class, 'store']);
+Route::post('/help-desks', [HelpDesksController::class, 'store']);
+Route::post('/customers', [CustomersController::class, 'store']);
 
 // 認証が必要なルートグループ
 Route::middleware('auth:sanctum')->group(function () {
@@ -52,7 +57,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // helpdesk
     Route::prefix('help-desks')->group(function () {
         Route::get('/', [HelpDesksController::class, 'index']);
-        Route::post('/', [HelpDesksController::class, 'store']);
         Route::put('/{id}', [HelpDesksController::class, 'update']);
         Route::delete('/{id}', [HelpDesksController::class, 'destroy']);
     });
@@ -60,7 +64,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // customer
     Route::prefix('customers')->group(function () {
         Route::get('/', [CustomersController::class, 'index']);
-        Route::post('/', [CustomersController::class, 'store']);
         Route::put('/{id}', [CustomersController::class, 'update']);
         Route::delete('/{id}', [CustomersController::class, 'destroy']);
     });
@@ -82,9 +85,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::get('/ping', function () {
-    return response()->json(['message' => 'pong'], 200);
-});
 
 
 
