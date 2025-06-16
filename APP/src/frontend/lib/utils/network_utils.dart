@@ -8,7 +8,7 @@ class NetworkUtils {
       if (connectivityResult == ConnectivityResult.none) return false;
 
       // 実際のインターネット接続を確認
-      final result = await InternetAddress.lookup('google.com');
+      final result = await InternetAddress.lookup('54.165.66.148');
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } catch (e) {
       return false;
