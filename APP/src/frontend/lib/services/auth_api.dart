@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:frontend/utils/network_utils.dart';
+import '../utils/network_utils.dart';
 
 class AuthApi {
   static const String baseUrl = 'http://54.165.66.148/api';

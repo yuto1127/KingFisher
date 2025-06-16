@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;  // デバッグモード判定用
+import 'package:flutter/foundation.dart' show kDebugMode; // デバッグモード判定用
 import 'package:provider/provider.dart';
 import '../models/login_model.dart';
-import '../services/api_client.dart';
+import '../services/auth_api.dart';
 import '../providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -21,7 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
 
   // 入力フィールドのデコレーション
-  InputDecoration _getInputDecoration(String label, {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
+  InputDecoration _getInputDecoration(String label,
+      {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
     return InputDecoration(
       labelText: label,
       border: const OutlineInputBorder(),
@@ -71,11 +72,14 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final response = await ApiClient.login(_model);
+      // AuthApiを使用してログイン
+      final response = await AuthApi.login(_model.email, _model.password);
+
       if (mounted) {
         // ログイン成功時にAuthProviderの状態を更新
         Provider.of<AuthProvider>(context, listen: false)
-            .login(response['token'] ?? 'default_token');
+            .login(response['token']);
+
         // ログイン成功後、ホームページに遷移
         context.go('/');
       }
@@ -157,7 +161,9 @@ class _LoginPageState extends State<LoginPage> {
                               TextFormField(
                                 decoration: _getInputDecoration(
                                   'パスワード',
-                                  suffixIcon: _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                  suffixIcon: _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   onSuffixIconPressed: () {
                                     setState(() {
                                       _obscurePassword = !_obscurePassword;
@@ -166,7 +172,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 obscureText: _obscurePassword,
                                 validator: _validatePassword,
-                                onSaved: (value) => _model.password = value ?? '',
+                                onSaved: (value) =>
+                                    _model.password = value ?? '',
                               ),
                               const SizedBox(height: 24),
                               ElevatedButton(
@@ -174,7 +181,8 @@ class _LoginPageState extends State<LoginPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF009a73),
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
                                 ),
                                 child: _isLoading
                                     ? const SizedBox(
@@ -182,7 +190,9 @@ class _LoginPageState extends State<LoginPage> {
                                         height: 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white),
                                         ),
                                       )
                                     : const Text('ログイン'),
@@ -193,7 +203,8 @@ class _LoginPageState extends State<LoginPage> {
                                 TextButton(
                                   onPressed: () {
                                     // デバッグ用の仮のトークンを設定
-                                    Provider.of<AuthProvider>(context, listen: false)
+                                    Provider.of<AuthProvider>(context,
+                                            listen: false)
                                         .login('debug_token');
                                     context.go('/');
                                   },
@@ -232,4 +243,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-} 
+}

@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../layouts/main_layout.dart';
 import '../models/registration_model.dart';
-import '../services/api_client.dart';
+import '../services/users_api.dart';
+import '../services/user_passes_api.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -144,7 +145,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
     });
 
     try {
-      await ApiClient.registerUser(_model);
+      // ユーザー情報の登録
+      final userData = {
+        'name': _model.name,
+        'gender': _model.gender,
+        'birthday': _model.barthDay?.toIso8601String(),
+        'phone_number': _model.phoneNumber,
+        'postal_code': _model.postalCode,
+        'prefecture': _model.prefecture,
+        'city': _model.city,
+        'address_line1': _model.addressLine1,
+        'address_line2': _model.addressLine2,
+      };
+
+      final createdUser = await UsersApi.create(userData);
+      final userId = createdUser['id'];
+
+      // ユーザーパスの登録
+      final userPassData = {
+        'user_id': userId,
+        'email': _model.email,
+        'password': _model.password,
+      };
+
+      await UserPassesApi.create(userPassData);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -171,9 +196,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
+      showBottomNav: false,
       child: Column(
         children: [
           AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                context.go('/login');
+              },
+            ),
             title: const Text('会員登録'),
             backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,

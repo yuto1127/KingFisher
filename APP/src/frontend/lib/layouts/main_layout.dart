@@ -3,44 +3,48 @@ import 'package:go_router/go_router.dart';
 
 class MainLayout extends StatelessWidget {
   final Widget child;
+  final bool showBottomNav;
 
   const MainLayout({
     super.key,
     required this.child,
+    this.showBottomNav = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (int idx) => _onItemTapped(idx, context),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info_outline),
-            label: 'インフォ',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map_outlined),
-            label: 'マップ',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'ホーム',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.qr_code_scanner),
-            label: 'QR',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            label: '設定',
-          ),
-        ],
-        selectedItemColor: Color(0xFF009a73),
-      ),
+      bottomNavigationBar: showBottomNav
+          ? BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _calculateSelectedIndex(context),
+              onTap: (int idx) => _onItemTapped(idx, context),
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.info_outline),
+                  label: 'インフォ',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.map_outlined),
+                  label: 'マップ',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  label: 'ホーム',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.qr_code_scanner),
+                  label: 'QR',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings_outlined),
+                  label: '設定',
+                ),
+              ],
+              selectedItemColor: Color(0xFF009a73),
+            )
+          : null,
     );
   }
 

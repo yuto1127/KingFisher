@@ -18,7 +18,6 @@ class User extends Authenticatable
         'gender',
         'barth_day',
         'phone_number',
-        'role_id',
         'postal_code',
         'prefecture',
         'city',
@@ -33,11 +32,6 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'is_active' => 'boolean'
     ];
-
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
 
     public function userPass()
     {
