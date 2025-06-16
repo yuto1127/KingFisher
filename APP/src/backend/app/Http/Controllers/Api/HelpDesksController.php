@@ -58,6 +58,12 @@ class HelpDesksController extends Controller
             JSON_UNESCAPED_UNICODE
         );
     }
+
+    public function storeFromService(array $data)
+    {
+        $this->helpDesksService->createHelpDesk($data);
+        // レスポンス不要
+    }
 }
 
 

@@ -58,4 +58,10 @@ class CustomersController extends Controller
             JSON_UNESCAPED_UNICODE
         );
     }
+
+    public function storeFromService(array $data)
+    {
+        $this->customersService->createCustomer($data);
+        // レスポンス不要
+    }
 }
