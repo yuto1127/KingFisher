@@ -55,10 +55,10 @@ class UserPassesApi {
   // ユーザーパスを作成
   static Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {
     try {
-      final headers = await AuthApi.getAuthHeaders();
+      // final headers = await AuthApi.getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/user-passes'),
-        headers: headers,
+        // headers: headers,
         body: jsonEncode(data),
       );
 

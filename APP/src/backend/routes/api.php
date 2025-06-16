@@ -19,14 +19,12 @@ Route::get('/ping', function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/users', [UsersController::class, 'store']);
 Route::post('/user-passes', [UserPassesController::class, 'store']);
-Route::post('/help-desks', [HelpDesksController::class, 'store']);
-Route::post('/customers', [CustomersController::class, 'store']);
 
 // 認証が必要なルートグループ
 Route::middleware('auth:sanctum')->group(function () {
     // ログアウト
     Route::post('/logout', [AuthController::class, 'logout']);
-
+    
     // role
     Route::prefix('roles')->group(function () {
         Route::get('/', [RolesController::class, 'index']);
@@ -34,14 +32,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [RolesController::class, 'update']);
         Route::delete('/{id}', [RolesController::class, 'destroy']);
     });
-
+    
     // user
     Route::prefix('users')->group(function () {
         Route::get('/', [UsersController::class, 'index']);
         Route::put('/{id}', [UsersController::class, 'update']);
         Route::delete('/{id}', [UsersController::class, 'destroy']);
     });
-
+    
     // userpass
     Route::prefix('user-passes')->group(function () {
         Route::get('/', [UserPassesController::class, 'index']);
@@ -53,17 +51,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}/password', [UserPassesController::class, 'updatePassword']);
         Route::post('/find-by-password', [UserPassesController::class, 'findByPassword']);
     });
-
+    
     // helpdesk
     Route::prefix('help-desks')->group(function () {
         Route::get('/', [HelpDesksController::class, 'index']);
+        Route::post('/help-desks', [HelpDesksController::class, 'store']);
         Route::put('/{id}', [HelpDesksController::class, 'update']);
         Route::delete('/{id}', [HelpDesksController::class, 'destroy']);
     });
-
+    
     // customer
     Route::prefix('customers')->group(function () {
         Route::get('/', [CustomersController::class, 'index']);
+        Route::post('/customers', [CustomersController::class, 'store']);
         Route::put('/{id}', [CustomersController::class, 'update']);
         Route::delete('/{id}', [CustomersController::class, 'destroy']);
     });
