@@ -16,6 +16,7 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   final _model = RegistrationModel();
+  final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
@@ -24,6 +25,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   void dispose() {
+    _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
@@ -83,7 +85,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (value.length < 8) {
       return 'パスワードは8文字以上である必要があります';
     }
-    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$').hasMatch(value)) {
+    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}').hasMatch(value)) {
       return 'パスワードは英字と数字を含む必要があります';
     }
     return null;
@@ -94,7 +96,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (value == null || value.isEmpty) {
       return '必須項目です';
     }
-    if (value != _model.password) {
+    if (value != _passwordController.text) {
       return 'パスワードが一致しません';
     }
     return null;
@@ -371,6 +373,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
+                                controller: _passwordController,
                                 decoration: _getInputDecoration(
                                   'パスワード',
                                   suffixIcon: _obscurePassword
@@ -397,6 +400,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
+                                controller: _confirmPasswordController,
                                 decoration: _getInputDecoration(
                                   'パスワード（確認）',
                                   suffixIcon: _obscureConfirmPassword
@@ -410,7 +414,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   },
                                 ),
                                 obscureText: _obscureConfirmPassword,
-                                controller: _confirmPasswordController,
                                 validator: _validateConfirmPassword,
                               ),
                             ],
