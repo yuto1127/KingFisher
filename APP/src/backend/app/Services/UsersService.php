@@ -8,6 +8,7 @@ use App\Models\UserPass;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Api\HelpDesksController;
 use App\Http\Controllers\Api\CustomersController;
+use App\Http\Controllers\Api\UserPassesController;
 
 class UsersService
 {
@@ -29,11 +30,12 @@ class UsersService
         $user = $this->usersRepository->create($data);
 
         // 2. user_passes登録
-        UserPass::create([
-            'user_id' => $user->id,
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        app(UserPassesController::class)
+            ->store(new \Illuminate\Http\Request([
+                'user_id' => $user->id,
+                'email' => $data['email'],
+                'password' => $data['password'], // store側でハッシュ化される前提
+            ]));
 
         // 3. メールアドレスで分岐し、helpdeskまたはcustomerに登録
         if (isset($data['email']) && str_ends_with($data['email'], '@chuo.ac.jp')) {
