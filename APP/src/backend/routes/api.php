@@ -14,8 +14,8 @@ use App\Http\Controllers\Api\AuthController;
 
 // 認証関連のルート（認証不要）
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('users', [UsersController::class, 'store']);
-Route::post('user-passes', [UserPassesController::class, 'store']);
+Route::post('/users', [UsersController::class, 'store']);
+Route::post('/user-passes', [UserPassesController::class, 'store']);
 
 // 認証が必要なルートグループ
 Route::middleware('auth:sanctum')->group(function () {
