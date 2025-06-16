@@ -5,6 +5,7 @@ import '../layouts/main_layout.dart';
 import '../models/registration_model.dart';
 import '../services/users_api.dart';
 import '../services/user_passes_api.dart';
+import 'dart:html' as html;
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -179,7 +180,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
             backgroundColor: Colors.green,
           ),
         );
-        // 登録完了後、ログインページに戻る
         context.go('/login');
       }
     } catch (e) {
