@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:html' as html;
 import '../utils/network_utils.dart';
 
 class AuthApi {
@@ -20,18 +22,7 @@ class AuthApi {
     'unknown_error': '予期せぬエラーが発生しました',
   };
 
-  // 安全なストレージのインスタンスを作成
-  static const _storage = FlutterSecureStorage(
-    // iOSのキーチェーン設定
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences:
-          true, // Android 6.0以上で暗号化されたSharedPreferencesを使用
-    ),
-    // AndroidのKeyStore設定
-    iOptions: IOSOptions(
-      accessibility: KeychainAccessibility.first_unlock, // デバイスの初回アンロック後にアクセス可能
-    ),
-  );
+  static const _storage = FlutterSecureStorage();
 
   // エラーメッセージを取得
   static String _getErrorMessage(String code, String? detail) {
@@ -64,32 +55,60 @@ class AuthApi {
 
   // トークンを保存
   static Future<void> saveToken(String token) async {
-    await _storage.write(key: tokenKey, value: token);
-  }
-
-  // ユーザーデータを保存
-  static Future<void> saveUserData(Map<String, dynamic> userData) async {
-    await _storage.write(key: userKey, value: jsonEncode(userData));
+    if (kIsWeb) {
+      html.window.localStorage[tokenKey] = token;
+    } else {
+      await _storage.write(key: tokenKey, value: token);
+    }
   }
 
   // トークンを取得
   static Future<String?> getToken() async {
-    return await _storage.read(key: tokenKey);
+    if (kIsWeb) {
+      return html.window.localStorage[tokenKey];
+    } else {
+      return await _storage.read(key: tokenKey);
+    }
+  }
+
+  // トークンを削除
+  static Future<void> deleteToken() async {
+    if (kIsWeb) {
+      html.window.localStorage.remove(tokenKey);
+    } else {
+      await _storage.delete(key: tokenKey);
+    }
+    await deleteUserData();
+  }
+
+  // ユーザーデータを保存
+  static Future<void> saveUserData(Map<String, dynamic> userData) async {
+    if (kIsWeb) {
+      html.window.localStorage[userKey] = jsonEncode(userData);
+    } else {
+      await _storage.write(key: userKey, value: jsonEncode(userData));
+    }
   }
 
   // ユーザーデータを取得
   static Future<Map<String, dynamic>?> getUserData() async {
-    final data = await _storage.read(key: userKey);
+    String? data;
+    if (kIsWeb) {
+      data = html.window.localStorage[userKey];
+    } else {
+      data = await _storage.read(key: userKey);
+    }
     if (data == null) return null;
     return _processDateFields(jsonDecode(data));
   }
 
-  // トークンとユーザーデータを削除
-  static Future<void> deleteToken() async {
-    await Future.wait([
-      _storage.delete(key: tokenKey),
-      _storage.delete(key: userKey),
-    ]);
+  // ユーザーデータを削除
+  static Future<void> deleteUserData() async {
+    if (kIsWeb) {
+      html.window.localStorage.remove(userKey);
+    } else {
+      await _storage.delete(key: userKey);
+    }
   }
 
   // ネットワーク接続を確認
