@@ -163,7 +163,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
       final createdUser = await UsersApi.create(userData);
       final userId = createdUser['id'];
-      
 
       // ユーザーパスの登録
       final userPassData = {
