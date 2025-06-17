@@ -163,8 +163,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
       final createdUser = await UsersApi.create(userData);
       final userId = createdUser['id'];
-
       // ユーザーパスの登録
+      // print('$userId, ${_model.email}, ${_model.password}');
       final userPassData = {
         'user_id': userId,
         'email': _model.email,

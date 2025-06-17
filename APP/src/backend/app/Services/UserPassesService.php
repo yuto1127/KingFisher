@@ -22,7 +22,6 @@ class UserPassesService
 
     public function createUserPass(array $data)
     {
-        return response()->json(['ok' => true]);
 
         // パスワードの存在確認
         if (!isset($data['password'])) {
@@ -37,10 +36,6 @@ class UserPassesService
                 'user_id' => ['ユーザーIDは必須です。'],
             ]);
         }
-
-        // パスワードをハッシュ化
-        $data['password'] = Hash::make($data['password']);
-
         return $this->userPassesRepository->create($data);
     }
 
