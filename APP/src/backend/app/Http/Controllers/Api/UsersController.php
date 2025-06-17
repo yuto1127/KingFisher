@@ -53,8 +53,7 @@ class UsersController extends Controller
             );
         }
 
-        $res = $this->usersService->createUser($request->all());
-        Log::error(json_encode($res));
+        $this->usersService->createUser($request->all());
         return response()->json(
             ['message' => 'ユーザーを作成しました'],
             201,
