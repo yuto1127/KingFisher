@@ -17,7 +17,8 @@ class UsersRepository
 
     public function create(array $data)
     {
-        return DB::table('users')->insert($data);
+        $id = DB::table('users')->insertGetId($data);
+        return DB::table('users')->where('id', $id)->first();
     }
 
     public function update(int $id, array $data)

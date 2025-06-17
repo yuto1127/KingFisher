@@ -22,10 +22,20 @@ class UserPassesService
 
     public function createUserPass(array $data)
     {
+        // デバッグ用ログ
+        \Log::info('Creating user pass:', $data);
+
         // パスワードの存在確認
         if (!isset($data['password'])) {
             throw ValidationException::withMessages([
                 'password' => ['パスワードは必須です。'],
+            ]);
+        }
+
+        // user_idの存在確認
+        if (!isset($data['user_id']) || $data['user_id'] === null) {
+            throw ValidationException::withMessages([
+                'user_id' => ['ユーザーIDは必須です。'],
             ]);
         }
 

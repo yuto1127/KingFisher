@@ -37,6 +37,9 @@ class UsersService
 
         // 1. ユーザー登録
         $user = $this->usersRepository->create($data);
+        
+        // デバッグ用ログ
+        \Log::info('Created user:', ['user' => $user, 'user_id' => $user->id ?? 'null']);
 
         // 2. user_passes登録（emailとpasswordがある場合のみ）
         if ($email && $password) {
