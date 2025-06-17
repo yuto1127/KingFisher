@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\UsersService;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class UsersController extends Controller
 {
@@ -42,6 +43,7 @@ class UsersController extends Controller
             'address_line2' => 'nullable|string|max:100',
             'is_active' => 'boolean'
         ]);
+        Log::info($request->all());
 
         if ($validator->fails()) {
             return response()->json(

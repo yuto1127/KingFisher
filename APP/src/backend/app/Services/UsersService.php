@@ -37,20 +37,20 @@ class UsersService
                 'password' => $data['password'], // store側でハッシュ化される前提
             ]));
 
-        // 3. メールアドレスで分岐し、helpdeskまたはcustomerに登録
-        if (isset($data['email']) && str_ends_with($data['email'], '@chuo.ac.jp')) {
-            // HelpDeskControllerのstoreFromServiceを呼び出し
-            app(HelpDesksController::class)->storeFromService([
-                'user_id' => $user->id,
-                'role_id' => 2,
-            ]);
-        } else {
-            // CustomersControllerのstoreFromServiceを呼び出し
-            app(CustomersController::class)->storeFromService([
-                'user_id' => $user->id,
-                'role_id' => 3,
-            ]);
-        }
+        // // 3. メールアドレスで分岐し、helpdeskまたはcustomerに登録
+        // if (isset($data['email']) && str_ends_with($data['email'], '@chuo.ac.jp')) {
+        //     // HelpDeskControllerのstoreFromServiceを呼び出し
+        //     app(HelpDesksController::class)->storeFromService([
+        //         'user_id' => $user->id,
+        //         'role_id' => 2,
+        //     ]);
+        // } else {
+        //     // CustomersControllerのstoreFromServiceを呼び出し
+        //     app(CustomersController::class)->storeFromService([
+        //         'user_id' => $user->id,
+        //         'role_id' => 3,
+        //     ]);
+        // }
         return $user;
     }
 

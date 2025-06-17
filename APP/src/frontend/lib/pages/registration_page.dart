@@ -180,7 +180,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             backgroundColor: Colors.green,
           ),
         );
-        context.go('/login');
+        context.go('#/login');
       }
     } catch (e) {
       setState(() {
