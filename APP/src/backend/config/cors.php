@@ -9,7 +9,7 @@ return [
     'allowed_methods' => ['*'],
 
     // 許可するオリジン（リクエスト元のドメイン）。['*']はすべてのオリジンを許可。
-    'allowed_origins' => ['http://localhost:3000', 'http://127.0.0.1:3000', '*'],
+    'allowed_origins' => ['*'],
     // 本番はFlutter Webのドメイン指定
 
     // 動的なオリジンマッチに使用。正規表現で記述可能（例：['/^https:\/\/.*\.example\.com$/']）。
