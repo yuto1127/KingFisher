@@ -42,7 +42,7 @@ class Kernel extends HttpKernel
      * 個別に登録可能なルートミドルウェア
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'auth.basic' => \App\Http\Middleware\AuthenticateWithBasicAuth::class,
