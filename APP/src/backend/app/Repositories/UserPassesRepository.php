@@ -16,7 +16,6 @@ class UserPassesRepository
 
     public function create(array $data)
     {
-        \Log::info('user_passes insert data: ' . json_encode($data));
         // パスワードが存在する場合は暗号化
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
