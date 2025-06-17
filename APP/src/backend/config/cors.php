@@ -16,7 +16,7 @@ return [
     'allowed_origins_patterns' => [],
 
     // 許可するリクエストヘッダー。['*']で全て許可。セキュリティ的に必要なヘッダーだけを指定するのが理想。
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization', 'Accept', 'Origin'],
 
     // レスポンス時にクライアント側へ公開するヘッダーを指定。例：['Authorization', 'X-Custom-Header']。
     'exposed_headers' => [],
