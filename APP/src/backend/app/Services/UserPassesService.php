@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\UserPassesRepository;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
 
 class UserPassesService
 {
@@ -27,6 +28,10 @@ class UserPassesService
                 'password' => ['パスワードは必須です。'],
             ]);
         }
+
+        // パスワードをハッシュ化
+        $data['password'] = Hash::make($data['password']);
+
         return $this->userPassesRepository->create($data);
     }
 
