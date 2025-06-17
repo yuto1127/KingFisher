@@ -22,9 +22,10 @@ return [
     'exposed_headers' => [],
 
     // ブラウザがプリフライトリクエスト（OPTIONS）をキャッシュする時間（秒単位）。0でキャッシュしない。
-    'max_age' => 0.2,
+    'max_age' => 0,
 
     // 認証情報（クッキー、認証ヘッダーなど）を許可するか。trueにするとCORSで資格情報付きリクエストを許可。
-    'supports_credentials' => true,
+    // 'supports_credentials' => true,
+    'supports_credentials' => false,
 
 ];
