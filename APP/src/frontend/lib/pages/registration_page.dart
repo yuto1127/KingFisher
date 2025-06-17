@@ -152,7 +152,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       final userData = {
         'name': _model.name,
         'gender': _model.gender,
-        'birth_day': _model.barthDay?.toIso8601String(),
+        'barth_day': _model.barthDay?.toIso8601String(),
         'phone_number': _model.phoneNumber,
         'postal_code': _model.postalCode,
         'prefecture': _model.prefecture,
