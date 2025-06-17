@@ -3,6 +3,7 @@ import 'router.dart';
 import 'package:provider/provider.dart';
 import 'providers/map_image_provider.dart';
 import 'providers/auth_provider.dart';
+import 'providers/icon_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => MapImageProvider()),
+        ChangeNotifierProvider(create: (_) => IconProvider()),
       ],
       child: Builder(
         builder: (context) {
