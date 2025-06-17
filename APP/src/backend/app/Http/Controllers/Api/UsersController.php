@@ -30,6 +30,8 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
+        \Log::error('Created user');
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
             'gender' => 'required|string|max:10',
