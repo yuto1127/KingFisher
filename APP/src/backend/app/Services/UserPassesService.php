@@ -22,8 +22,7 @@ class UserPassesService
 
     public function createUserPass(array $data)
     {
-        // デバッグ用ログ
-        \Log::info('Creating user pass:', $data);
+        return response()->json(['ok' => true]);
 
         // パスワードの存在確認
         if (!isset($data['password'])) {

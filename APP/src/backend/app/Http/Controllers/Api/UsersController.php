@@ -43,7 +43,6 @@ class UsersController extends Controller
             'address_line2' => 'nullable|string|max:100',
             'is_active' => 'boolean'
         ]);
-        Log::info($request->all());
 
         if ($validator->fails()) {
             return response()->json(
@@ -54,7 +53,8 @@ class UsersController extends Controller
             );
         }
 
-        $this->usersService->createUser($request->all());
+        $res = $this->usersService->createUser($request->all());
+        Log::info($res);
         return response()->json(
             ['message' => 'ユーザーを作成しました'],
             201,

@@ -28,14 +28,13 @@ class UserPassesController extends Controller
 
     public function store(Request $request)
     {
-        return response()->json(['ok' => true]);
-        // $this->userPassesService->createUserPass($request->all());
-        // return response()->json(
-        //     ['message' => 'ユーザーパスを作成しました'],
-        //     201,
-        //     ['Content-Type' => 'application/json; charset=UTF-8'],
-        //     JSON_UNESCAPED_UNICODE
-        // );
+        $this->userPassesService->createUserPass($request->all());
+        return response()->json(
+            ['message' => 'ユーザーパスを作成しました'],
+            201,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
     }
 
     public function update(Request $request, $id)

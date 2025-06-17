@@ -41,14 +41,14 @@ class UsersService
         // デバッグ用ログ
         \Log::info('Created user:', ['user' => $user, 'user_id' => $user->id ?? 'null']);
 
-        // 2. user_passes登録（emailとpasswordがある場合のみ）
-        if ($email && $password) {
-            $this->userPassesService->createUserPass([
-                'user_id' => $user->id,
-                'email' => $email,
-                'password' => $password,
-            ]);
-        }
+        // // 2. user_passes登録（emailとpasswordがある場合のみ）
+        // if ($email && $password) {
+        //     $this->userPassesService->createUserPass([
+        //         'user_id' => $user->id,
+        //         'email' => $email,
+        //         'password' => $password,
+        //     ]);
+        // }
 
         // // 3. メールアドレスで分岐し、helpdeskまたはcustomerに登録
         // if (isset($data['email']) && str_ends_with($data['email'], '@chuo.ac.jp')) {
