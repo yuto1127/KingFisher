@@ -30,7 +30,8 @@ php artisan db:seed --class=CustomersSeeder
 php artisan db:seed --class=EventsSeeder
 php artisan db:seed --class=EntryStatusesSeeder
 
-
+sudo git pull origin main
+php artisan optimize:clear
 （同時作成）
 php artisan make:model Role --factory
 php artisan make:model Role --migration

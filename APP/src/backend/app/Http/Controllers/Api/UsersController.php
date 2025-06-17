@@ -53,9 +53,10 @@ class UsersController extends Controller
             );
         }
 
-        $this->usersService->createUser($request->all());
+        $user = $this->usersService->createUser($request->all());
         return response()->json(
-            ['message' => 'ユーザーを作成しました'],
+            ['id' => $user->id,
+            'message' => 'ユーザーを作成しました'],
             201,
             ['Content-Type' => 'application/json; charset=UTF-8'],
             JSON_UNESCAPED_UNICODE
