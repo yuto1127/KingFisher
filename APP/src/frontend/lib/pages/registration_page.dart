@@ -108,8 +108,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (value == null || value.isEmpty) {
       return '必須項目です';
     }
-    if (!RegExp(r'^\d{3}\d{4}$').hasMatch(value)) {
-      return '郵便番号は1234567の形式で入力してください';
+    if (!RegExp(r'^\d{7}$').hasMatch(value)) {
+      return '郵便番号は7桁の数字で入力してください（例: 1234567）';
     }
     return null;
   }
@@ -331,6 +331,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 decoration:
                                     _getInputDecoration('郵便番号（例: 1234567）'),
                                 keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 validator: _validatePostalCode,
                                 onSaved: (value) =>
                                     _model.postalCode = value ?? '',
