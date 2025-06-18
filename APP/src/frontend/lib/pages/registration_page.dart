@@ -275,7 +275,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               const SizedBox(height: 16),
                               TextFormField(
                                 decoration:
-                                    _getInputDecoration('生年月日（YYYY-MM-DD）'),
+                                    _getInputDecoration('生年月日（YYYYMMDD）'),
                                 validator: _validateBarthDay,
                                 onSaved: (value) {
                                   if (value != null && value.isNotEmpty) {
