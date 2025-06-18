@@ -67,4 +67,10 @@ class UserPassesRepository
         }
         return null;
     }
+
+    // メールアドレスの重複チェック
+    public function checkEmailExists(string $email): bool
+    {
+        return DB::table('user_passes')->where('email', $email)->exists();
+    }
 } 

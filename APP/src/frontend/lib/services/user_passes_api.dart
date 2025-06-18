@@ -112,4 +112,49 @@ class UserPassesApi {
       throw Exception(_errorMessages['network_error']!);
     }
   }
+
+  // パスワードによる検索
+  static Future<Map<String, dynamic>> findByPassword(String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/user-passes/find-by-password'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw _handleErrorResponse(response);
+      }
+    } catch (e) {
+      throw Exception('パスワードによる検索中にエラーが発生しました: $e');
+    }
+  }
+
+  // メールアドレスの重複チェック
+  static Future<bool> checkEmailExists(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/user-passes/check-email'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({'email': email}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['exists'] ?? false;
+      } else {
+        throw _handleErrorResponse(response);
+      }
+    } catch (e) {
+      throw Exception('メールアドレスの重複チェック中にエラーが発生しました: $e');
+    }
+  }
 }

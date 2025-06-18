@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/verify-password', [UserPassesController::class, 'verifyPassword']);
         Route::put('/{id}/password', [UserPassesController::class, 'updatePassword']);
         Route::post('/find-by-password', [UserPassesController::class, 'findByPassword']);
+        Route::post('/check-email', [UserPassesController::class, 'checkEmailExists']);
     });
     
     // helpdesk

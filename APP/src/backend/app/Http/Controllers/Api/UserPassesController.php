@@ -106,4 +106,20 @@ class UserPassesController extends Controller
             JSON_UNESCAPED_UNICODE
         );
     }
+
+    // メールアドレスの重複チェック
+    public function checkEmailExists(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $exists = $this->userPassesService->checkEmailExists($request->email);
+        return response()->json(
+            ['exists' => $exists],
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
+    }
 }

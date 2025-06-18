@@ -76,4 +76,10 @@ class UserPassesService
         }
         return $userPass;
     }
+
+    // メールアドレスの重複チェック
+    public function checkEmailExists(string $email): bool
+    {
+        return $this->userPassesRepository->checkEmailExists($email);
+    }
 } 

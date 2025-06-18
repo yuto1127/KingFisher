@@ -98,6 +98,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return null;
   }
 
+  // メールアドレスの重複チェック
+  Future<String?> _validateEmailUnique(String? value) async {
+    if (value == null || value.isEmpty) {
+      return '必須項目です';
+    }
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+      return '有効なメールアドレスを入力してください';
+    }
+
+    try {
+      final exists = await UserPassesApi.checkEmailExists(value);
+      if (exists) {
+        return 'このメールアドレスは既に登録されています';
+      }
+    } catch (e) {
+      // エラーが発生した場合は重複チェックをスキップ
+      return null;
+    }
+
+    return null;
+  }
+
   // 電話番号のバリデーション
   String? _validatePhone(String? value) {
     if (value == null || value.isEmpty) {
@@ -222,7 +244,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = e.toString();
+        if (e.toString().contains('Duplicate entry') &&
+            e.toString().contains('user_passes_email_unique')) {
+          _errorMessage = 'このメールアドレスは既に登録されています。別のメールアドレスを使用してください。';
+        } else {
+          _errorMessage = e.toString();
+        }
       });
     } finally {
       if (mounted) {
