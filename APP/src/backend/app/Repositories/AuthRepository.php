@@ -22,7 +22,7 @@ class AuthRepository
             return null;
         }
 
-        return User::find($userPass->id);
+        return User::find($userPass->user_id);
     }
 
     public function verifyPassword(User $user, string $password): bool
