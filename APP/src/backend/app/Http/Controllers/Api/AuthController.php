@@ -7,6 +7,7 @@ use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -20,15 +21,22 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+        // デバッグログ
+        Log::info('Login attempt', [
+            'email' => $request->email,
+            'has_password' => !empty($request->password),
+            'request_data' => $request->all()
         ]);
 
-        // レート制限をチェック
-        $this->ensureIsNotRateLimited($request);
-
         try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            // レート制限をチェック
+            $this->ensureIsNotRateLimited($request);
+
             $result = $this->authService->login(
                 $request->email,
                 $request->password
@@ -36,6 +44,8 @@ class AuthController extends Controller
 
             // 成功時はレート制限をクリア
             RateLimiter::clear($this->throttleKey($request));
+
+            Log::info('Login successful', ['email' => $request->email]);
 
             return response()->json(
                 $result,
@@ -46,6 +56,20 @@ class AuthController extends Controller
         } catch (ValidationException $e) {
             // 失敗時はレート制限を記録
             RateLimiter::hit($this->throttleKey($request));
+            
+            Log::error('Login validation failed', [
+                'email' => $request->email,
+                'errors' => $e->errors()
+            ]);
+            
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Login error', [
+                'email' => $request->email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             throw $e;
         }
     }

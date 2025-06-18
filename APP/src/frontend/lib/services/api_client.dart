@@ -25,7 +25,8 @@ class ApiClient {
   }
 
   // 会員登録
-  static Future<Map<String, dynamic>> registerUser(RegistrationModel user) async {
+  static Future<Map<String, dynamic>> registerUser(
+      RegistrationModel user) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/users'),
@@ -50,6 +51,8 @@ class ApiClient {
   // ログイン
   static Future<Map<String, dynamic>> login(LoginModel credentials) async {
     try {
+      print('Login request data: ${credentials.toJson()}'); // デバッグ用
+
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
         headers: {
@@ -59,14 +62,39 @@ class ApiClient {
         body: json.encode(credentials.toJson()),
       );
 
+      print('Login response status: ${response.statusCode}'); // デバッグ用
+      print('Login response body: ${response.body}'); // デバッグ用
+
       if (response.statusCode == 200) {
         return json.decode(response.body);
+      } else if (response.statusCode == 422) {
+        // バリデーションエラーの詳細を表示
+        final error = json.decode(response.body);
+        print('Validation errors: $error'); // デバッグ用
+
+        if (error['errors'] != null) {
+          final errors = error['errors'] as Map<String, dynamic>;
+          final errorMessages = <String>[];
+
+          errors.forEach((field, messages) {
+            if (messages is List) {
+              errorMessages.addAll(messages.cast<String>());
+            }
+          });
+
+          throw Exception(errorMessages.join(', '));
+        } else {
+          throw Exception(error['message'] ?? '入力内容に誤りがあります');
+        }
       } else {
         final error = json.decode(response.body);
         throw Exception(error['message'] ?? 'ログインに失敗しました');
       }
     } catch (e) {
+      if (e is FormatException) {
+        throw Exception('サーバーからの応答が不正です');
+      }
       throw Exception('ネットワークエラー: $e');
     }
   }
-} 
+}
