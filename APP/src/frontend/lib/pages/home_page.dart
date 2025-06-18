@@ -93,20 +93,11 @@ class _HomePageState extends State<HomePage> {
             foregroundColor: Colors.white, // テキストを白色に
             actions: [
               // 管理者ページへの遷移ボタン
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextButton(
-                    onPressed: _handleAdminClick,
-                    child: Text(
-                      // '管理者 (${_requiredClicks - _adminClickCount})',
-                      '',
-                      style: const TextStyle(
-                        color: Color(0xFF009a73),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextButton(
+                  onPressed: _handleAdminClick,
+                  child: const Text(''),
                 ),
               ),
             ],
@@ -118,12 +109,12 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // ページタイトル
-                  const Text(
-                    'ホームページ',
-                    style: TextStyle(fontSize: 30),
-                  ),
-                  const SizedBox(height: 20), // 垂直方向の余白
-                  
+                  // Text(
+                  //   'ホームページ',
+                  //   style: TextStyle(fontSize: 30),
+                  // ),
+                  //SizedBox(height: 20), // 垂直方向の余白
+
                   // QRコード表示ウィジェット
                   const Text(
                     '会員QRコード',
@@ -135,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                     version: QrVersions.auto, // QRコードのバージョンを自動選択
                     size: 200.0, // QRコードのサイズ（ピクセル）
                   ),
-                  const SizedBox(height: 20), // 垂直方向の余白
+                  //const SizedBox(height: 20), // 垂直方向の余白
 
                   // 会員登録ページへのナビゲーションボタン
                   // ElevatedButton(
@@ -158,23 +149,23 @@ class _HomePageState extends State<HomePage> {
                   // const SizedBox(height: 20),
 
                   // 設定ページへのナビゲーションボタン
-                  ElevatedButton(
-                    onPressed: () {
-                      // 設定ページへ遷移
-                      context.go('/settings');
-                    },
-                    child: const Text('設定ページへ'),
-                  ),
-                  const SizedBox(height: 10), // ボタン間の余白
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     // 設定ページへ遷移
+                  //     context.go('/settings');
+                  //   },
+                  //   child: const Text('設定ページへ'),
+                  // ),
+                  // const SizedBox(height: 10), // ボタン間の余白
 
-                  // プロフィールページへのナビゲーションボタン
-                  ElevatedButton(
-                    onPressed: () {
-                      // プロフィールページへ遷移
-                      context.go('/profile');
-                    },
-                    child: const Text('プロフィールページへ'),
-                  ),
+                  // // プロフィールページへのナビゲーションボタン
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     // プロフィールページへ遷移
+                  //     context.go('/profile');
+                  //   },
+                  //   child: const Text('プロフィールページへ'),
+                  // ),
                 ],
               ),
             ),

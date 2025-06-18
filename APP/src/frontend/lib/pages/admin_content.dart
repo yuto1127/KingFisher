@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/info_provider.dart';
 import '../layouts/main_layout.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
@@ -25,6 +26,12 @@ class _AdminContentPageState extends State<AdminContentPage> {
       });
       // Providerにも保存
       context.read<MapImageProvider>().setImage(bytes);
+
+      // InfoProviderにお知らせを追加
+      context.read<InfoProvider>().addInfo(
+            'マップ画像更新',
+            '新しいマップ画像がアップロードされました。',
+          );
     }
   }
 
