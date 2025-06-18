@@ -69,10 +69,9 @@ class CustomersApi {
   // 顧客を作成
   static Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {
     try {
-      final headers = await AuthApi.getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/customers'),
-        headers: headers,
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
 
