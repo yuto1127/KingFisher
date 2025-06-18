@@ -331,9 +331,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 decoration:
                                     _getInputDecoration('郵便番号（例: 1234567）'),
                                 keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
                                 validator: _validatePostalCode,
                                 onSaved: (value) =>
                                     _model.postalCode = value ?? '',
