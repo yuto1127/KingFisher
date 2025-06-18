@@ -19,8 +19,12 @@ return new class extends Migration
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->index(['user_id', 'tokenable_type']);
+        });
+
+        // usersテーブルが作成された後に外部キー制約を追加
+        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
