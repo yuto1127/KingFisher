@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 // 共通レイアウト
 import '../layouts/main_layout.dart';
 // コンテンツ管理ページ
-import 'admin_content.dart';
 
 /// アプリケーションの管理者ページ
 /// 管理者向けの機能と設定を提供
@@ -98,4 +97,4 @@ class AdminPage extends StatelessWidget {
       ),
     );
   }
-} 
+}
