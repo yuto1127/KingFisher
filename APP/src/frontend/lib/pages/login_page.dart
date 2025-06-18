@@ -100,6 +100,9 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     _formKey.currentState!.save();
+
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -115,9 +118,11 @@ class _LoginPageState extends State<LoginPage> {
         context.go('/');
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {

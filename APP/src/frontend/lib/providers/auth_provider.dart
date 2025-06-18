@@ -61,7 +61,20 @@ class AuthProvider extends ChangeNotifier {
       _isAuthenticated = false;
       _token = null;
       _userData = null;
-      rethrow;
+
+      // エラーメッセージを適切に処理
+      String errorMessage = 'ログインに失敗しました';
+      if (e.toString().contains('CORS')) {
+        errorMessage = 'サーバーとの接続に問題があります。しばらく待ってから再試行してください。';
+      } else if (e.toString().contains('timeout')) {
+        errorMessage = 'サーバーへの接続がタイムアウトしました。';
+      } else if (e.toString().contains('network')) {
+        errorMessage = 'ネットワークエラーが発生しました。';
+      } else {
+        errorMessage = e.toString().replaceAll('Exception: ', '');
+      }
+
+      throw Exception(errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();

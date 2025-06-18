@@ -272,6 +272,10 @@ class AuthApi {
         throw _handleErrorResponse(response);
       }
     } on http.ClientException catch (e) {
+      // CORSエラーの詳細を確認
+      if (e.toString().contains('CORS') || e.toString().contains('blocked')) {
+        throw Exception('CORSエラー: サーバーとの接続がブロックされています。サーバーが起動しているか確認してください。');
+      }
       throw Exception(_errorMessages['network_error']!);
     } catch (e) {
       if (e is FormatException) {
