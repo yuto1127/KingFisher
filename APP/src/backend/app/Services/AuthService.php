@@ -6,6 +6,7 @@ use App\Repositories\AuthRepository;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
