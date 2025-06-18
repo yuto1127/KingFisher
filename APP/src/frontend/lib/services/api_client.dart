@@ -4,7 +4,7 @@ import '../models/registration_model.dart';
 import '../models/login_model.dart';
 
 class ApiClient {
-  static const String baseUrl = 'http://localhost:8000/api'; // 開発環境用のURL
+  static const String baseUrl = 'http://54.165.66.148/api'; // 開発環境用のURL
 
   // ユーザー情報を取得
   static Future<Map<String, dynamic>> getUser(String barcode) async {
