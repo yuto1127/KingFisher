@@ -4,9 +4,20 @@ import 'package:provider/provider.dart';
 import 'providers/map_image_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/info_provider.dart';
+import 'providers/icon_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => MapImageProvider()),
+        ChangeNotifierProvider(create: (_) => InfoProvider()),
+        ChangeNotifierProvider(create: (_) => IconProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
