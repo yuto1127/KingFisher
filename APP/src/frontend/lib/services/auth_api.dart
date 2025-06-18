@@ -201,9 +201,6 @@ class AuthApi {
     try {
       await _checkConnection();
 
-      print('=== LOGIN DEBUG START ===');
-      print('Login request data: {"email": "$email", "password": "***"}');
-
       final response = await http
           .post(
         Uri.parse('$baseUrl/login'),
@@ -220,14 +217,8 @@ class AuthApi {
         },
       );
 
-      print('Login response status: ${response.statusCode}');
-      print('Login response headers: ${response.headers}');
-      print('Login response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print('Login success data: $data');
-        print('=== LOGIN DEBUG END ===');
 
         if (data['token'] == null) {
           throw Exception(_errorMessages['server_error']!);
@@ -235,20 +226,15 @@ class AuthApi {
 
         // トークンとユーザーデータを保存
         await saveToken(data['token']);
-        print('Token saved to local storage');
 
         if (data['user'] != null) {
           await saveUserData(data['user']);
-          print('User data saved to local storage');
         }
 
         return _processDateFields(data);
       } else if (response.statusCode == 422) {
         // バリデーションエラーの詳細を表示
         final error = json.decode(response.body);
-        print('Validation errors: $error');
-        print('Debug info: ${error['debug']}');
-        print('=== LOGIN DEBUG END ===');
 
         if (error['errors'] != null) {
           final errors = error['errors'] as Map<String, dynamic>;
@@ -286,12 +272,8 @@ class AuthApi {
         throw _handleErrorResponse(response);
       }
     } on http.ClientException catch (e) {
-      print('Login exception: $e');
-      print('=== LOGIN DEBUG END ===');
       throw Exception(_errorMessages['network_error']!);
     } catch (e) {
-      print('Login exception: $e');
-      print('=== LOGIN DEBUG END ===');
       if (e is FormatException) {
         throw Exception('サーバーからの応答が不正です');
       }
@@ -325,7 +307,6 @@ class AuthApi {
         // ローカルストレージからデータを削除
         await deleteToken();
         await deleteUserData();
-        print('Logged out and cleared local storage');
       } else {
         throw _handleErrorResponse(response);
       }

@@ -15,7 +15,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => InfoProvider()),
         ChangeNotifierProvider(create: (_) => IconProvider()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -25,31 +25,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => MapImageProvider()),
-        ChangeNotifierProvider(create: (_) => InfoProvider()),
-      ],
-      child: Builder(
-        builder: (context) {
-          final authProvider = Provider.of<AuthProvider>(context);
-
-          // アプリ起動時に認証データを初期化
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        // アプリ起動時に認証データを初期化（一度だけ実行）
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (authProvider.isLoading) {
             authProvider.initializeAuth();
-          });
+          }
+        });
 
-          return MaterialApp.router(
-            title: 'KingFisher',
-            theme: ThemeData(
-              primarySwatch: Colors.green,
-              primaryColor: const Color(0xFF009a73),
-            ),
-            routerConfig: createRouter(authProvider),
-          );
-        },
-      ),
+        return MaterialApp.router(
+          title: 'KingFisher',
+          theme: ThemeData(
+            primarySwatch: Colors.green,
+            primaryColor: const Color(0xFF009a73),
+          ),
+          routerConfig: createRouter(authProvider),
+        );
+      },
     );
   }
 }

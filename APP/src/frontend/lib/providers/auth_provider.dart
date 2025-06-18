@@ -6,6 +6,7 @@ class AuthProvider extends ChangeNotifier {
   String? _token;
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
+  bool _isInitialized = false;
 
   bool get isAuthenticated => _isAuthenticated;
   String? get token => _token;
@@ -14,6 +15,9 @@ class AuthProvider extends ChangeNotifier {
 
   // アプリ起動時にローカルストレージからデータを復元
   Future<void> initializeAuth() async {
+    // 既に初期化済みの場合は何もしない
+    if (_isInitialized) return;
+
     try {
       _isLoading = true;
       notifyListeners();
@@ -26,16 +30,14 @@ class AuthProvider extends ChangeNotifier {
         _token = token;
         _userData = userData;
         _isAuthenticated = true;
-        print('Auth restored from local storage: ${userData['email']}');
       } else {
         _isAuthenticated = false;
-        print('No auth data found in local storage');
       }
     } catch (e) {
-      print('Error initializing auth: $e');
       _isAuthenticated = false;
     } finally {
       _isLoading = false;
+      _isInitialized = true;
       notifyListeners();
     }
   }
@@ -52,9 +54,6 @@ class AuthProvider extends ChangeNotifier {
         _token = response['token'];
         _userData = response['user'];
         _isAuthenticated = true;
-
-        // ローカルストレージへの保存はAuthApiで既に実行済み
-        print('Login successful: ${_userData?['email']}');
       } else {
         throw Exception('トークンが取得できませんでした');
       }
@@ -74,7 +73,6 @@ class AuthProvider extends ChangeNotifier {
     try {
       await AuthApi.logout();
     } catch (e) {
-      print('Logout error: $e');
       // エラーが発生してもローカルストレージはクリアされる
     } finally {
       _token = null;

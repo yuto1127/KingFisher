@@ -44,13 +44,15 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
           return '/login';
         }
 
-        // ログイン済みでログインページにアクセスした場合
+        // ログイン済みでログインページまたは登録ページにアクセスした場合
         if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
           return '/';
         }
 
+        // その他の場合はリダイレクトしない
         return null;
       },
+      refreshListenable: authProvider, // AuthProviderの変更を監視
       errorBuilder: (context, state) => Scaffold(
         appBar: AppBar(
           title: const Text('エラー'),
