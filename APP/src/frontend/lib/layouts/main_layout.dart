@@ -34,8 +34,8 @@ class MainLayout extends StatelessWidget {
                   label: 'ホーム',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.qr_code_scanner),
-                  label: 'QR',
+                  icon: Icon(Icons.umbrella),
+                  label: '落とし物',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.settings_outlined),
@@ -52,7 +52,7 @@ class MainLayout extends StatelessWidget {
     final String location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/information')) return 0;
     if (location.startsWith('/map')) return 1;
-    if (location.startsWith('/qr-reader')) return 3;
+    if (location.startsWith('/lost-item')) return 3;
     if (location.startsWith('/settings')) return 4;
     return 2; // ホームページ
   }
@@ -69,7 +69,7 @@ class MainLayout extends StatelessWidget {
         context.go('/');
         break;
       case 3:
-        context.go('/qr-reader');
+        context.go('/lost-item');
         break;
       case 4:
         context.go('/settings');

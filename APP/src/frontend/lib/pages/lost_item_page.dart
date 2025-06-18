@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../layouts/main_layout.dart';
 
-class QRReaderPage extends StatelessWidget {
-  const QRReaderPage({super.key});
+class LostItemPage extends StatelessWidget {
+  const LostItemPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,19 +10,20 @@ class QRReaderPage extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
-            title: const Text('QRリーダー'),
+            title: const Text('落とし物管理'),
             backgroundColor: Color(0xFF009a73),
             foregroundColor: Colors.white,
           ),
           Container(
-            height: 300,
-            color: Colors.black,
+            height: 180,
+            color: Color(0xFFf5f5f5),
             child: const Center(
               child: Text(
-                'QRコードスキャンエリア',
+                '落とし物の登録・管理ができます',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
+                  color: Color(0xFF009a73),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -34,7 +35,7 @@ class QRReaderPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'スキャン履歴',
+                    '最近の落とし物',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -44,22 +45,22 @@ class QRReaderPage extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       children: [
-                        _buildHistoryCard(
-                          title: 'メインホール',
-                          time: '2024-03-25 14:30',
-                          description: '多目的ホールの詳細情報を表示',
+                        _buildLostItemCard(
+                          title: '黒い財布',
+                          time: '2024-06-17 10:00',
+                          description: '受付で預かっています',
                         ),
                         const SizedBox(height: 12),
-                        _buildHistoryCard(
-                          title: '会議室A',
-                          time: '2024-03-25 13:15',
-                          description: '会議室の予約状況を確認',
+                        _buildLostItemCard(
+                          title: '青い傘',
+                          time: '2024-06-16 15:30',
+                          description: 'ロビーで発見されました',
                         ),
                         const SizedBox(height: 12),
-                        _buildHistoryCard(
-                          title: 'レストラン',
-                          time: '2024-03-25 12:00',
-                          description: '本日のメニューを表示',
+                        _buildLostItemCard(
+                          title: 'スマートフォン',
+                          time: '2024-06-15 18:20',
+                          description: 'スタッフルームで保管中',
                         ),
                       ],
                     ),
@@ -73,7 +74,7 @@ class QRReaderPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHistoryCard({
+  Widget _buildLostItemCard({
     required String title,
     required String time,
     required String description,
@@ -81,6 +82,7 @@ class QRReaderPage extends StatelessWidget {
     return Card(
       elevation: 2,
       child: ListTile(
+        leading: const Icon(Icons.umbrella, color: Color(0xFF009a73)),
         title: Text(
           title,
           style: const TextStyle(
@@ -100,7 +102,7 @@ class QRReaderPage extends StatelessWidget {
             ),
           ],
         ),
-        trailing: const Icon(Icons.history),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       ),
     );
   }
