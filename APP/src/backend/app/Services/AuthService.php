@@ -20,6 +20,7 @@ class AuthService
     public function login(string $email, string $password): array
     {
         $user = $this->authRepository->findByEmail($email);
+        dd($user);
         if (!$user || !$this->authRepository->verifyPassword($user, $password)) {
             throw ValidationException::withMessages([
                 'email' => ['認証情報が正しくありません。'],
