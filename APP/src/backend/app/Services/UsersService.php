@@ -29,6 +29,10 @@ class UsersService
     public function createUser(array $data)
     {
         $data['created_at'] = now();
+        // 郵便番号が7桁数字のみの場合はハイフンを追加
+        if (isset($data['postal_code']) && preg_match('/^\d{7}$/', $data['postal_code'])) {
+            $data['postal_code'] = substr($data['postal_code'], 0, 3) . '-' . substr($data['postal_code'], 3, 4);
+        }
         // emailとpasswordを分離
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
@@ -70,6 +74,10 @@ class UsersService
     public function updateUser(int $id, array $data)
     {
         $data['updated_at'] = now();
+        // 郵便番号が7桁数字のみの場合はハイフンを追加
+        if (isset($data['postal_code']) && preg_match('/^\d{7}$/', $data['postal_code'])) {
+            $data['postal_code'] = substr($data['postal_code'], 0, 3) . '-' . substr($data['postal_code'], 3, 4);
+        }
         return $this->usersRepository->update($id, $data);
     }
 
