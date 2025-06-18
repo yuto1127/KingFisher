@@ -55,7 +55,7 @@ class User extends Authenticatable
 
     public function personalAccessTokens()
     {
-        return $this->hasMany(PersonalAccessToken::class, 'user_id');
+        return $this->morphMany(PersonalAccessToken::class, 'tokenable');
     }
 
     // 住所を完全な文字列として取得

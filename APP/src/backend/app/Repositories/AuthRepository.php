@@ -34,19 +34,6 @@ class AuthRepository
             ->first();
     }
 
-    public function verifyPassword(User $user, string $password): bool
-    {
-        $userPass = DB::table('user_passes')
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (!$userPass) {
-            return false;
-        }
-
-        return Hash::check($password, $userPass->password);
-    }
-
     public function verifyPasswordWithHash(string $password, string $hashedPassword): bool
     {
         return Hash::check($password, $hashedPassword);

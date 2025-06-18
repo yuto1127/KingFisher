@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 
-class PersonalAccessToken extends Model
+class PersonalAccessToken extends SanctumPersonalAccessToken
 {
     protected $fillable = [
-        'user_id',
         'tokenable_type',
+        'tokenable_id',
         'name',
         'token',
         'abilities',
@@ -18,6 +18,6 @@ class PersonalAccessToken extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'tokenable_id');
     }
 } 
