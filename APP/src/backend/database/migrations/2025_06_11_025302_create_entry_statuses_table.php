@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('user_id');
             $table->string('status');
-            $table->date('entry_at');
-            $table->date('exit_at');
+            $table->timestamp('entry_at');
+            $table->timestamp('exit_at');
             $table->timestamps();
 
             // 外部キー制約

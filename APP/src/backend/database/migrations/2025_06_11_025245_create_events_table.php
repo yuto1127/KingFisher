@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title', 255);
             $table->text('description')->nullable();
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->string('location', 255)->nullable();
             $table->integer('capacity')->nullable();
             $table->boolean('is_active')->default(true);

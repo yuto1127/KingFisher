@@ -20,10 +20,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['user_id', 'tokenable_type']);
-        });
-
-        // usersテーブルが作成された後に外部キー制約を追加
-        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            
+            // 外部キー制約をテーブル作成時に定義
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
