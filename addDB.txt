@@ -83,3 +83,14 @@ RolesSeeder
 
 
 /Users/akaishiyuuto/Desktop/KingFisher.pem
+
+
+DROP TABLE roles;
+DROP TABLE users;
+DROP TABLE user_passes;
+DROP TABLE help_desks;
+DROP TABLE customers;
+DROP TABLE events;
+DROP TABLE entry_statuses;
+DROP TABLE personal_access_tokens;
+DELETE FROM migrations;
