@@ -34,6 +34,12 @@ class MyApp extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final authProvider = Provider.of<AuthProvider>(context);
+
+          // アプリ起動時に認証データを初期化
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            authProvider.initializeAuth();
+          });
+
           return MaterialApp.router(
             title: 'KingFisher',
             theme: ThemeData(

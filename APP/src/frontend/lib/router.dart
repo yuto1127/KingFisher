@@ -11,6 +11,7 @@ import 'pages/admin_user.dart';
 import 'pages/registration_page.dart';
 import 'pages/login_page.dart';
 import 'pages/lost_item_page.dart';
+import 'pages/profile_page.dart';
 
 // 認証が必要なルート
 final _authenticatedRoutes = {
@@ -22,11 +23,17 @@ final _authenticatedRoutes = {
   '/admin',
   '/admin/content',
   '/admin/user',
+  '/profile',
 };
 
 GoRouter createRouter(AuthProvider authProvider) => GoRouter(
       initialLocation: '/login',
       redirect: (context, state) {
+        // 認証状態の初期化が完了するまで待機
+        if (authProvider.isLoading) {
+          return null;
+        }
+
         final isAuthenticated = authProvider.isAuthenticated;
         final isAuthRoute = _authenticatedRoutes.contains(state.fullPath);
         final isLoginRoute = state.fullPath == '/login';
@@ -91,6 +98,10 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
         GoRoute(
           path: '/settings',
           builder: (context, state) => const SettingsPage(),
+        ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => const ProfilePage(),
         ),
         GoRoute(
           path: '/admin',

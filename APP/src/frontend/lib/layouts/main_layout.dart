@@ -38,8 +38,8 @@ class MainLayout extends StatelessWidget {
                   label: '落とし物',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.settings_outlined),
-                  label: '設定',
+                  icon: Icon(Icons.person_outline),
+                  label: 'プロフィール',
                 ),
               ],
               selectedItemColor: Color(0xFF009a73),
@@ -53,7 +53,7 @@ class MainLayout extends StatelessWidget {
     if (location.startsWith('/information')) return 0;
     if (location.startsWith('/map')) return 1;
     if (location.startsWith('/lost-item')) return 3;
-    if (location.startsWith('/settings')) return 4;
+    if (location.startsWith('/profile')) return 4;
     return 2; // ホームページ
   }
 
@@ -72,7 +72,7 @@ class MainLayout extends StatelessWidget {
         context.go('/lost-item');
         break;
       case 4:
-        context.go('/settings');
+        context.go('/profile');
         break;
     }
   }

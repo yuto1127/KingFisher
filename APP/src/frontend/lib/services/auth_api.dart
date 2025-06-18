@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:html' as html;
 import '../utils/network_utils.dart';
+import '../models/registration_model.dart';
+import '../models/login_model.dart';
 
 class AuthApi {
   static const String baseUrl = 'http://54.165.66.148/api';
@@ -118,11 +120,89 @@ class AuthApi {
     }
   }
 
+  // 認証状態を確認
+  static Future<bool> isAuthenticated() async {
+    final token = await getToken();
+    return token != null;
+  }
+
+  // ユーザー情報を取得（バーコード指定）
+  static Future<Map<String, dynamic>> getUser(String barcode) async {
+    try {
+      await _checkConnection();
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/users/$barcode'),
+        headers: {'Accept': 'application/json'},
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception(_errorMessages['timeout_error']!);
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return _processDateFields(json.decode(response.body));
+      } else {
+        throw _handleErrorResponse(response);
+      }
+    } on http.ClientException catch (e) {
+      throw Exception(_errorMessages['network_error']!);
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(_errorMessages['unknown_error']!);
+    }
+  }
+
+  // 会員登録
+  static Future<Map<String, dynamic>> registerUser(
+      RegistrationModel user) async {
+    try {
+      await _checkConnection();
+
+      final response = await http
+          .post(
+        Uri.parse('$baseUrl/users'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode(user.toJson()),
+      )
+          .timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception(_errorMessages['timeout_error']!);
+        },
+      );
+
+      if (response.statusCode == 201) {
+        return _processDateFields(json.decode(response.body));
+      } else {
+        throw _handleErrorResponse(response);
+      }
+    } on http.ClientException catch (e) {
+      throw Exception(_errorMessages['network_error']!);
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(_errorMessages['unknown_error']!);
+    }
+  }
+
+  // ログイン（LoginModel使用）
+  static Future<Map<String, dynamic>> loginWithModel(
+      LoginModel credentials) async {
+    return await login(credentials.email, credentials.password);
+  }
+
   // ログイン
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
     try {
       await _checkConnection();
+
+      print('=== LOGIN DEBUG START ===');
+      print('Login request data: {"email": "$email", "password": "***"}');
 
       final response = await http
           .post(
@@ -140,25 +220,81 @@ class AuthApi {
         },
       );
 
+      print('Login response status: ${response.statusCode}');
+      print('Login response headers: ${response.headers}');
+      print('Login response body: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        print('Login success data: $data');
+        print('=== LOGIN DEBUG END ===');
+
         if (data['token'] == null) {
           throw Exception(_errorMessages['server_error']!);
         }
 
         // トークンとユーザーデータを保存
         await saveToken(data['token']);
+        print('Token saved to local storage');
+
         if (data['user'] != null) {
           await saveUserData(data['user']);
+          print('User data saved to local storage');
         }
 
         return _processDateFields(data);
+      } else if (response.statusCode == 422) {
+        // バリデーションエラーの詳細を表示
+        final error = json.decode(response.body);
+        print('Validation errors: $error');
+        print('Debug info: ${error['debug']}');
+        print('=== LOGIN DEBUG END ===');
+
+        if (error['errors'] != null) {
+          final errors = error['errors'] as Map<String, dynamic>;
+          final errorMessages = <String>[];
+
+          // エラーフィールドごとにメッセージを整理
+          if (errors['email'] != null) {
+            final emailErrors = errors['email'] as List;
+            errorMessages.addAll(emailErrors.cast<String>());
+          }
+
+          if (errors['password'] != null) {
+            final passwordErrors = errors['password'] as List;
+            errorMessages.addAll(passwordErrors.cast<String>());
+          }
+
+          // その他のエラーも含める
+          errors.forEach((field, messages) {
+            if (field != 'email' && field != 'password' && messages is List) {
+              errorMessages.addAll(messages.cast<String>());
+            }
+          });
+
+          throw Exception(errorMessages.join(', '));
+        } else if (error['debug'] != null) {
+          // デバッグ情報を含むエラーメッセージ
+          final debug = error['debug'] as Map<String, dynamic>;
+          final debugInfo =
+              debug.entries.map((e) => '${e.key}: ${e.value}').join(', ');
+          throw Exception('${error['message']} (Debug: $debugInfo)');
+        } else {
+          throw Exception(error['message'] ?? '入力内容に誤りがあります');
+        }
       } else {
         throw _handleErrorResponse(response);
       }
     } on http.ClientException catch (e) {
+      print('Login exception: $e');
+      print('=== LOGIN DEBUG END ===');
       throw Exception(_errorMessages['network_error']!);
     } catch (e) {
+      print('Login exception: $e');
+      print('=== LOGIN DEBUG END ===');
+      if (e is FormatException) {
+        throw Exception('サーバーからの応答が不正です');
+      }
       if (e is Exception) rethrow;
       throw Exception(_errorMessages['unknown_error']!);
     }
@@ -185,17 +321,23 @@ class AuthApi {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 401) {
+        // ローカルストレージからデータを削除
         await deleteToken();
-      } else if (response.statusCode == 401) {
-        await deleteToken();
-        throw Exception(_errorMessages['token_expired']!);
+        await deleteUserData();
+        print('Logged out and cleared local storage');
       } else {
         throw _handleErrorResponse(response);
       }
     } on http.ClientException catch (e) {
+      // エラーが発生してもローカルストレージはクリア
+      await deleteToken();
+      await deleteUserData();
       throw Exception(_errorMessages['network_error']!);
     } catch (e) {
+      // エラーが発生してもローカルストレージはクリア
+      await deleteToken();
+      await deleteUserData();
       if (e is Exception) rethrow;
       throw Exception(_errorMessages['unknown_error']!);
     }
