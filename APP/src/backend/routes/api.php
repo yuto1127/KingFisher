@@ -11,11 +11,55 @@ use App\Http\Controllers\Api\CustomersController;
 use App\Http\Controllers\Api\EventsController;
 use App\Http\Controllers\Api\EntryStatusesController;
 use App\Http\Controllers\Api\AuthController;
+use Illuminate\Support\Facades\Hash;
 
 // 認証関連のルート（認証不要）
 Route::get('/ping', function () {
     return response()->json(['message' => 'pong'], 200);
 });
+
+// デバッグ用エンドポイント
+Route::get('/debug/users', function () {
+    $users = \Illuminate\Support\Facades\DB::table('users')->get();
+    $userPasses = \Illuminate\Support\Facades\DB::table('user_passes')->get();
+    
+    return response()->json([
+        'users' => $users,
+        'user_passes' => $userPasses,
+        'count' => [
+            'users' => $users->count(),
+            'user_passes' => $userPasses->count()
+        ]
+    ]);
+});
+
+// パスワードテスト用エンドポイント
+Route::post('/debug/test-password', function (Request $request) {
+    $email = $request->input('email');
+    $password = $request->input('password');
+    
+    $userPass = \Illuminate\Support\Facades\DB::table('user_passes')
+        ->where('email', $email)
+        ->first();
+    
+    if (!$userPass) {
+        return response()->json([
+            'error' => 'ユーザーが見つかりません',
+            'email' => $email
+        ]);
+    }
+    
+    $isValid = Hash::check($password, $userPass->password);
+    
+    return response()->json([
+        'email' => $email,
+        'password_provided' => $password,
+        'stored_hash' => $userPass->password,
+        'is_valid' => $isValid,
+        'user_id' => $userPass->user_id
+    ]);
+});
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/users', [UsersController::class, 'store']);
 Route::post('/user-passes', [UserPassesController::class, 'store']);
