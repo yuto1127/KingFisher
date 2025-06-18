@@ -7,6 +7,37 @@ import '../services/users_api.dart';
 import '../services/user_passes_api.dart';
 import '../services/customers_api.dart';
 
+// 郵便番号用のカスタムフォーマッター
+class _PostalCodeFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // 数字以外を除去
+    final text = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+
+    if (text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    // 7桁を超える場合は切り詰める
+    final limitedText = text.length > 7 ? text.substring(0, 7) : text;
+
+    // ハイフンを挿入
+    String formattedText = limitedText;
+    if (limitedText.length >= 3) {
+      formattedText =
+          '${limitedText.substring(0, 3)}-${limitedText.substring(3)}';
+    }
+
+    return newValue.copyWith(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: formattedText.length),
+    );
+  }
+}
+
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
 
@@ -108,8 +139,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (value == null || value.isEmpty) {
       return '必須項目です';
     }
-    if (!RegExp(r'^\d{7}$').hasMatch(value)) {
-      return '郵便番号は7桁の数字で入力してください（例: 1234567）';
+    if (!RegExp(r'^\d{3}-\d{4}$').hasMatch(value)) {
+      return '郵便番号は123-4567の形式で入力してください';
     }
     return null;
   }
@@ -329,10 +360,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               const SizedBox(height: 16),
                               TextFormField(
                                 decoration:
-                                    _getInputDecoration('郵便番号（例: 1234567）'),
+                                    _getInputDecoration('郵便番号（例: 123-4567）'),
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(7),
+                                  _PostalCodeFormatter(),
                                 ],
                                 validator: _validatePostalCode,
                                 onSaved: (value) =>
