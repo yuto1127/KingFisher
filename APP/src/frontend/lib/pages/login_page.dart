@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/login_model.dart';
 import '../services/api_client.dart';
 import '../providers/auth_provider.dart';
+import '../providers/icon_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,6 +20,38 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
   bool _obscurePassword = true;
+
+  // アイコン選択ダイアログを表示
+  void _showIconSelectionDialog(BuildContext context) {
+    final iconProvider = Provider.of<IconProvider>(context, listen: false);
+    final List<IconData> icons = [
+      Icons.account_circle,
+      Icons.person,
+      Icons.face,
+      Icons.emoji_emotions,
+      Icons.sentiment_satisfied,
+      Icons.sentiment_very_satisfied,
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('アイコンを選択'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: icons.map((icon) => ListTile(
+              leading: Icon(icon),
+              onTap: () {
+                iconProvider.setLoginIcon(icon);
+                Navigator.pop(context);
+              },
+            )).toList(),
+          ),
+        ),
+      ),
+    );
+  }
 
   // 入力フィールドのデコレーション
   InputDecoration _getInputDecoration(String label, {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
@@ -94,6 +127,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final iconProvider = Provider.of<IconProvider>(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -112,10 +147,25 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // ロゴまたはアプリ名
-                    const Icon(
-                      Icons.account_circle,
-                      size: 80,
-                      color: Colors.white,
+                    GestureDetector(
+                      onTap: () => _showIconSelectionDialog(context),
+                      child: Column(
+                        children: [
+                          Icon(
+                            iconProvider.loginIcon,
+                            size: 80,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'タップしてアイコンを変更',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Text(

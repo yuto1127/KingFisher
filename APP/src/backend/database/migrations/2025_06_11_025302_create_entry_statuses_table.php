@@ -13,12 +13,28 @@ return new class extends Migration
     {
         Schema::create('entry_statuses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events');
-            $table->foreignId('user_id')->constrained('users');
+            $table->unsignedBigInteger('event_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('status');
-            $table->dateTime('entry_at');
-            $table->dateTime('exit_at');
+            $table->date('entry_at');
+            $table->date('exit_at');
             $table->timestamps();
+
+            // 外部キー制約
+            $table->foreign('event_id')
+                ->references('id')
+                ->on('events')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+
+            // ユニーク制約
+            $table->unique(['event_id', 'user_id']);
         });
     }
 

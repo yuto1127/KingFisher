@@ -20,19 +20,17 @@ class RolesRepository
 
     public function create(array $data)
     {
-        return Role::create($data);
+        return DB::table('roles')->insert($data);
     }
 
     public function update(int $id, array $data)
     {
-        $role = Role::findOrFail($id);
-        $role->update($data);
-        return $role;
+        DB::table('roles')->where('id', $id)->update($data);
+        return DB::table('roles')->where('id', $id)->first();
     }
 
     public function delete(int $id)
     {
-        $role = Role::findOrFail($id);
-        return $role->delete();
+        return DB::table('roles')->where('id', $id)->delete();
     }
 } 

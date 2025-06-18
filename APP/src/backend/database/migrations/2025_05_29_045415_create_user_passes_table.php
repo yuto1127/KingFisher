@@ -13,10 +13,23 @@ return new class extends Migration
     {
         Schema::create('user_passes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('email');
-            $table->string('password');
+            $table->unsignedBigInteger('user_id');
+            $table->string('email', 255)->unique();
+            $table->string('password', 255);
+            $table->timestamp('password_changed_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
+
+            // 外部キー制約
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
+            // インデックス
+            $table->index('email_verified_at');
+            $table->index('password_changed_at');
         });
     }
 

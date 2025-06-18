@@ -9,15 +9,18 @@ use App\Models\User;
 class HelpDesk extends Model
 {
     //
-    protected $fillable = ['role_id','user_id'];
+    protected $fillable = [
+        'role_id',
+        'user_id',
+    ];
 
     public function role()
     {
-        return $this->hasOne(Role::class);
+        return $this->belongsTo(Role::class);
     }
 
     public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 }

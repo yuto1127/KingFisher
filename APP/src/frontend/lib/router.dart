@@ -6,12 +6,12 @@ import 'pages/home_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/information_page.dart';
 import 'pages/map_page.dart';
-import 'pages/qr_reader_page.dart';
 import 'pages/admin_page.dart';
 import 'pages/admin_content.dart';
 import 'pages/admin_user.dart';
 import 'pages/registration_page.dart';
 import 'pages/login_page.dart';
+import 'pages/lost_item_page.dart';
 
 // 認証が必要なルート
 final _authenticatedRoutes = {
@@ -90,10 +90,6 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
       builder: (context, state) => const MapPage(),
     ),
     GoRoute(
-      path: '/qr-reader',
-      builder: (context, state) => const QRReaderPage(),
-    ),
-    GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsPage(),
     ),
@@ -108,6 +104,10 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
     GoRoute(
       path: '/admin/user',
       builder: (context, state) => const AdminUserPage(),
+    ),
+    GoRoute(
+      path: '/lost-item',
+      builder: (context, state) => const LostItemPage(),
     ),
   ],
 );

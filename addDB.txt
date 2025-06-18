@@ -21,7 +21,7 @@ seeder
 php artisan make:seeder テーブル名Seeder
 
 （実行コマンド）
-php artisan migrate
+php artisan migrate:refresh
 php artisan db:seed --class=RolesSeeder
 php artisan db:seed --class=UsersSeeder
 php artisan db:seed --class=UserPassesSeeder
@@ -30,7 +30,8 @@ php artisan db:seed --class=CustomersSeeder
 php artisan db:seed --class=EventsSeeder
 php artisan db:seed --class=EntryStatusesSeeder
 
-
+sudo git pull origin main
+php artisan optimize:clear
 （同時作成）
 php artisan make:model Role --factory
 php artisan make:model Role --migration

@@ -20,11 +20,13 @@ class RolesService
 
     public function createRole(array $data)
     {
+        $data['created_at'] = now();
         return $this->rolesRepository->create($data);
     }
 
     public function updateRole(int $id, array $data)
     {
+        $data['updated_at'] = now();
         return $this->rolesRepository->update($id, $data);
     }
 

@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../layouts/main_layout.dart';
 import '../models/registration_model.dart';
-import '../services/api_client.dart';
+import '../services/users_api.dart';
+import '../services/user_passes_api.dart';
+import '../services/customers_api.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -28,7 +30,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   // 入力フィールドのデコレーション
-  InputDecoration _getInputDecoration(String label, {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
+  InputDecoration _getInputDecoration(String label,
+      {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
     return InputDecoration(
       labelText: label,
       border: const OutlineInputBorder(),
@@ -111,7 +114,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
     });
 
     try {
-      await ApiClient.registerUser(_model);
+      // ユーザー情報の登録
+      final userData = {
+        'name': _model.name,
+        'gender': _model.gender,
+        'barth_day': _model.barthDay?.toIso8601String(),
+        'phone_number': _model.phoneNumber,
+        'postal_code': _model.postalCode,
+        'prefecture': _model.prefecture,
+        'city': _model.city,
+        'address_line1': _model.addressLine1,
+        'address_line2': _model.addressLine2,
+      };
+
+      final createdUser = await UsersApi.create(userData);
+      final userId = createdUser['id'];
+      // ユーザーパスの登録
+      // print('$userId, ${_model.email}, ${_model.password}');
+      final userPassData = {
+        'user_id': userId,
+        'email': _model.email,
+        'password': _model.password,
+      };
+
+      await UserPassesApi.create(userPassData);
+
+      // 顧客情報の登録
+      final customerData = {
+        'user_id': userId,
+        'role_id': 3,
+      };
+      await CustomersApi.create(customerData);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -119,8 +153,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             backgroundColor: Colors.green,
           ),
         );
-        // 登録完了後、ログインページに戻る
-        context.go('/login');
+        context.go('#/login');
       }
     } catch (e) {
       setState(() {
@@ -141,6 +174,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Column(
         children: [
           AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                context.go('#/login');
+              },
+            ),
             title: const Text('会員登録'),
             backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
@@ -199,13 +238,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
                                 validator: _validatePhone,
-                                onSaved: (value) => _model.phoneNumber = value ?? '',
+                                onSaved: (value) =>
+                                    _model.phoneNumber = value ?? '',
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
                                 decoration: _getInputDecoration('住所'),
                                 validator: _validateRequired,
-                                onSaved: (value) => _model.address = value ?? '',
+                                onSaved: (value) =>
+                                    _model.addressLine1 = value ?? '',
                                 maxLines: 2,
                               ),
                             ],
@@ -230,7 +271,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               TextFormField(
                                 decoration: _getInputDecoration(
                                   'パスワード',
-                                  suffixIcon: _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                  suffixIcon: _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   onSuffixIconPressed: () {
                                     setState(() {
                                       _obscurePassword = !_obscurePassword;
@@ -239,7 +282,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                                 obscureText: _obscurePassword,
                                 validator: _validatePassword,
-                                onSaved: (value) => _model.password = value ?? '',
+                                onSaved: (value) =>
+                                    _model.password = value ?? '',
                               ),
                               const SizedBox(height: 8),
                               const Text(
@@ -253,10 +297,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               TextFormField(
                                 decoration: _getInputDecoration(
                                   'パスワード（確認）',
-                                  suffixIcon: _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                  suffixIcon: _obscureConfirmPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   onSuffixIconPressed: () {
                                     setState(() {
-                                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                                      _obscureConfirmPassword =
+                                          !_obscureConfirmPassword;
                                     });
                                   },
                                 ),
@@ -282,7 +329,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : const Text('登録する'),
@@ -297,4 +345,4 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ),
     );
   }
-} 
+}
