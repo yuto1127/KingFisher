@@ -22,7 +22,7 @@ class AuthApi {
     'unknown_error': '予期せぬエラーが発生しました',
   };
 
-  static const _storage = FlutterSecureStorage();
+  static final _storage = FlutterSecureStorage();
 
   // エラーメッセージを取得
   static String _getErrorMessage(String code, String? detail) {
