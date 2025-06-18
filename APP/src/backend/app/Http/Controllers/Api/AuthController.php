@@ -28,15 +28,15 @@ class AuthController extends Controller
             'request_data' => $request->all()
         ]);
 
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        // レート制限をチェック
+        $this->ensureIsNotRateLimited($request);
+
         try {
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
-
-            // レート制限をチェック
-            $this->ensureIsNotRateLimited($request);
-
             $result = $this->authService->login(
                 $request->email,
                 $request->password

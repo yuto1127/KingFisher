@@ -33,7 +33,7 @@ class AuthService
         if (!$userData) {
             Log::warning('AuthService: User not found', ['email' => $email]);
             throw ValidationException::withMessages([
-                'email' => ['認証情報が正しくありません。'],
+                'email' => ['メールアドレスが正しくありません。'],
             ]);
         }
 
@@ -48,7 +48,7 @@ class AuthService
         if (!$passwordValid) {
             Log::warning('AuthService: Invalid password', ['email' => $email]);
             throw ValidationException::withMessages([
-                'email' => ['認証情報が正しくありません。'],
+                'password' => ['パスワードが正しくありません。'],
             ]);
         }
 
