@@ -5,7 +5,7 @@ import '../layouts/main_layout.dart';
 import '../models/registration_model.dart';
 import '../services/users_api.dart';
 import '../services/user_passes_api.dart';
-import 'dart:html' as html;
+import '../services/customers_api.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -172,6 +172,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
       };
 
       await UserPassesApi.create(userPassData);
+
+      // 顧客情報の登録
+      final customerData = {
+        'user_id': userId,
+        'role_id': 3,
+      };
+      await CustomersApi.create(customerData);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

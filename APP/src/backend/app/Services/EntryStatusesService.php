@@ -20,11 +20,13 @@ class EntryStatusesService
 
     public function createEntryStatus(array $data)
     {
+        $data['created_at'] = now();
         return $this->entryStatusesRepository->create($data);
     }
 
     public function updateEntryStatus(int $id, array $data)
     {
+        $data['updated_at'] = now();
         return $this->entryStatusesRepository->update($id, $data);
     }
 

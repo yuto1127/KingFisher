@@ -20,11 +20,13 @@ class CustomersService
 
     public function createCustomer(array $data)
     {
+        $data['created_at'] = now();
         return $this->customersRepository->create($data);
     }
 
     public function updateCustomer(int $id, array $data)
     {
+        $data['updated_at'] = now();
         return $this->customersRepository->update($id, $data);
     }
 

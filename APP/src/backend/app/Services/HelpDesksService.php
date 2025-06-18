@@ -20,11 +20,13 @@ class HelpDesksService
 
     public function createHelpDesk(array $data)
     {
+        $data['created_at'] = now();
         return $this->helpDesksRepository->create($data);
     }
 
     public function updateHelpDesk(int $id, array $data)
     {
+        $data['updated_at'] = now();
         return $this->helpDesksRepository->update($id, $data);
     }
 

@@ -20,11 +20,13 @@ class EventsService
 
     public function createEvent(array $data)
     {
+        $data['created_at'] = now();
         return $this->eventsRepository->create($data);
     }
 
     public function updateEvent(int $id, array $data)
     {
+        $data['updated_at'] = now();
         return $this->eventsRepository->update($id, $data);
     }
 

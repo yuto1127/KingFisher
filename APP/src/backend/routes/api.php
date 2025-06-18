@@ -19,6 +19,8 @@ Route::get('/ping', function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/users', [UsersController::class, 'store']);
 Route::post('/user-passes', [UserPassesController::class, 'store']);
+Route::post('/customers', [CustomersController::class, 'store']);
+
 
 // 認証が必要なルートグループ
 Route::middleware('auth:sanctum')->group(function () {
@@ -63,7 +65,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // customer
     Route::prefix('customers')->group(function () {
         Route::get('/', [CustomersController::class, 'index']);
-        Route::post('/customers', [CustomersController::class, 'store']);
         Route::put('/{id}', [CustomersController::class, 'update']);
         Route::delete('/{id}', [CustomersController::class, 'destroy']);
     });
