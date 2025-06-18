@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Repositories\AuthRepository;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthService
 {
@@ -19,7 +19,7 @@ class AuthService
     public function login(string $email, string $password): array
     {
         $user = $this->authRepository->findByEmail($email);
-        echo(Hash::make($password));
+        Log::info(Hash::make($password));
         if (!$user || !$this->authRepository->verifyPassword($user, $password)) {
             throw ValidationException::withMessages([
                 'email' => ['認証情報が正しくありません。'],
