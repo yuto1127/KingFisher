@@ -30,7 +30,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   // 入力フィールドのデコレーション
-  InputDecoration _getInputDecoration(String label, {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
+  InputDecoration _getInputDecoration(String label,
+      {IconData? suffixIcon, VoidCallback? onSuffixIconPressed}) {
     return InputDecoration(
       labelText: label,
       border: const OutlineInputBorder(),
@@ -237,13 +238,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
                                 validator: _validatePhone,
-                                onSaved: (value) => _model.phoneNumber = value ?? '',
+                                onSaved: (value) =>
+                                    _model.phoneNumber = value ?? '',
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
                                 decoration: _getInputDecoration('住所'),
                                 validator: _validateRequired,
-                                onSaved: (value) => _model.address = value ?? '',
+                                onSaved: (value) =>
+                                    _model.addressLine1 = value ?? '',
                                 maxLines: 2,
                               ),
                             ],
@@ -268,7 +271,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               TextFormField(
                                 decoration: _getInputDecoration(
                                   'パスワード',
-                                  suffixIcon: _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                  suffixIcon: _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   onSuffixIconPressed: () {
                                     setState(() {
                                       _obscurePassword = !_obscurePassword;
@@ -277,7 +282,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                                 obscureText: _obscurePassword,
                                 validator: _validatePassword,
-                                onSaved: (value) => _model.password = value ?? '',
+                                onSaved: (value) =>
+                                    _model.password = value ?? '',
                               ),
                               const SizedBox(height: 8),
                               const Text(
@@ -291,10 +297,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               TextFormField(
                                 decoration: _getInputDecoration(
                                   'パスワード（確認）',
-                                  suffixIcon: _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                  suffixIcon: _obscureConfirmPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   onSuffixIconPressed: () {
                                     setState(() {
-                                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                                      _obscureConfirmPassword =
+                                          !_obscureConfirmPassword;
                                     });
                                   },
                                 ),
@@ -320,7 +329,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : const Text('登録する'),
@@ -335,4 +345,4 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ),
     );
   }
-} 
+}
