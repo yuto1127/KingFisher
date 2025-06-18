@@ -22,9 +22,7 @@ class AuthRepository
             return null;
         }
 
-        return DB::table('users')
-            ->where('id', $userPass->id)
-            ->first();
+        return User::find($userPass->id);
     }
 
     public function verifyPassword(User $user, string $password): bool
