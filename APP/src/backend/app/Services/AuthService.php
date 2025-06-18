@@ -19,12 +19,24 @@ class AuthService
 
     public function login(string $email, string $password): array
     {
-        $user = $this->authRepository->findByEmail($email);
-        if (!$user || !$this->authRepository->verifyPassword($user, $password)) {
+        // 1回のクエリでユーザー情報とパスワードハッシュを取得
+        $userData = $this->authRepository->findByEmailWithPassword($email);
+        
+        if (!$userData) {
             throw ValidationException::withMessages([
                 'email' => ['認証情報が正しくありません。'],
             ]);
         }
+
+        // パスワード検証
+        if (!$this->authRepository->verifyPasswordWithHash($password, $userData->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['認証情報が正しくありません。'],
+            ]);
+        }
+
+        // Userモデルのインスタンスを作成
+        $user = User::find($userData->user_id);
 
         // 既存のトークンを削除
         $this->authRepository->deleteUserTokens($user);

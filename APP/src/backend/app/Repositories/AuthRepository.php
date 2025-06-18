@@ -25,6 +25,15 @@ class AuthRepository
         return User::find($userPass->user_id);
     }
 
+    public function findByEmailWithPassword(string $email): ?object
+    {
+        return DB::table('user_passes')
+            ->join('users', 'user_passes.user_id', '=', 'users.id')
+            ->where('user_passes.email', $email)
+            ->select('users.*', 'user_passes.password', 'user_passes.user_id')
+            ->first();
+    }
+
     public function verifyPassword(User $user, string $password): bool
     {
         $userPass = DB::table('user_passes')
@@ -36,6 +45,11 @@ class AuthRepository
         }
 
         return Hash::check($password, $userPass->password);
+    }
+
+    public function verifyPasswordWithHash(string $password, string $hashedPassword): bool
+    {
+        return Hash::check($password, $hashedPassword);
     }
 
     public function deleteUserTokens(User $user): void
