@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tokenable_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('tokenable_type');
             $table->string('name');
             $table->string('token', 64)->unique();
@@ -19,7 +19,8 @@ return new class extends Migration
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
 
-            $table->index(['tokenable_id', 'tokenable_type']);
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->index(['user_id', 'tokenable_type']);
         });
     }
 

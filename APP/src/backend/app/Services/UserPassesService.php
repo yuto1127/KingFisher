@@ -22,25 +22,24 @@ class UserPassesService
 
     public function createUserPass(array $data)
     {
-
-        // パスワードの存在確認
+        $data['created_at'] = now();
         if (!isset($data['password'])) {
             throw ValidationException::withMessages([
                 'password' => ['パスワードは必須です。'],
             ]);
         }
-
-        // user_idの存在確認
         if (!isset($data['user_id']) || $data['user_id'] === null) {
             throw ValidationException::withMessages([
                 'user_id' => ['ユーザーIDは必須です。'],
             ]);
         }
+        $data['password'] = Hash::make($data['password']);
         return $this->userPassesRepository->create($data);
     }
 
     public function updateUserPass(int $id, array $data)
     {
+        $data['updated_at'] = now();
         return $this->userPassesRepository->update($id, $data);
     }
 

@@ -28,6 +28,7 @@ class UsersService
 
     public function createUser(array $data)
     {
+        $data['created_at'] = now();
         // emailとpasswordを分離
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
@@ -41,13 +42,13 @@ class UsersService
         // デバッグ用ログ
 
         // // 2. user_passes登録（emailとpasswordがある場合のみ）
-        // if ($email && $password) {
-        //     $this->userPassesService->createUserPass([
-        //         'user_id' => $user->id,
-        //         'email' => $email,
-        //         'password' => $password,
-        //     ]);
-        // }
+        if ($email && $password) {
+            $this->userPassesService->createUserPass([
+                'user_id' => $user->id,
+                'email' => $email,
+                'password' => $password,
+            ]);
+        }
 
         // // 3. メールアドレスで分岐し、helpdeskまたはcustomerに登録
         // if (isset($data['email']) && str_ends_with($data['email'], '@chuo.ac.jp')) {
@@ -68,6 +69,7 @@ class UsersService
 
     public function updateUser(int $id, array $data)
     {
+        $data['updated_at'] = now();
         return $this->usersRepository->update($id, $data);
     }
 

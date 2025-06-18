@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->hasMany(EntryStatus::class);
     }
 
+    public function personalAccessTokens()
+    {
+        return $this->hasMany(PersonalAccessToken::class, 'user_id');
+    }
+
     // 住所を完全な文字列として取得
     public function getFullAddressAttribute(): string
     {
