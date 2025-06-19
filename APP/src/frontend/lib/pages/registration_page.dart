@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../layouts/main_layout.dart';
 import '../models/registration_model.dart';
-import '../services/users_api.dart';
-import '../services/user_passes_api.dart';
-import '../services/customers_api.dart';
+import '../utils/network_utils.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // 郵便番号用のカスタムフォーマッター
 class _PostalCodeFormatter extends TextInputFormatter {
@@ -201,12 +201,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
     });
 
     try {
-      // ユーザー情報の登録
-      final userData = {
+      // 統合登録APIを使用
+      final registrationData = {
         'name': _model.name,
         'gender': _model.gender,
         'barth_day': _model.barthDay?.toIso8601String(),
         'phone_number': _model.phoneNumber,
+        'email': _model.email,
+        'password': _model.password,
         'postal_code': _model.postalCode,
         'prefecture': _model.prefecture,
         'city': _model.city,
@@ -214,42 +216,45 @@ class _RegistrationPageState extends State<RegistrationPage> {
         'address_line2': _model.addressLine2,
       };
 
-      final createdUser = await UsersApi.create(userData);
-      final userId = createdUser['id'];
+      final response = await http.post(
+        Uri.parse('${NetworkUtils.baseUrl}/api/register'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(registrationData),
+      );
 
-      // ユーザーパスの登録
-      final userPassData = {
-        'user_id': userId,
-        'email': _model.email,
-        'password': _model.password,
-      };
-
-      await UserPassesApi.create(userPassData);
-
-      // 顧客情報の登録
-      final customerData = {
-        'user_id': userId,
-        'role_id': 3,
-      };
-      await CustomersApi.create(customerData);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('会員登録が完了しました'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.go('#/login');
+      if (response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(responseData['message'] ?? '会員登録が完了しました'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          context.go('#/login');
+        }
+      } else {
+        final errorData = jsonDecode(response.body);
+        String errorMessage = '会員登録に失敗しました';
+        
+        if (errorData['errors'] != null) {
+          final errors = errorData['errors'] as Map<String, dynamic>;
+          errorMessage = errors.values.first.toString().replaceAll('[', '').replaceAll(']', '');
+        } else if (errorData['error'] != null) {
+          errorMessage = errorData['error'];
+        }
+        
+        setState(() {
+          _errorMessage = errorMessage;
+        });
       }
     } catch (e) {
       setState(() {
-        if (e.toString().contains('Duplicate entry') &&
-            e.toString().contains('user_passes_email_unique')) {
-          _errorMessage = 'このメールアドレスは既に登録されています。別のメールアドレスを使用してください。';
-        } else {
-          _errorMessage = e.toString();
-        }
+        _errorMessage = 'ネットワークエラーが発生しました: ${e.toString()}';
       });
     } finally {
       if (mounted) {

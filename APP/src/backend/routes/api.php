@@ -33,6 +33,44 @@ Route::get('/debug/users', function () {
     ]);
 });
 
+// 新規登録ユーザーのデバッグ用エンドポイント
+Route::get('/debug/registration-test/{email}', function ($email) {
+    $userPass = \Illuminate\Support\Facades\DB::table('user_passes')
+        ->where('email', $email)
+        ->first();
+    
+    if (!$userPass) {
+        return response()->json([
+            'error' => 'ユーザーパスが見つかりません',
+            'email' => $email
+        ]);
+    }
+    
+    $user = \Illuminate\Support\Facades\DB::table('users')
+        ->where('id', $userPass->user_id)
+        ->first();
+    
+    $customer = \Illuminate\Support\Facades\DB::table('customers')
+        ->where('user_id', $userPass->user_id)
+        ->first();
+    
+    $role = null;
+    if ($customer) {
+        $role = \Illuminate\Support\Facades\DB::table('roles')
+            ->where('id', $customer->role_id)
+            ->first();
+    }
+    
+    return response()->json([
+        'email' => $email,
+        'user_pass' => $userPass,
+        'user' => $user,
+        'customer' => $customer,
+        'role' => $role,
+        'all_tables_complete' => $userPass && $user && $customer && $role
+    ]);
+});
+
 // パスワードテスト用エンドポイント
 Route::post('/debug/test-password', function (Request $request) {
     $email = $request->input('email');
@@ -61,6 +99,7 @@ Route::post('/debug/test-password', function (Request $request) {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/users', [UsersController::class, 'store']);
 Route::post('/user-passes', [UserPassesController::class, 'store']);
 Route::post('/customers', [CustomersController::class, 'store']);

@@ -76,11 +76,68 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $this->authService->logout($request->user());
+        $user = $request->user();
+        $this->authService->logout($user);
+        
+        return response()->json(
+            ['message' => 'ログアウトしました'],
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
+    }
 
-        return response()->json([
-            'message' => 'ログアウトしました'
-        ], 200, ['Content-Type' => 'application/json; charset=UTF-8'], JSON_UNESCAPED_UNICODE);
+    // 統合登録API
+    public function register(Request $request)
+    {
+        try {
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'name' => 'required|string|max:100',
+                'gender' => 'required|string|max:10',
+                'barth_day' => 'required|date',
+                'phone_number' => 'required|string|max:20',
+                'email' => 'required|email|unique:user_passes,email',
+                'password' => 'required|string|min:8',
+                'postal_code' => 'nullable|string|max:8',
+                'prefecture' => 'nullable|string|max:10',
+                'city' => 'nullable|string|max:50',
+                'address_line1' => 'nullable|string|max:100',
+                'address_line2' => 'nullable|string|max:100',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(
+                    ['errors' => $validator->errors()],
+                    422,
+                    ['Content-Type' => 'application/json; charset=UTF-8'],
+                    JSON_UNESCAPED_UNICODE
+                );
+            }
+
+            $result = $this->authService->register($request->all());
+            
+            return response()->json(
+                [
+                    'message' => '会員登録が完了しました',
+                    'user_id' => $result['user_id']
+                ],
+                201,
+                ['Content-Type' => 'application/json; charset=UTF-8'],
+                JSON_UNESCAPED_UNICODE
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Registration error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(
+                ['error' => '会員登録に失敗しました: ' . $e->getMessage()],
+                500,
+                ['Content-Type' => 'application/json; charset=UTF-8'],
+                JSON_UNESCAPED_UNICODE
+            );
+        }
     }
 
     /**

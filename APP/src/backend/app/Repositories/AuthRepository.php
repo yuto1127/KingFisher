@@ -106,21 +106,21 @@ class AuthRepository
     public function createToken(User $user): string
     {
         try {
-            if (!Schema::hasTable('personal_access_tokens')) {
+        if (!Schema::hasTable('personal_access_tokens')) {
                 \Log::error('personal_access_tokens table does not exist', [
                     'user_id' => $user->id
                 ]);
-                throw new \Exception('personal_access_tokensテーブルが存在しません。マイグレーションを実行してください。');
-            }
+            throw new \Exception('personal_access_tokensテーブルが存在しません。マイグレーションを実行してください。');
+        }
 
-            $token = $user->createToken('auth-token');
+        $token = $user->createToken('auth-token');
             
             \Log::info('Token created successfully', [
                 'user_id' => $user->id,
                 'token_prefix' => substr($token->plainTextToken, 0, 10) . '...'
             ]);
             
-            return $token->plainTextToken;
+        return $token->plainTextToken;
         } catch (\Exception $e) {
             \Log::error('Error creating token', [
                 'user_id' => $user->id,
@@ -134,14 +134,14 @@ class AuthRepository
     public function deleteCurrentToken(User $user): void
     {
         try {
-            if (!Schema::hasTable('personal_access_tokens')) {
+        if (!Schema::hasTable('personal_access_tokens')) {
                 \Log::warning('personal_access_tokens table does not exist', [
                     'user_id' => $user->id
                 ]);
                 return;
-            }
+        }
 
-            $user->currentAccessToken()->delete();
+        $user->currentAccessToken()->delete();
             
             \Log::info('Current token deleted successfully', [
                 'user_id' => $user->id

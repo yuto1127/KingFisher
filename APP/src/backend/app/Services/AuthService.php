@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
@@ -113,5 +114,90 @@ class AuthService
     public function logout(User $user): void
     {
         $this->authRepository->deleteCurrentToken($user);
+    }
+
+    public function register(array $data): array
+    {
+        Log::info('AuthService: Starting registration process', [
+            'email' => $data['email'],
+            'name' => $data['name']
+        ]);
+
+        try {
+            // トランザクション開始
+            DB::beginTransaction();
+
+            // 1. ユーザー情報を作成
+            $userData = [
+                'name' => $data['name'],
+                'gender' => $data['gender'],
+                'barth_day' => $data['barth_day'],
+                'phone_number' => $data['phone_number'],
+                'postal_code' => $data['postal_code'] ?? null,
+                'prefecture' => $data['prefecture'] ?? null,
+                'city' => $data['city'] ?? null,
+                'address_line1' => $data['address_line1'] ?? null,
+                'address_line2' => $data['address_line2'] ?? null,
+                'is_active' => true,
+            ];
+
+            $user = User::create($userData);
+
+            Log::info('AuthService: User created', [
+                'user_id' => $user->id,
+                'name' => $user->name
+            ]);
+
+            // 2. ユーザーパス情報を作成
+            $userPassData = [
+                'user_id' => $user->id,
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ];
+
+            \App\Models\UserPass::create($userPassData);
+
+            Log::info('AuthService: UserPass created', [
+                'user_id' => $user->id,
+                'email' => $data['email']
+            ]);
+
+            // 3. 顧客情報を作成（デフォルトロールID: 3）
+            $customerData = [
+                'user_id' => $user->id,
+                'role_id' => 3, // デフォルトの顧客ロール
+            ];
+
+            \App\Models\Customer::create($customerData);
+
+            Log::info('AuthService: Customer created', [
+                'user_id' => $user->id,
+                'role_id' => 3
+            ]);
+
+            // トランザクションコミット
+            DB::commit();
+
+            Log::info('AuthService: Registration successful', [
+                'user_id' => $user->id,
+                'email' => $data['email']
+            ]);
+
+            return [
+                'user_id' => $user->id,
+                'message' => '会員登録が完了しました'
+            ];
+
+        } catch (\Exception $e) {
+            // トランザクションロールバック
+            DB::rollBack();
+
+            Log::error('AuthService: Registration failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            throw $e;
+        }
     }
 } 
