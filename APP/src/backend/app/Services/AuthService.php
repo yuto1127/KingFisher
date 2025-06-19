@@ -27,7 +27,9 @@ class AuthService
         Log::info('AuthService: User data retrieved', [
             'email' => $email,
             'user_found' => $userData !== null,
-            'user_id' => $userData?->user_id ?? null
+            'user_id' => $userData?->user_id ?? null,
+            'user_email_from_db' => $userData?->email ?? null,
+            'user_name_from_db' => $userData?->name ?? null
         ]);
 
         if (!$userData) {
@@ -69,7 +71,7 @@ class AuthService
         }
 
         // メールアドレスをユーザーオブジェクトに追加
-        $user->email = $userData->email;
+        $user->email = $userData->email ?? $email; // データベースから取得できない場合は引数のemailを使用
 
         // ロール情報を取得
         $roleInfo = $user->getRoleInfo();
