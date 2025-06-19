@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 // 共通レイアウト
 import '../layouts/main_layout.dart';
+// 認証プロバイダー
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 
 /// アプリケーションのホームページ
 /// メインのナビゲーションとQRコード表示機能を提供
@@ -126,7 +129,46 @@ class _HomePageState extends State<HomePage> {
                     version: QrVersions.auto, // QRコードのバージョンを自動選択
                     size: 200.0, // QRコードのサイズ（ピクセル）
                   ),
-                  //const SizedBox(height: 20), // 垂直方向の余白
+                  const SizedBox(height: 20), // 垂直方向の余白
+
+                  // デバッグ情報表示（開発時のみ）
+                  Consumer<AuthProvider>(
+                    builder: (context, authProvider, child) {
+                      return Card(
+                        margin: const EdgeInsets.all(16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'デバッグ情報',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text('ユーザーID: ${authProvider.userId ?? 'N/A'}'),
+                              Text('ユーザー名: ${authProvider.userName ?? 'N/A'}'),
+                              Text('ロールID: ${authProvider.roleId ?? 'N/A'}'),
+                              Text('ロール名: ${authProvider.roleName ?? 'N/A'}'),
+                              Text('ロールタイプ: ${authProvider.roleType ?? 'N/A'}'),
+                              Text('認証状態: ${authProvider.isAuthenticated ? 'ログイン中' : '未ログイン'}'),
+                              if (authProvider.userData != null) ...[
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'ユーザーデータ:',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(authProvider.userData.toString()),
+                              ],
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
 
                   // 会員登録ページへのナビゲーションボタン
                   // ElevatedButton(

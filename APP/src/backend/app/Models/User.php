@@ -79,4 +79,30 @@ class User extends Authenticatable
         }
         return implode(' ', $address);
     }
+
+    // ユーザーのロール情報を取得
+    public function getRoleInfo()
+    {
+        // まずcustomersテーブルで確認
+        $customer = $this->customers()->with('role')->first();
+        if ($customer) {
+            return [
+                'role_id' => $customer->role_id,
+                'role_name' => $customer->role->name,
+                'type' => 'customer'
+            ];
+        }
+
+        // customersにない場合はhelp_desksテーブルで確認
+        $helpDesk = $this->helpDesks()->with('role')->first();
+        if ($helpDesk) {
+            return [
+                'role_id' => $helpDesk->role_id,
+                'role_name' => $helpDesk->role->name,
+                'type' => 'help_desk'
+            ];
+        }
+
+        return null;
+    }
 }

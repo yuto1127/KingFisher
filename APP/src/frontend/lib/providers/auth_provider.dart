@@ -13,6 +13,21 @@ class AuthProvider extends ChangeNotifier {
   Map<String, dynamic>? get userData => _userData;
   bool get isLoading => _isLoading;
 
+  // role_idを取得
+  int? get roleId => _userData?['role_id'];
+
+  // ユーザー名を取得
+  String? get userName => _userData?['name'];
+
+  // ユーザーIDを取得
+  int? get userId => _userData?['id'];
+
+  // ロール名を取得
+  String? get roleName => _userData?['role_name'];
+
+  // ロールタイプを取得（customer または help_desk）
+  String? get roleType => _userData?['role_type'];
+
   // アプリ起動時にローカルストレージからデータを復元
   Future<void> initializeAuth() async {
     // 既に初期化済みの場合は何もしない

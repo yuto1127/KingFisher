@@ -68,10 +68,22 @@ class AuthService
             ]);
         }
 
+        // ロール情報を取得
+        $roleInfo = $user->getRoleInfo();
+        
+        if ($roleInfo) {
+            $user->role_id = $roleInfo['role_id'];
+            $user->role_name = $roleInfo['role_name'];
+            $user->role_type = $roleInfo['type'];
+        }
+
         Log::info('AuthService: User model found', [
             'email' => $email,
             'user_id' => $user->id,
-            'user_name' => $user->name
+            'user_name' => $user->name,
+            'role_id' => $user->role_id ?? null,
+            'role_name' => $user->role_name ?? null,
+            'role_type' => $user->role_type ?? null
         ]);
 
         // 既存のトークンを削除
