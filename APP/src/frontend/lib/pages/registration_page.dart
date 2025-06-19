@@ -107,16 +107,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       return '有効なメールアドレスを入力してください';
     }
 
-    try {
-      final exists = await UserPassesApi.checkEmailExists(value);
-      if (exists) {
-        return 'このメールアドレスは既に登録されています';
-      }
-    } catch (e) {
-      // エラーが発生した場合は重複チェックをスキップ
-      return null;
-    }
-
+    // 統合APIでバリデーションを行うため、ここでは基本的な形式チェックのみ
     return null;
   }
 
@@ -177,19 +168,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   // 生年月日のバリデーション
   String? _validateBarthDay(String? value) {
-    if (value == null || value.isEmpty) {
-      return '必須項目です';
-    }
-    try {
-      DateTime.parse(value);
-    } catch (e) {
-      return '有効な日付を入力してください';
+    if (_model.barthDay == null) {
+      return '生年月日を選択してください';
     }
     return null;
   }
 
   // フォーム送信
   Future<void> _submitForm() async {
+    // 生年月日のバリデーション
+    if (_model.barthDay == null) {
+      setState(() {
+        _errorMessage = '生年月日を選択してください';
+      });
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -343,15 +337,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              TextFormField(
-                                decoration:
-                                    _getInputDecoration('生年月日（YYYYMMDD）'),
-                                validator: _validateBarthDay,
-                                onSaved: (value) {
-                                  if (value != null && value.isNotEmpty) {
-                                    _model.barthDay = DateTime.parse(value);
+                              InkWell(
+                                onTap: () async {
+                                  final DateTime? picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now().subtract(const Duration(days: 6570)), // 18歳
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime.now(),
+                                  );
+                                  if (picked != null) {
+                                    setState(() {
+                                      _model.barthDay = picked;
+                                    });
                                   }
                                 },
+                                child: InputDecorator(
+                                  decoration: _getInputDecoration('生年月日'),
+                                  child: Text(
+                                    _model.barthDay != null
+                                        ? '${_model.barthDay!.year}-${_model.barthDay!.month.toString().padLeft(2, '0')}-${_model.barthDay!.day.toString().padLeft(2, '0')}'
+                                        : '生年月日を選択してください',
+                                    style: TextStyle(
+                                      color: _model.barthDay != null ? Colors.black : Colors.grey,
+                                    ),
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
