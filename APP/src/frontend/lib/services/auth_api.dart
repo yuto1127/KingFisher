@@ -6,6 +6,7 @@ import 'dart:html' as html;
 import '../utils/network_utils.dart';
 import '../models/registration_model.dart';
 import '../models/login_model.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthApi {
   static const String baseUrl = 'http://54.165.66.148/api';
