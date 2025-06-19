@@ -42,7 +42,10 @@ class AuthService
         
         Log::info('AuthService: Password verification result', [
             'email' => $email,
-            'password_valid' => $passwordValid
+            'password_valid' => $passwordValid,
+            'password_length' => strlen($password),
+            'hashed_password_prefix' => substr($userData->password, 0, 20) . '...',
+            'password_check_result' => Hash::check($password, $userData->password)
         ]);
 
         if (!$passwordValid) {
