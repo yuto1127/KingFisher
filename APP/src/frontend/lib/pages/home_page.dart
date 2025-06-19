@@ -9,6 +9,7 @@ import '../layouts/main_layout.dart';
 // 認証プロバイダー
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'package:flutter/foundation.dart';
 
 /// アプリケーションのホームページ
 /// メインのナビゲーションとQRコード表示機能を提供
