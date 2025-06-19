@@ -126,9 +126,13 @@ class AuthProvider extends ChangeNotifier {
 
   // デバッグ用：ログインをスキップ
   void debugLogin() {
-    _token = 'debug_token';
-    _userData = {'email': 'debug@example.com', 'name': 'Debug User'};
-    _isAuthenticated = true;
-    notifyListeners();
+    // 開発環境でのみ使用可能
+    assert(() {
+      _token = 'debug_token';
+      _userData = {'email': 'debug@example.com', 'name': 'Debug User'};
+      _isAuthenticated = true;
+      notifyListeners();
+      return true;
+    }());
   }
 }
