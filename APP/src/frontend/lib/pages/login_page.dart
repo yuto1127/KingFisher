@@ -120,7 +120,8 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = e.toString();
+          final msg = e.toString().replaceFirst('Exception: ', '').trim();
+          _errorMessage = msg.isEmpty ? 'ログインに失敗しました。' : msg;
         });
       }
     } finally {
@@ -193,14 +194,15 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (_errorMessage != null)
+                              if (_errorMessage != null && _errorMessage!.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 16.0),
                                   child: Text(
                                     _errorMessage!,
                                     style: const TextStyle(
                                       color: Colors.red,
-                                      fontSize: 14,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
