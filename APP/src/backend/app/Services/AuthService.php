@@ -68,6 +68,9 @@ class AuthService
             ]);
         }
 
+        // メールアドレスをユーザーオブジェクトに追加
+        $user->email = $userData->email;
+
         // ロール情報を取得
         $roleInfo = $user->getRoleInfo();
         
@@ -81,6 +84,7 @@ class AuthService
             'email' => $email,
             'user_id' => $user->id,
             'user_name' => $user->name,
+            'user_email' => $user->email,
             'role_id' => $user->role_id ?? null,
             'role_name' => $user->role_name ?? null,
             'role_type' => $user->role_type ?? null

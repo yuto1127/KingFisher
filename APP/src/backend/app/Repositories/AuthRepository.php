@@ -30,7 +30,7 @@ class AuthRepository
         return DB::table('user_passes')
             ->join('users', 'user_passes.user_id', '=', 'users.id')
             ->where('user_passes.email', $email)
-            ->select('users.*', 'user_passes.password', 'user_passes.user_id')
+            ->select('users.*', 'user_passes.password', 'user_passes.user_id', 'user_passes.email')
             ->first();
     }
 

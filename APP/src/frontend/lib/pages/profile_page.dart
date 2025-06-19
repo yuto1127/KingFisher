@@ -46,8 +46,11 @@ class ProfilePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           if (userData != null) ...[
-                            _buildInfoRow('メールアドレス', userData['email'] ?? '不明'),
-                            _buildInfoRow('名前', userData['name'] ?? '不明'),
+                            _buildInfoRow('メールアドレス', authProvider.userEmail ?? '不明'),
+                            _buildInfoRow('名前', authProvider.userName ?? '不明'),
+                            _buildInfoRow('ユーザーID', authProvider.userId?.toString() ?? '不明'),
+                            _buildInfoRow('ロール名', authProvider.roleName ?? '不明'),
+                            _buildInfoRow('ロールタイプ', authProvider.roleType ?? '不明'),
                             _buildInfoRow(
                                 '作成日', userData['created_at'] ?? '不明'),
                             if (userData['role'] != null)

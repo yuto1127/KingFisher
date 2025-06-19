@@ -132,6 +132,48 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 20), // 垂直方向の余白
 
+                  // デバッグ情報表示（開発時のみ）
+                  if (kDebugMode) ...[
+                    Consumer<AuthProvider>(
+                      builder: (context, authProvider, child) {
+                        return Card(
+                          margin: const EdgeInsets.all(16),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'デバッグ情報',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text('ユーザーID: ${authProvider.userId ?? 'N/A'}'),
+                                Text('ユーザー名: ${authProvider.userName ?? 'N/A'}'),
+                                Text('メールアドレス: ${authProvider.userEmail ?? 'N/A'}'),
+                                Text('ロールID: ${authProvider.roleId ?? 'N/A'}'),
+                                Text('ロール名: ${authProvider.roleName ?? 'N/A'}'),
+                                Text('ロールタイプ: ${authProvider.roleType ?? 'N/A'}'),
+                                Text('認証状態: ${authProvider.isAuthenticated ? 'ログイン中' : '未ログイン'}'),
+                                if (authProvider.userData != null) ...[
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'ユーザーデータ:',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(authProvider.userData.toString()),
+                                ],
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+
                   // 会員登録ページへのナビゲーションボタン
                   // ElevatedButton(
                   //   onPressed: () {

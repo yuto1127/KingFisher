@@ -28,6 +28,9 @@ class AuthProvider extends ChangeNotifier {
   // ロールタイプを取得（customer または help_desk）
   String? get roleType => _userData?['role_type'];
 
+  // メールアドレスを取得
+  String? get userEmail => _userData?['email'];
+
   // アプリ起動時にローカルストレージからデータを復元
   Future<void> initializeAuth() async {
     // 既に初期化済みの場合は何もしない
