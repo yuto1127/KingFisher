@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                   Consumer<AuthProvider>(
                     builder: (context, authProvider, child) {
                       // ユーザーIDを取得、nullの場合はデフォルト値を表示
-                      final userId = authProvider.userId?.toString() ?? '210000000';
+                      final userId = authProvider.userId?.toString() ?? 'No_Data';
                       return QrImageView(
                         data: userId, // ローカルストレージのuser_data内のidの値
                         version: QrVersions.auto, // QRコードのバージョンを自動選択
