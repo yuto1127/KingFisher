@@ -15,6 +15,11 @@ class UsersRepository
         return $data;
     }
 
+    public function getById(int $id)
+    {
+        return DB::table('users')->where('id', $id)->first();
+    }
+
     public function create(array $data)
     {
         $id = DB::table('users')->insertGetId($data);

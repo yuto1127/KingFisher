@@ -28,6 +28,20 @@ class UsersController extends Controller
         );
     }
 
+    public function show($id)
+    {
+        $user = $this->usersService->getUserById($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        return response()->json(
+            $user,
+            200,
+            ['Content-Type' => 'application/json; charset=UTF-8'],
+            JSON_UNESCAPED_UNICODE
+        );
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -26,6 +26,11 @@ class UsersService
         return $this->usersRepository->getAll();
     }
 
+    public function getUserById(int $id)
+    {
+        return $this->usersRepository->getById($id);
+    }
+
     public function createUser(array $data)
     {
         $data['created_at'] = now();
