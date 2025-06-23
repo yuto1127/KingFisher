@@ -8,6 +8,7 @@ import 'pages/map_page.dart';
 import 'pages/admin_page.dart';
 import 'pages/admin_content.dart';
 import 'pages/admin_user.dart';
+import 'pages/admin_user_edit_page.dart';
 import 'pages/entry_status_page.dart';
 import 'pages/registration_page.dart';
 import 'pages/login_page.dart';
@@ -24,6 +25,7 @@ final _authenticatedRoutes = {
   '/admin',
   '/admin/content',
   '/admin/user',
+  '/admin/user/:userId',
   '/admin/entry-status',
   '/profile',
 };
@@ -118,6 +120,21 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
         GoRoute(
           path: '/admin/user',
           builder: (context, state) => const AdminUserPage(),
+        ),
+        GoRoute(
+          path: '/admin/user/:userId',
+          builder: (context, state) {
+            final userId = int.tryParse(state.pathParameters['userId'] ?? '');
+            if (userId != null) {
+              return AdminUserEditPage(userId: userId);
+            }
+            // エラーハンドリング
+            return const Scaffold(
+              body: Center(
+                child: Text('無効なユーザーIDです'),
+              ),
+            );
+          },
         ),
         GoRoute(
           path: '/admin/entry-status',

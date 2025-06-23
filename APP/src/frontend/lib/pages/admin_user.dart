@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../layouts/main_layout.dart';
 import 'package:go_router/go_router.dart';
 import '../services/users_api.dart';
+import '../providers/auth_provider.dart';
 
 /// ユーザー管理ページ
 /// 管理者がユーザー情報を管理するためのページ
@@ -43,7 +45,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
     }
   }
 
-  Widget _buildUserCard(Map<String, dynamic> user) {
+  Widget _buildUserCard(Map<String, dynamic> user, int? currentUserId) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12.0),
       child: Padding(
@@ -85,12 +87,13 @@ class _AdminUserPageState extends State<AdminUserPage> {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    // TODO: ユーザー編集機能を実装
-                  },
-                ),
+                if (user['id'] != currentUserId)
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      context.go('/admin/user/${user['id']}');
+                    },
+                  ),
               ],
             ),
             const SizedBox(height: 12.0),
@@ -151,6 +154,8 @@ class _AdminUserPageState extends State<AdminUserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUserId = context.watch<AuthProvider>().userId;
+
     return MainLayout(
       child: Column(
         children: [
@@ -238,7 +243,8 @@ class _AdminUserPageState extends State<AdminUserPage> {
                                     child: ListView.builder(
                                       itemCount: _users.length,
                                       itemBuilder: (context, index) {
-                                        return _buildUserCard(_users[index]);
+                                        return _buildUserCard(
+                                            _users[index], currentUserId);
                                       },
                                     ),
                                   ),
