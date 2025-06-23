@@ -141,7 +141,7 @@ class _AdminUserEditPageState extends State<AdminUserEditPage> {
               backgroundColor: Colors.green,
             ),
           );
-          context.pop();
+          context.go('/admin/user');
         }
       } catch (e) {
         setState(() {
