@@ -97,12 +97,33 @@ class _HomePageState extends State<HomePage> {
             foregroundColor: Colors.white, // テキストを白色に
             actions: [
               // 管理者ページへの遷移ボタン
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextButton(
-                  onPressed: _handleAdminClick,
-                  child: const Text(''),
-                ),
+              Consumer<AuthProvider>(
+                builder: (context, authProvider, child) {
+                  // デバッグモードの場合は現在の設定を維持
+                  if (kDebugMode) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextButton(
+                        onPressed: _handleAdminClick,
+                        child: const Text(''),
+                      ),
+                    );
+                  }
+
+                  // 本番モードではrole_idが1の場合のみボタンを表示
+                  if (authProvider.roleId == 1) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextButton(
+                        onPressed: () => context.go('/admin'),
+                        child: const Text('管理者'),
+                      ),
+                    );
+                  }
+
+                  // role_idが1でない場合は何も表示しない
+                  return const SizedBox.shrink();
+                },
               ),
             ],
           ),
@@ -128,7 +149,8 @@ class _HomePageState extends State<HomePage> {
                   Consumer<AuthProvider>(
                     builder: (context, authProvider, child) {
                       // ユーザーIDを取得、nullの場合はデフォルト値を表示
-                      final userId = authProvider.userId?.toString() ?? 'No_Data';
+                      final userId =
+                          authProvider.userId?.toString() ?? 'No_Data';
                       return QrImageView(
                         data: userId, // ローカルストレージのuser_data内のidの値
                         version: QrVersions.auto, // QRコードのバージョンを自動選択
@@ -158,17 +180,22 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text('ユーザーID: ${authProvider.userId ?? 'N/A'}'),
-                                Text('ユーザー名: ${authProvider.userName ?? 'N/A'}'),
-                                Text('メールアドレス: ${authProvider.userEmail ?? 'N/A'}'),
+                                Text(
+                                    'ユーザー名: ${authProvider.userName ?? 'N/A'}'),
+                                Text(
+                                    'メールアドレス: ${authProvider.userEmail ?? 'N/A'}'),
                                 Text('ロールID: ${authProvider.roleId ?? 'N/A'}'),
                                 Text('ロール名: ${authProvider.roleName ?? 'N/A'}'),
-                                Text('ロールタイプ: ${authProvider.roleType ?? 'N/A'}'),
-                                Text('認証状態: ${authProvider.isAuthenticated ? 'ログイン中' : '未ログイン'}'),
+                                Text(
+                                    'ロールタイプ: ${authProvider.roleType ?? 'N/A'}'),
+                                Text(
+                                    '認証状態: ${authProvider.isAuthenticated ? 'ログイン中' : '未ログイン'}'),
                                 if (authProvider.userData != null) ...[
                                   const SizedBox(height: 8),
                                   const Text(
                                     'ユーザーデータ:',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   Text(authProvider.userData.toString()),
                                 ],
@@ -179,45 +206,6 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ],
-
-                  // 会員登録ページへのナビゲーションボタン
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     context.go('/register');
-                  //   },
-                  //   style: ElevatedButton.styleFrom(
-                  //     backgroundColor: const Color(0xFF009a73),
-                  //     foregroundColor: Colors.white,
-                  //     padding: const EdgeInsets.symmetric(
-                  //       horizontal: 32,
-                  //       vertical: 16,
-                  //     ),
-                  //   ),
-                  //   child: const Text(
-                  //     '新規会員登録',
-                  //     style: TextStyle(fontSize: 16),
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 20),
-
-                  // 設定ページへのナビゲーションボタン
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     // 設定ページへ遷移
-                  //     context.go('/settings');
-                  //   },
-                  //   child: const Text('設定ページへ'),
-                  // ),
-                  // const SizedBox(height: 10), // ボタン間の余白
-
-                  // // プロフィールページへのナビゲーションボタン
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     // プロフィールページへ遷移
-                  //     context.go('/profile');
-                  //   },
-                  //   child: const Text('プロフィールページへ'),
-                  // ),
                 ],
               ),
             ),
