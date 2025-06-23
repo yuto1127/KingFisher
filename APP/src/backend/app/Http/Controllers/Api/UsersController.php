@@ -85,7 +85,7 @@ class UsersController extends Controller
             'barth_day' => 'sometimes|required|date',
             'phone_number' => 'sometimes|required|string|max:20',
             // 'role_id' => 'sometimes|required|exists:roles,id',
-            'postal_code' => 'nullable|string|max:8|regex:/^\d{3}-\d{4}$/',
+            'postal_code' => 'nullable|string|max:8',
             'prefecture' => 'nullable|string|max:10',
             'city' => 'nullable|string|max:50',
             'address_line1' => 'nullable|string|max:100',
@@ -101,8 +101,13 @@ class UsersController extends Controller
                 JSON_UNESCAPED_UNICODE
             );
         }
+        
+        $data = $request->all();
+        if (isset($data['postal_code']) && preg_match('/^\d{7}$/', $data['postal_code'])) {
+            $data['postal_code'] = substr($data['postal_code'], 0, 3) . '-' . substr($data['postal_code'], 3, 4);
+        }
 
-        $this->usersService->updateUser($id, $request->all());
+        $this->usersService->updateUser($id, $data);
         return response()->json(
             ['message' => 'ユーザーを更新しました'],
             200,

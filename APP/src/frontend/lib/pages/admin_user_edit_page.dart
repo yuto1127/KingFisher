@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../layouts/main_layout.dart';
 import '../services/users_api.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter/services.dart';
 
 class AdminUserEditPage extends StatefulWidget {
   final int userId;
@@ -16,6 +19,7 @@ class _AdminUserEditPageState extends State<AdminUserEditPage> {
   bool _isLoading = true;
   String? _errorMessage;
   Map<String, dynamic>? _user;
+  bool _isLoadingAddress = false;
 
   // Controllers for form fields
   final _nameController = TextEditingController();
@@ -53,7 +57,8 @@ class _AdminUserEditPageState extends State<AdminUserEditPage> {
           _user = user;
           _nameController.text = user['name'] ?? '';
           _phoneController.text = user['phone_number'] ?? '';
-          _postalCodeController.text = user['postal_code'] ?? '';
+          _postalCodeController.text =
+              (user['postal_code'] ?? '').replaceAll('-', '');
           _prefectureController.text = user['prefecture'] ?? '';
           _cityController.text = user['city'] ?? '';
           _address1Controller.text = user['address_line1'] ?? '';
@@ -71,6 +76,40 @@ class _AdminUserEditPageState extends State<AdminUserEditPage> {
       setState(() {
         _errorMessage = 'エラーが発生しました: $e';
         _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchAddressFromPostalCode(String postalCode) async {
+    if (postalCode.length != 7) return;
+
+    setState(() {
+      _isLoadingAddress = true;
+    });
+
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'https://zipcloud.ibsnet.co.jp/api/search?zipcode=$postalCode'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == 200 &&
+            data['results'] != null &&
+            data['results'].isNotEmpty) {
+          final result = data['results'][0];
+          setState(() {
+            _prefectureController.text = result['address1'] ?? '';
+            _cityController.text = result['address2'] ?? '';
+          });
+        }
+      }
+    } catch (e) {
+      print('住所検索エラー: $e');
+    } finally {
+      setState(() {
+        _isLoadingAddress = false;
       });
     }
   }
@@ -162,7 +201,42 @@ class _AdminUserEditPageState extends State<AdminUserEditPage> {
                           const SizedBox(height: 16),
                           _buildTextField(_phoneController, '電話番号'),
                           const SizedBox(height: 16),
-                          _buildTextField(_postalCodeController, '郵便番号'),
+                          TextFormField(
+                            controller: _postalCodeController,
+                            decoration: InputDecoration(
+                              labelText: '郵便番号（7桁）',
+                              border: const OutlineInputBorder(),
+                              suffixIcon: _isLoadingAddress
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(12.0),
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(7),
+                            ],
+                            onChanged: (value) {
+                              if (value.length == 7) {
+                                _fetchAddressFromPostalCode(value);
+                              }
+                            },
+                            validator: (value) {
+                              if (value != null &&
+                                  value.isNotEmpty &&
+                                  !RegExp(r'^\d{7}$').hasMatch(value)) {
+                                return '7桁の数字で入力してください';
+                              }
+                              return null;
+                            },
+                          ),
                           const SizedBox(height: 16),
                           _buildTextField(_prefectureController, '都道府県'),
                           const SizedBox(height: 16),
