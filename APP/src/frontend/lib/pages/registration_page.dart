@@ -221,7 +221,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
       if (response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -234,14 +234,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
       } else {
         final errorData = jsonDecode(response.body);
         String errorMessage = '会員登録に失敗しました';
-        
+
         if (errorData['errors'] != null) {
           final errors = errorData['errors'] as Map<String, dynamic>;
-          errorMessage = errors.values.first.toString().replaceAll('[', '').replaceAll(']', '');
+          errorMessage = errors.values.first
+              .toString()
+              .replaceAll('[', '')
+              .replaceAll(']', '');
         } else if (errorData['error'] != null) {
           errorMessage = errorData['error'];
         }
-        
+
         setState(() {
           _errorMessage = errorMessage;
         });
@@ -341,9 +344,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 onTap: () async {
                                   final DateTime? picked = await showDatePicker(
                                     context: context,
-                                    initialDate: DateTime.now().subtract(const Duration(days: 6570)), // 18歳
+                                    initialDate: DateTime.now().subtract(
+                                        const Duration(days: 6570)), // 18歳
                                     firstDate: DateTime(1900),
                                     lastDate: DateTime.now(),
+                                    locale: const Locale('ja', 'JP'), // 日本語ロケール
+                                    builder: (context, child) {
+                                      return Theme(
+                                        data: Theme.of(context).copyWith(
+                                          colorScheme: const ColorScheme.light(
+                                            primary:
+                                                Color(0xFF009a73), // プライマリカラー
+                                            onPrimary: Colors.white,
+                                            surface: Colors.white,
+                                            onSurface: Colors.black,
+                                          ),
+                                          textButtonTheme: TextButtonThemeData(
+                                            style: TextButton.styleFrom(
+                                              foregroundColor:
+                                                  const Color(0xFF009a73),
+                                            ),
+                                          ),
+                                        ),
+                                        child: child!,
+                                      );
+                                    },
                                   );
                                   if (picked != null) {
                                     setState(() {
@@ -355,10 +380,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   decoration: _getInputDecoration('生年月日'),
                                   child: Text(
                                     _model.barthDay != null
-                                        ? '${_model.barthDay!.year}-${_model.barthDay!.month.toString().padLeft(2, '0')}-${_model.barthDay!.day.toString().padLeft(2, '0')}'
+                                        ? '${_model.barthDay!.year}年${_model.barthDay!.month}月${_model.barthDay!.day}日'
                                         : '生年月日を選択してください',
                                     style: TextStyle(
-                                      color: _model.barthDay != null ? Colors.black : Colors.grey,
+                                      color: _model.barthDay != null
+                                          ? Colors.black
+                                          : Colors.grey,
                                     ),
                                   ),
                                 ),

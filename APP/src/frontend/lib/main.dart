@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'router.dart';
 import 'package:provider/provider.dart';
 import 'providers/map_image_provider.dart';
@@ -41,6 +42,15 @@ class MyApp extends StatelessWidget {
             primaryColor: const Color(0xFF009a73),
           ),
           routerConfig: createRouter(authProvider),
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('ja', 'JP'),
+          ],
         );
       },
     );
