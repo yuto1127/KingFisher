@@ -24,16 +24,9 @@ class _PostalCodeFormatter extends TextInputFormatter {
     // 7桁を超える場合は切り詰める
     final limitedText = text.length > 7 ? text.substring(0, 7) : text;
 
-    // ハイフンを挿入
-    String formattedText = limitedText;
-    if (limitedText.length >= 3) {
-      formattedText =
-          '${limitedText.substring(0, 3)}-${limitedText.substring(3)}';
-    }
-
     return newValue.copyWith(
-      text: formattedText,
-      selection: TextSelection.collapsed(offset: formattedText.length),
+      text: limitedText,
+      selection: TextSelection.collapsed(offset: limitedText.length),
     );
   }
 }
@@ -50,15 +43,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _model = RegistrationModel();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _postalCodeController = TextEditingController();
+  final _prefectureController = TextEditingController();
+  final _cityController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoadingAddress = false;
 
   @override
   void dispose() {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _postalCodeController.dispose();
+    _prefectureController.dispose();
+    _cityController.dispose();
     super.dispose();
   }
 
@@ -152,10 +152,54 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (value == null || value.isEmpty) {
       return '必須項目です';
     }
-    if (!RegExp(r'^\d{3}-\d{4}$').hasMatch(value)) {
-      return '郵便番号は123-4567の形式で入力してください';
+    if (!RegExp(r'^\d{7}$').hasMatch(value)) {
+      return '郵便番号は7桁の数字で入力してください';
     }
     return null;
+  }
+
+  // 郵便番号から住所を取得
+  Future<void> _fetchAddressFromPostalCode(String postalCode) async {
+    if (postalCode.length != 7) return; // 7桁でない場合は処理しない
+
+    setState(() {
+      _isLoadingAddress = true;
+    });
+
+    try {
+      // 郵便番号検索API（郵便番号データ配信サービス）
+      final response = await http.get(
+        Uri.parse(
+            'https://zipcloud.ibsnet.co.jp/api/search?zipcode=$postalCode'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == 200 &&
+            data['results'] != null &&
+            data['results'].isNotEmpty) {
+          final result = data['results'][0];
+          final address1 = result['address1'] ?? ''; // 都道府県
+          final address2 = result['address2'] ?? ''; // 市区町村
+          final address3 = result['address3'] ?? ''; // 町域
+
+          setState(() {
+            _prefectureController.text = address1;
+            _cityController.text = address2;
+            _model.prefecture = address1;
+            _model.city = address2;
+          });
+        }
+      }
+    } catch (e) {
+      // エラーが発生してもユーザーに通知しない（静かに失敗）
+      print('郵便番号検索エラー: $e');
+    } finally {
+      setState(() {
+        _isLoadingAddress = false;
+      });
+    }
   }
 
   // 性別のバリデーション
@@ -428,8 +472,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
+                                controller: _postalCodeController,
                                 decoration:
-                                    _getInputDecoration('郵便番号（例: 123-4567）'),
+                                    _getInputDecoration('郵便番号（7桁の数字）').copyWith(
+                                  suffixIcon: _isLoadingAddress
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                        )
+                                      : null,
+                                ),
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
@@ -437,20 +495,30 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   _PostalCodeFormatter(),
                                 ],
                                 validator: _validatePostalCode,
+                                onChanged: (value) {
+                                  if (value.length == 7) {
+                                    // 7桁になったら検索
+                                    _fetchAddressFromPostalCode(value);
+                                  }
+                                },
                                 onSaved: (value) =>
                                     _model.postalCode = value ?? '',
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
+                                controller: _prefectureController,
                                 decoration: _getInputDecoration('都道府県'),
                                 validator: _validateRequired,
+                                onChanged: (value) => _model.prefecture = value,
                                 onSaved: (value) =>
                                     _model.prefecture = value ?? '',
                               ),
                               const SizedBox(height: 16),
                               TextFormField(
+                                controller: _cityController,
                                 decoration: _getInputDecoration('市区町村'),
                                 validator: _validateRequired,
+                                onChanged: (value) => _model.city = value,
                                 onSaved: (value) => _model.city = value ?? '',
                               ),
                               const SizedBox(height: 16),
