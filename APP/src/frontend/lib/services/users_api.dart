@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/network_utils.dart';
 import 'auth_api.dart';
 
 class UsersApi {
@@ -44,24 +45,97 @@ class UsersApi {
     return processed;
   }
 
-  // すべてのユーザーを取得
+  /// ユーザー一覧を取得
   static Future<List<Map<String, dynamic>>> getAll() async {
     try {
-      final headers = await AuthApi.getAuthHeaders();
+      final token = await AuthApi.getToken();
+
       final response = await http.get(
-        Uri.parse('$baseUrl/users'),
-        headers: headers,
+        Uri.parse('${NetworkUtils.baseUrl}/api/users'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> users = jsonDecode(response.body);
-        return users.map((user) => _processDateFields(user)).toList();
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else if (response.statusCode == 401) {
+        throw Exception('認証エラー: トークンが無効です');
       } else {
-        throw _handleErrorResponse(response);
+        throw Exception('Failed to get users: ${response.statusCode}');
       }
     } catch (e) {
-      if (e is Exception) rethrow;
-      throw Exception(_errorMessages['network_error']!);
+      throw Exception('Network error: $e');
+    }
+  }
+
+  /// 特定のユーザーを取得
+  static Future<Map<String, dynamic>?> getUser(int id) async {
+    try {
+      final token = await AuthApi.getToken();
+
+      final response = await http.get(
+        Uri.parse('${NetworkUtils.baseUrl}/api/users/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to get user: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  /// ユーザーを更新
+  static Future<Map<String, dynamic>?> updateUser(
+      int id, Map<String, dynamic> data) async {
+    try {
+      final token = await AuthApi.getToken();
+
+      final response = await http.put(
+        Uri.parse('${NetworkUtils.baseUrl}/api/users/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to update user: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  /// ユーザーを削除
+  static Future<bool> deleteUser(int id) async {
+    try {
+      final token = await AuthApi.getToken();
+
+      final response = await http.delete(
+        Uri.parse('${NetworkUtils.baseUrl}/api/users/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      return response.statusCode == 204;
+    } catch (e) {
+      throw Exception('Network error: $e');
     }
   }
 
@@ -78,46 +152,6 @@ class UsersApi {
       if (response.statusCode == 201) {
         return _processDateFields(jsonDecode(response.body));
       } else {
-        throw _handleErrorResponse(response);
-      }
-    } catch (e) {
-      if (e is Exception) rethrow;
-      throw Exception(_errorMessages['network_error']!);
-    }
-  }
-
-  // ユーザーを更新
-  static Future<Map<String, dynamic>> update(
-      int id, Map<String, dynamic> data) async {
-    try {
-      final headers = await AuthApi.getAuthHeaders();
-      final response = await http.put(
-        Uri.parse('$baseUrl/users/$id'),
-        headers: headers,
-        body: jsonEncode(data),
-      );
-
-      if (response.statusCode == 200) {
-        return _processDateFields(jsonDecode(response.body));
-      } else {
-        throw _handleErrorResponse(response);
-      }
-    } catch (e) {
-      if (e is Exception) rethrow;
-      throw Exception(_errorMessages['network_error']!);
-    }
-  }
-
-  // ユーザーを削除
-  static Future<void> delete(int id) async {
-    try {
-      final headers = await AuthApi.getAuthHeaders();
-      final response = await http.delete(
-        Uri.parse('$baseUrl/users/$id'),
-        headers: headers,
-      );
-
-      if (response.statusCode != 200) {
         throw _handleErrorResponse(response);
       }
     } catch (e) {

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../layouts/main_layout.dart';
-import 'dart:async';
-import '../services/auth_api.dart'; // AuthApiをインポート
 import 'package:go_router/go_router.dart';
+import '../services/users_api.dart';
 
 /// ユーザー管理ページ
 /// 管理者がユーザー情報を管理するためのページ
@@ -14,106 +13,140 @@ class AdminUserPage extends StatefulWidget {
 }
 
 class _AdminUserPageState extends State<AdminUserPage> {
-  final TextEditingController _barcodeController = TextEditingController();
-  final FocusNode _barcodeFocusNode = FocusNode();
-  String? _lastScannedCode;
+  List<Map<String, dynamic>> _users = [];
+  bool _isLoading = true;
   String? _errorMessage;
-  Timer? _scanTimeout;
-  DateTime? _lastScanTime;
-  bool _isProcessing = false;
 
   @override
   void initState() {
     super.initState();
-    // フォーカスを自動的にバーコード入力フィールドに設定
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _barcodeFocusNode.requestFocus();
-    });
+    _loadUsers();
   }
 
-  @override
-  void dispose() {
-    _barcodeController.dispose();
-    _barcodeFocusNode.dispose();
-    _scanTimeout?.cancel();
-    super.dispose();
-  }
-
-  // エラーメッセージを表示
-  void _showError(String message) {
-    setState(() {
-      _errorMessage = message;
-    });
-    // 3秒後にエラーメッセージをクリア
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _errorMessage = null;
-        });
-      }
-    });
-  }
-
-  // 重複スキャンをチェック（1秒以内の連続スキャンを防止）
-  bool _isDuplicateScan() {
-    if (_lastScanTime == null) return false;
-
-    final now = DateTime.now();
-    final difference = now.difference(_lastScanTime!);
-    return difference.inSeconds < 1;
-  }
-
-  void _onBarcodeSubmitted(String value) async {
-    if (value.isEmpty) return;
-
-    // 処理中の場合は新しいスキャンを受け付けない
-    if (_isProcessing) {
-      _showError('前回のスキャンの処理中です。お待ちください。');
-      _barcodeController.clear();
-      return;
-    }
-
-    // 重複スキャンチェック
-    if (_isDuplicateScan()) {
-      _showError('連続してスキャンすることはできません。少し待ってから再試行してください。');
-      _barcodeController.clear();
-      return;
-    }
-
-    setState(() {
-      _isProcessing = true;
-      _lastScanTime = DateTime.now();
-    });
-
+  Future<void> _loadUsers() async {
     try {
-      // タイムアウトタイマーを設定（5秒）
-      _scanTimeout?.cancel();
-      _scanTimeout = Timer(const Duration(seconds: 5), () {
-        if (_isProcessing) {
-          _showError('処理がタイムアウトしました。再度スキャンしてください。');
-          setState(() {
-            _isProcessing = false;
-          });
-        }
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
       });
 
-      // APIを呼び出してユーザー情報を取得
-      final userData = await AuthApi.getUser(value);
-
+      final users = await UsersApi.getAll();
       setState(() {
-        _lastScannedCode = value;
-        _errorMessage = null;
-        // TODO: 取得したユーザー情報を表示する処理を追加
+        _users = users;
+        _isLoading = false;
       });
     } catch (e) {
-      _showError('エラーが発生しました: ${e.toString()}');
-    } finally {
-      _scanTimeout?.cancel();
       setState(() {
-        _isProcessing = false;
+        _errorMessage = 'ユーザー一覧の取得に失敗しました: ${e.toString()}';
+        _isLoading = false;
       });
-      _barcodeController.clear();
     }
+  }
+
+  Widget _buildUserCard(Map<String, dynamic> user) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: const Color(0xFF009a73),
+                  child: Text(
+                    user['name']?[0]?.toString().toUpperCase() ?? '?',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user['name']?.toString() ?? '名前なし',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'ID: ${user['id']}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    // TODO: ユーザー編集機能を実装
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12.0),
+            if (user['gender'] != null) ...[
+              _buildInfoRow('性別', user['gender'].toString()),
+            ],
+            if (user['phone_number'] != null) ...[
+              _buildInfoRow('電話番号', user['phone_number'].toString()),
+            ],
+            if (user['postal_code'] != null) ...[
+              _buildInfoRow('郵便番号', user['postal_code'].toString()),
+            ],
+            if (user['prefecture'] != null) ...[
+              _buildInfoRow('都道府県', user['prefecture'].toString()),
+            ],
+            if (user['city'] != null) ...[
+              _buildInfoRow('市区町村', user['city'].toString()),
+            ],
+            if (user['address_line1'] != null) ...[
+              _buildInfoRow('住所', user['address_line1'].toString()),
+            ],
+            if (user['last_login_at'] != null) ...[
+              _buildInfoRow('最終ログイン', user['last_login_at'].toString()),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -129,6 +162,12 @@ class _AdminUserPageState extends State<AdminUserPage> {
               icon: const Icon(Icons.arrow_back),
               onPressed: () => context.go('/admin'),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: _loadUsers,
+              ),
+            ],
           ),
           Expanded(
             child: Padding(
@@ -136,70 +175,73 @@ class _AdminUserPageState extends State<AdminUserPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // バーコードスキャン領域
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'バーコードスキャン',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _barcodeController,
-                            focusNode: _barcodeFocusNode,
-                            decoration: InputDecoration(
-                              hintText: 'バーコードをスキャンしてください',
-                              border: const OutlineInputBorder(),
-                              errorText: _errorMessage,
-                              suffixIcon: _isProcessing
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : null,
-                            ),
-                            onSubmitted: _onBarcodeSubmitted,
-                            enabled: !_isProcessing,
-                          ),
-                          if (_lastScannedCode != null) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              '最後にスキャンしたコード: $_lastScannedCode',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
                   // ユーザー一覧のヘッダー
-                  const Text(
-                    'ユーザー一覧',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'ユーザー一覧',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${_users.length}件',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
-                  // ここにユーザー一覧のリストやテーブルを実装予定
+                  // ユーザー一覧の表示
                   Expanded(
-                    child: Center(
-                      child: Text('ユーザー一覧を表示予定'),
-                    ),
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : _errorMessage != null
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      _errorMessage!,
+                                      style: const TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 16,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: _loadUsers,
+                                      child: const Text('再試行'),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : _users.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      'ユーザーが見つかりません',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  )
+                                : RefreshIndicator(
+                                    onRefresh: _loadUsers,
+                                    child: ListView.builder(
+                                      itemCount: _users.length,
+                                      itemBuilder: (context, index) {
+                                        return _buildUserCard(_users[index]);
+                                      },
+                                    ),
+                                  ),
                   ),
                 ],
               ),

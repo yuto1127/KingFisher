@@ -8,6 +8,7 @@ import 'pages/map_page.dart';
 import 'pages/admin_page.dart';
 import 'pages/admin_content.dart';
 import 'pages/admin_user.dart';
+import 'pages/entry_status_page.dart';
 import 'pages/registration_page.dart';
 import 'pages/login_page.dart';
 import 'pages/lost_item_page.dart';
@@ -23,6 +24,7 @@ final _authenticatedRoutes = {
   '/admin',
   '/admin/content',
   '/admin/user',
+  '/admin/entry-status',
   '/profile',
 };
 
@@ -116,6 +118,10 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
         GoRoute(
           path: '/admin/user',
           builder: (context, state) => const AdminUserPage(),
+        ),
+        GoRoute(
+          path: '/admin/entry-status',
+          builder: (context, state) => const EntryStatusPage(),
         ),
         GoRoute(
           path: '/lost-item',

@@ -57,6 +57,13 @@ class AdminPage extends StatelessWidget {
                     },
                   ),
                   _buildAdminButton(
+                    icon: Icons.login,
+                    label: '入退室\n管理',
+                    onPressed: () {
+                      context.go('/admin/entry-status');
+                    },
+                  ),
+                  _buildAdminButton(
                     icon: Icons.settings,
                     label: 'システム\n設定',
                     onPressed: () {
