@@ -21,6 +21,10 @@ class AdminPage extends StatelessWidget {
             title: const Text('管理者ページ'),
             backgroundColor: Color(0xFF009a73), // 緑色のテーマカラー
             foregroundColor: Colors.white, // テキストを白色に
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go('/'),
+            ),
           ),
           // メインコンテンツエリア
           Expanded(

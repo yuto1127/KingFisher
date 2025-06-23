@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../layouts/main_layout.dart';
 import 'dart:async';
 import '../services/auth_api.dart'; // AuthApiをインポート
+import 'package:go_router/go_router.dart';
 
 /// ユーザー管理ページ
 /// 管理者がユーザー情報を管理するためのページ
@@ -124,6 +125,10 @@ class _AdminUserPageState extends State<AdminUserPage> {
             title: const Text('ユーザー管理'),
             backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go('/admin'),
+            ),
           ),
           Expanded(
             child: Padding(

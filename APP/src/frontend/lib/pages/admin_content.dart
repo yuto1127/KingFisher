@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 import 'package:provider/provider.dart';
 import '../providers/map_image_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class AdminContentPage extends StatefulWidget {
   const AdminContentPage({super.key});
@@ -44,6 +45,10 @@ class _AdminContentPageState extends State<AdminContentPage> {
             title: const Text('コンテンツ管理'),
             backgroundColor: Color(0xFF009a73),
             foregroundColor: Colors.white,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.go('/admin'),
+            ),
           ),
           Expanded(
             child: ListView(
