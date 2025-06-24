@@ -5,6 +5,16 @@ import '../layouts/main_layout.dart';
 import '../providers/auth_provider.dart';
 import '../services/users_api.dart';
 
+// 性別のマッピング
+const genderMap = {
+  'male': '男性',
+  'female': '女性',
+  'other': 'その他',
+  '男性': 'male',
+  '女性': 'female',
+  'その他': 'other',
+};
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -41,7 +51,9 @@ class _ProfilePageState extends State<ProfilePage> {
       _prefectureController.text = userData['prefecture']?.toString() ?? '';
       _cityController.text = userData['city']?.toString() ?? '';
       _addressController.text = userData['address_line1']?.toString() ?? '';
-      _selectedGender = userData['gender']?.toString();
+      final gender = userData['gender']?.toString();
+      // DB値が日本語でも英語でも対応
+      _selectedGender = genderMap[gender] ?? gender;
     }
   }
 
