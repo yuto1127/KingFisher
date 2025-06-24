@@ -14,11 +14,7 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: child,
-        ),
-      ),
+      body: child,
       bottomNavigationBar: showBottomNav
           ? BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
