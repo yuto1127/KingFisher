@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _initializeControllers() {
     final authProvider = context.read<AuthProvider>();
     final userData = authProvider.userData;
-    
+
     if (userData != null) {
       _nameController.text = userData['name']?.toString() ?? '';
       _phoneController.text = userData['phone_number']?.toString() ?? '';
@@ -51,9 +51,18 @@ class _ProfilePageState extends State<ProfilePage> {
       _prefectureController.text = userData['prefecture']?.toString() ?? '';
       _cityController.text = userData['city']?.toString() ?? '';
       _addressController.text = userData['address_line1']?.toString() ?? '';
+
+      // 性別を英語の値で初期化
       final gender = userData['gender']?.toString();
-      // DB値が日本語でも英語でも対応
-      _selectedGender = genderMap[gender] ?? gender;
+      if (gender == 'male' || gender == '女性') {
+        _selectedGender = 'male';
+      } else if (gender == 'female' || gender == '女性') {
+        _selectedGender = 'female';
+      } else if (gender == 'other' || gender == 'その他') {
+        _selectedGender = 'other';
+      } else {
+        _selectedGender = null; // 不明な値の場合はnull
+      }
     }
   }
 
@@ -78,7 +87,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final authProvider = context.read<AuthProvider>();
       final userId = authProvider.userId;
-      
+
       if (userId == null) {
         throw Exception('ユーザーIDが取得できません');
       }
@@ -169,117 +178,137 @@ class _ProfilePageState extends State<ProfilePage> {
 
             return Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ユーザー情報カード
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'ユーザー情報',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ユーザー情報カード
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'ユーザー情報',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              if (_isEditing)
-                                Row(
-                                  children: [
-                                    TextButton(
-                                      onPressed: _isLoading ? null : _cancelEdit,
-                                      child: const Text('キャンセル'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: _isLoading ? null : _saveUserData,
-                                      child: _isLoading
-                                          ? const SizedBox(
-                                              width: 16,
-                                              height: 16,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                              ),
-                                            )
-                                          : const Text('保存'),
-                                    ),
-                                  ],
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          if (userData != null) ...[
-                            if (_isEditing) ...[
-                              _buildEditForm(),
-                            ] else ...[
-                              _buildInfoRow('メールアドレス', authProvider.userEmail ?? '不明'),
-                              _buildInfoRow('名前', authProvider.userName ?? '不明'),
-                              _buildInfoRow('ユーザーID', authProvider.userId?.toString() ?? '不明'),
-                              _buildInfoRow('ロール名', authProvider.roleName ?? '不明'),
-                              _buildInfoRow('ロールタイプ', authProvider.roleType ?? '不明'),
-                              _buildInfoRow('作成日', userData['created_at'] ?? '不明'),
-                              if (userData['gender'] != null)
-                                _buildInfoRow('性別', userData['gender'].toString()),
-                              if (userData['phone_number'] != null)
-                                _buildInfoRow('電話番号', userData['phone_number'].toString()),
-                              if (userData['postal_code'] != null)
-                                _buildInfoRow('郵便番号', userData['postal_code'].toString()),
-                              if (userData['prefecture'] != null)
-                                _buildInfoRow('都道府県', userData['prefecture'].toString()),
-                              if (userData['city'] != null)
-                                _buildInfoRow('市区町村', userData['city'].toString()),
-                              if (userData['address_line1'] != null)
-                                _buildInfoRow('住所', userData['address_line1'].toString()),
-                            ],
-                          ] else ...[
-                            const Text('ユーザー情報を読み込み中...'),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // アクションカード
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'アクション',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                                if (_isEditing)
+                                  Row(
+                                    children: [
+                                      TextButton(
+                                        onPressed:
+                                            _isLoading ? null : _cancelEdit,
+                                        child: const Text('キャンセル'),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed:
+                                            _isLoading ? null : _saveUserData,
+                                        child: _isLoading
+                                            ? const SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                ),
+                                              )
+                                            : const Text('保存'),
+                                      ),
+                                    ],
+                                  ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          ListTile(
-                            leading: const Icon(Icons.settings),
-                            title: const Text('設定'),
-                            onTap: () {
-                              // 設定ページへの遷移
-                              context.go('/settings');
-                            },
-                          ),
-                          ListTile(
-                            leading:
-                                const Icon(Icons.logout, color: Colors.red),
-                            title: const Text('ログアウト',
-                                style: TextStyle(color: Colors.red)),
-                            onTap: () => _showLogoutDialog(context),
-                          ),
-                        ],
+                            const SizedBox(height: 16),
+                            if (userData != null) ...[
+                              if (_isEditing) ...[
+                                _buildEditForm(),
+                              ] else ...[
+                                _buildInfoRow(
+                                    'メールアドレス', authProvider.userEmail ?? '不明'),
+                                _buildInfoRow(
+                                    '名前', authProvider.userName ?? '不明'),
+                                _buildInfoRow('ユーザーID',
+                                    authProvider.userId?.toString() ?? '不明'),
+                                _buildInfoRow(
+                                    'ロール名', authProvider.roleName ?? '不明'),
+                                _buildInfoRow(
+                                    'ロールタイプ', authProvider.roleType ?? '不明'),
+                                _buildInfoRow(
+                                    '作成日', userData['created_at'] ?? '不明'),
+                                if (userData['gender'] != null)
+                                  _buildInfoRow(
+                                      '性別',
+                                      genderMap[
+                                              userData['gender'].toString()] ??
+                                          userData['gender'].toString()),
+                                if (userData['phone_number'] != null)
+                                  _buildInfoRow('電話番号',
+                                      userData['phone_number'].toString()),
+                                if (userData['postal_code'] != null)
+                                  _buildInfoRow('郵便番号',
+                                      userData['postal_code'].toString()),
+                                if (userData['prefecture'] != null)
+                                  _buildInfoRow('都道府県',
+                                      userData['prefecture'].toString()),
+                                if (userData['city'] != null)
+                                  _buildInfoRow(
+                                      '市区町村', userData['city'].toString()),
+                                if (userData['address_line1'] != null)
+                                  _buildInfoRow('住所',
+                                      userData['address_line1'].toString()),
+                              ],
+                            ] else ...[
+                              const Text('ユーザー情報を読み込み中...'),
+                            ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+
+                    // アクションカード
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'アクション',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ListTile(
+                              leading: const Icon(Icons.settings),
+                              title: const Text('設定'),
+                              onTap: () {
+                                // 設定ページへの遷移
+                                context.go('/settings');
+                              },
+                            ),
+                            ListTile(
+                              leading:
+                                  const Icon(Icons.logout, color: Colors.red),
+                              title: const Text('ログアウト',
+                                  style: TextStyle(color: Colors.red)),
+                              onTap: () => _showLogoutDialog(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
