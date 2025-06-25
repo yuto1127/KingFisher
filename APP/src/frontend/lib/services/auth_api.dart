@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 
 class AuthApi {
 
-  static const String baseUrl = 'https://cid-kingfisher.jp/';
+  static const String baseUrl = 'https://cid-kingfisher.jp/api';
 
   static const String tokenKey = 'auth_token';
   static const String userKey = 'user_data';
