@@ -4,7 +4,6 @@ import '../utils/network_utils.dart';
 import 'auth_api.dart';
 
 class UsersApi {
-    // static const String baseUrl = 'http://54.165.66.148/api';
   static const String baseUrl = 'https://cid-kingfisher.jp/api';
   // エラーメッセージのマッピング
   static const Map<String, String> _errorMessages = {
