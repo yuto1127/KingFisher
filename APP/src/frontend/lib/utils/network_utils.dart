@@ -7,7 +7,7 @@ class NetworkUtils {
     try {
       final response = await http
           .get(
-            Uri.parse('$baseUrl/api/ping'),
+            Uri.parse('$baseUrl/ping'),
           )
           .timeout(const Duration(seconds: 3));
       return response.statusCode == 200;
