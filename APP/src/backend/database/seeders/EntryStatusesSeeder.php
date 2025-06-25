@@ -17,7 +17,6 @@ class EntryStatusesSeeder extends Seeder
         $users = [1,2,3];
         foreach ($users as $user) {
             EntryStatus::create([
-                'event_id' => 1,
                 'user_id' => $user,
                 'status' => 'exit',
                 'entry_at' => '2025-01-01 00:00:00',

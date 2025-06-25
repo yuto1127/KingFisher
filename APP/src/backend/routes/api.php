@@ -168,6 +168,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [EntryStatusesController::class, 'store']);
         Route::put('/{id}', [EntryStatusesController::class, 'update']);
         Route::delete('/{id}', [EntryStatusesController::class, 'destroy']);
+        
+        // バーコードスキャンによる入退室処理
+        Route::post('/toggle', [EntryStatusesController::class, 'toggleEntryStatus']);
+        Route::get('/user/{userId}', [EntryStatusesController::class, 'getUserEntryStatus']);
     });
 });
 

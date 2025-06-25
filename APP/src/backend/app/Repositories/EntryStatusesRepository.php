@@ -33,4 +33,13 @@ class EntryStatusesRepository
     {
         return DB::table('entry_statuses')->where('id', $id)->delete();
     }
+
+    // ユーザーIDで最新の入退室状況を取得
+    public function getLatestByUserId(int $userId)
+    {
+        return DB::table('entry_statuses')
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+    }
 } 

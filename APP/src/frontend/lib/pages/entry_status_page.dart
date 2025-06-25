@@ -23,6 +23,12 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
   Timer? _scanTimeout;
   DateTime? _lastScanTime;
   bool _isProcessing = false;
+  List<Map<String, dynamic>> _entryStatuses = [];
+  bool _isLoading = true;
+
+  // 追加: スキャンしたユーザー情報と入退室情報
+  Map<String, dynamic>? _scannedUser;
+  Map<String, dynamic>? _scannedEntryStatus;
 
   @override
   void initState() {
@@ -31,6 +37,7 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _barcodeFocusNode.requestFocus();
     });
+    _loadEntryStatuses();
   }
 
   @override
@@ -39,6 +46,25 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
     _barcodeFocusNode.dispose();
     _scanTimeout?.cancel();
     super.dispose();
+  }
+
+  // 入退室状況を読み込む
+  Future<void> _loadEntryStatuses() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      final statuses = await EntryStatusesApi.getEntryStatuses();
+      setState(() {
+        _entryStatuses = statuses;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showError('入退室状況の読み込みに失敗しました: ${e.toString()}');
+    }
   }
 
   // エラーメッセージを表示
@@ -85,14 +111,12 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
   void _onBarcodeSubmitted(String value) async {
     if (value.isEmpty) return;
 
-    // 処理中の場合は新しいスキャンを受け付けない
     if (_isProcessing) {
       _showError('前回のスキャンの処理中です。お待ちください。');
       _barcodeController.clear();
       return;
     }
 
-    // 重複スキャンチェック
     if (_isDuplicateScan()) {
       _showError('連続してスキャンすることはできません。少し待ってから再試行してください。');
       _barcodeController.clear();
@@ -105,7 +129,6 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
     });
 
     try {
-      // タイムアウトタイマーを設定（5秒）
       _scanTimeout?.cancel();
       _scanTimeout = Timer(const Duration(seconds: 5), () {
         if (_isProcessing) {
@@ -118,23 +141,34 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
 
       // ユーザー情報を取得
       final userData = await AuthApi.getUser(value);
+      Map<String, dynamic>? entryStatusData;
 
       if (userData != null) {
-        // 入退室状況を更新
-        final entryStatus = await EntryStatusesApi.createEntryStatus({
-          'user_id': userData['id'],
-          'event_id': 1, // デフォルトのイベントID
-          'status': 'entry', // 入室
-        });
+        // 入退室状況を切り替え
+        final result = await EntryStatusesApi.toggleEntryStatus(userData['id']);
+        // 最新の入退室状況を取得
+        entryStatusData = await EntryStatusesApi.getUserEntryStatus(userData['id']);
 
         setState(() {
           _lastScannedCode = value;
-          _successMessage = '${userData['name']}さんの入室を記録しました';
+          _successMessage = '${userData['name']}さんの${result['message']}';
+          _scannedUser = userData;
+          _scannedEntryStatus = entryStatusData;
         });
+
+        await _loadEntryStatuses();
       } else {
+        setState(() {
+          _scannedUser = null;
+          _scannedEntryStatus = null;
+        });
         _showError('ユーザーが見つかりません');
       }
     } catch (e) {
+      setState(() {
+        _scannedUser = null;
+        _scannedEntryStatus = null;
+      });
       _showError('エラーが発生しました: ${e.toString()}');
     } finally {
       _scanTimeout?.cancel();
@@ -142,6 +176,30 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
         _isProcessing = false;
       });
       _barcodeController.clear();
+    }
+  }
+
+  // ステータスに応じた色を取得
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'entry':
+        return Colors.green;
+      case 'exit':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // ステータスに応じたテキストを取得
+  String _getStatusText(String status) {
+    switch (status) {
+      case 'entry':
+        return '入室中';
+      case 'exit':
+        return '退室中';
+      default:
+        return '不明';
     }
   }
 
@@ -158,6 +216,12 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
               icon: const Icon(Icons.arrow_back),
               onPressed: () => context.go('/admin'),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: _loadEntryStatuses,
+              ),
+            ],
           ),
           Expanded(
             child: Padding(
@@ -227,25 +291,136 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
                               ),
                             ),
                           ],
+                          // 追加: スキャンしたユーザー情報と入退室情報の表示
+                          if (_scannedUser != null && _scannedEntryStatus != null) ...[
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            Text(
+                              'ユーザー情報',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            Text('名前: ${_scannedUser!['name'] ?? '不明'}'),
+                            Text('電話番号: ${_scannedUser!['phone'] ?? '不明'}'),
+                            const SizedBox(height: 8),
+                            Text(
+                              '入退室状況',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            Text('ステータス: ${_getStatusText(_scannedEntryStatus!['status'] ?? 'unknown')}'),
+                            Text('入室時刻: ${_scannedEntryStatus!['entry_at'] != null ? _scannedEntryStatus!['entry_at'].toString().replaceFirst("T", " ").substring(0, 19) : '---'}'),
+                            Text('退室時刻: ${_scannedEntryStatus!['exit_at'] != null ? _scannedEntryStatus!['exit_at'].toString().replaceFirst("T", " ").substring(0, 19) : '---'}'),
+                          ],
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   // 入退室状況のヘッダー
-                  const Text(
-                    '入退室状況',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        '入退室状況',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (_isLoading)
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 16),
-                  // ここに入退室状況のリストやテーブルを実装予定
+                  // 入退室状況のリスト
                   Expanded(
-                    child: Center(
-                      child: Text('入退室状況を表示予定'),
-                    ),
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : _entryStatuses.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  '入退室記録がありません',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: _entryStatuses.length,
+                                itemBuilder: (context, index) {
+                                  final entryStatus = _entryStatuses[index];
+                                  final status = entryStatus['status'] ?? 'unknown';
+                                  final entryAt = entryStatus['entry_at'] != null
+                                      ? DateTime.parse(entryStatus['entry_at'])
+                                      : null;
+                                  final exitAt = entryStatus['exit_at'] != null
+                                      ? DateTime.parse(entryStatus['exit_at'])
+                                      : null;
+                                  final updatedAt = entryStatus['updated_at'] != null
+                                      ? DateTime.parse(entryStatus['updated_at'])
+                                      : null;
+
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: _getStatusColor(status),
+                                        child: Icon(
+                                          status == 'entry'
+                                              ? Icons.login
+                                              : Icons.logout,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        'ユーザーID: ${entryStatus['user_id']}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'ステータス: ${_getStatusText(status)}',
+                                            style: TextStyle(
+                                              color: _getStatusColor(status),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          if (entryAt != null)
+                                            Text(
+                                              '入室時刻: ${entryAt.toLocal().toString().substring(0, 19)}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          if (exitAt != null)
+                                            Text(
+                                              '退室時刻: ${exitAt.toLocal().toString().substring(0, 19)}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          if (updatedAt != null)
+                                            Text(
+                                              '更新時刻: ${updatedAt.toLocal().toString().substring(0, 19)}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                   ),
                 ],
               ),

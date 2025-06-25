@@ -58,4 +58,28 @@ class EntryStatusesController extends Controller
             JSON_UNESCAPED_UNICODE
         );
     }
+
+    // バーコードスキャンによる入退室処理
+    public function toggleEntryStatus(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+
+        $result = $this->entryStatusesService->toggleEntryStatus($request->user_id);
+        
+        return response()->json($result, 200, [
+            'Content-Type' => 'application/json; charset=UTF-8'
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
+    // 特定ユーザーの入退室状況を取得
+    public function getUserEntryStatus($userId)
+    {
+        $entryStatus = $this->entryStatusesService->getUserEntryStatus($userId);
+        
+        return response()->json($entryStatus, 200, [
+            'Content-Type' => 'application/json; charset=UTF-8'
+        ], JSON_UNESCAPED_UNICODE);
+    }
 }
