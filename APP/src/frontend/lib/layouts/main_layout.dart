@@ -30,8 +30,8 @@ class MainLayout extends StatelessWidget {
                   label: 'マップ',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  label: 'ホーム',
+                  icon: Icon(Icons.qr_code),
+                  label: '会員証',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.umbrella),
