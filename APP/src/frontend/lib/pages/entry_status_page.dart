@@ -336,92 +336,110 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
                       ],
                     ),
                     const SizedBox(height: 16),
+                    // 入退室状況のリスト
                     Container(
                       height: 300, // 必要に応じて調整
-                      child: _isLoading
-                          ? const Center(child: CircularProgressIndicator())
-                          : _entryStatuses.isEmpty
-                              ? const Center(
-                                  child: Text(
-                                    '入退室記録がありません',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                )
-                              : ListView.builder(
-                                  itemCount: _entryStatuses.length,
-                                  itemBuilder: (context, index) {
-                                    final entryStatus = _entryStatuses[index];
-                                    final status = entryStatus['status'] ?? 'unknown';
-                                    final entryAt = entryStatus['entry_at'] != null
-                                        ? DateTime.parse(entryStatus['entry_at'])
-                                        : null;
-                                    final exitAt = entryStatus['exit_at'] != null
-                                        ? DateTime.parse(entryStatus['exit_at'])
-                                        : null;
-                                    final updatedAt = entryStatus['updated_at'] != null
-                                        ? DateTime.parse(entryStatus['updated_at'])
-                                        : null;
+                      child: Builder(
+                        builder: (context) {
+                          // user_idごとに最新のデータだけを残す
+                          final Map<int, Map<String, dynamic>> latestByUser = {};
+                          for (final entry in _entryStatuses) {
+                            final userId = entry['user_id'];
+                            if (!latestByUser.containsKey(userId) ||
+                                DateTime.parse(entry['updated_at']).isAfter(DateTime.parse(latestByUser[userId]!['updated_at']))) {
+                              latestByUser[userId] = entry;
+                            }
+                          }
+                          final latestEntryStatuses = latestByUser.values.toList();
 
-                                    return Card(
-                                      margin: const EdgeInsets.only(bottom: 8.0),
-                                      child: ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundColor: _getStatusColor(status),
-                                          child: Icon(
-                                            status == 'entry'
-                                                ? Icons.login
-                                                : Icons.logout,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        title: Text(
-                                          'ユーザーID: ${entryStatus['user_id']}',
-                                          style: const TextStyle(
+                          if (_isLoading) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (latestEntryStatuses.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                '入退室記録がありません',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return ListView.builder(
+                              itemCount: latestEntryStatuses.length,
+                              itemBuilder: (context, index) {
+                                final entryStatus = latestEntryStatuses[index];
+                                final status = entryStatus['status'] ?? 'unknown';
+                                final entryAt = entryStatus['entry_at'] != null
+                                    ? DateTime.parse(entryStatus['entry_at'])
+                                    : null;
+                                final exitAt = entryStatus['exit_at'] != null
+                                    ? DateTime.parse(entryStatus['exit_at'])
+                                    : null;
+                                final updatedAt = entryStatus['updated_at'] != null
+                                    ? DateTime.parse(entryStatus['updated_at'])
+                                    : null;
+
+                                return Card(
+                                  margin: const EdgeInsets.only(bottom: 8.0),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: _getStatusColor(status),
+                                      child: Icon(
+                                        status == 'entry'
+                                            ? Icons.login
+                                            : Icons.logout,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      'ユーザーID: ${entryStatus['user_id']}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'ステータス: ${_getStatusText(status)}',
+                                          style: TextStyle(
+                                            color: _getStatusColor(status),
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'ステータス: ${_getStatusText(status)}',
-                                              style: TextStyle(
-                                                color: _getStatusColor(status),
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                        if (entryAt != null)
+                                          Text(
+                                            '入室時刻: ${entryAt.toLocal().toString().substring(0, 19)}',
+                                            style: const TextStyle(
+                                              fontSize: 12,
                                             ),
-                                            if (entryAt != null)
-                                              Text(
-                                                '入室時刻: ${entryAt.toLocal().toString().substring(0, 19)}',
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            if (exitAt != null)
-                                              Text(
-                                                '退室時刻: ${exitAt.toLocal().toString().substring(0, 19)}',
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            if (updatedAt != null)
-                                              Text(
-                                                '更新時刻: ${updatedAt.toLocal().toString().substring(0, 19)}',
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                                          ),
+                                        if (exitAt != null)
+                                          Text(
+                                            '退室時刻: ${exitAt.toLocal().toString().substring(0, 19)}',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        if (updatedAt != null)
+                                          Text(
+                                            '更新時刻: ${updatedAt.toLocal().toString().substring(0, 19)}',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
