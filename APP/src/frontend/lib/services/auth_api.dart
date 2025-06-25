@@ -132,9 +132,12 @@ class AuthApi {
     try {
       await _checkConnection();
 
+      final headers = await getAuthHeaders(); // 認証トークンを取得
+      headers['Accept'] = 'application/json'; // Acceptヘッダーも追加
+
       final response = await http.get(
         Uri.parse('$baseUrl/users/$barcode'),
-        headers: {'Accept': 'application/json'},
+        headers: headers, // トークン付きでリクエスト
       ).timeout(
         const Duration(seconds: 10),
         onTimeout: () {
