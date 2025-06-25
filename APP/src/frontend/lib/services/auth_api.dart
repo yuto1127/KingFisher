@@ -9,7 +9,12 @@ import '../models/login_model.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthApi {
+<<<<<<< Updated upstream
   static const String baseUrl = 'https://cid-kingfisher.jp/api';
+=======
+  // static const String baseUrl = 'http://54.165.66.148/api';
+  static const String baseUrl = 'https://cid-kingfisher.jp/';
+>>>>>>> Stashed changes
   static const String tokenKey = 'auth_token';
   static const String userKey = 'user_data';
 
