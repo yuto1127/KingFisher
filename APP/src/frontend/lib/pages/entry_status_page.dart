@@ -80,8 +80,10 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
           _errorMessage = null;
         });
       }
-      // エラー後もフォーカスを戻す
-      FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      // エラー後も次フレームでフォーカスを戻す
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      });
     });
   }
 
@@ -98,8 +100,10 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
           _successMessage = null;
         });
       }
-      // 成功後もフォーカスを戻す
-      FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      // 成功後も次フレームでフォーカスを戻す
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      });
     });
   }
 
@@ -114,21 +118,27 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
 
   void _onBarcodeSubmitted(String value) async {
     if (value.isEmpty) {
-      FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      });
       return;
     }
 
     if (_isProcessing) {
       _showError('前回のスキャンの処理中です。お待ちください。');
       _barcodeController.clear();
-      FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      });
       return;
     }
 
     if (_isDuplicateScan()) {
       _showError('連続してスキャンすることはできません。少し待ってから再試行してください。');
       _barcodeController.clear();
-      FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      });
       return;
     }
 
@@ -145,7 +155,9 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
           setState(() {
             _isProcessing = false;
           });
-          FocusScope.of(context).requestFocus(_barcodeFocusNode);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            FocusScope.of(context).requestFocus(_barcodeFocusNode);
+          });
         }
       });
 
@@ -186,8 +198,10 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
         _isProcessing = false;
       });
       _barcodeController.clear();
-      // スキャン後もフォーカスを戻す
-      FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      // スキャン後も次フレームでフォーカスを戻す
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      });
     }
   }
 
