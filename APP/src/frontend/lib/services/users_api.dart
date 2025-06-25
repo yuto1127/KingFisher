@@ -4,12 +4,8 @@ import '../utils/network_utils.dart';
 import 'auth_api.dart';
 
 class UsersApi {
-<<<<<<< Updated upstream
-  static const String baseUrl = 'https://cid-kingfisher.jp/api';
-=======
-    // static const String baseUrl = 'http://54.165.66.148/api';
+
   static const String baseUrl = 'https://cid-kingfisher.jp/';
->>>>>>> Stashed changes
   // エラーメッセージのマッピング
   static const Map<String, String> _errorMessages = {
     'validation_error': '入力内容に誤りがあります',
