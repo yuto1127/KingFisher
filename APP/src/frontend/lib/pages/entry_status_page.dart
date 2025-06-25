@@ -217,250 +217,256 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      child: Column(
-        children: [
-          AppBar(
-            title: const Text('入退室管理'),
-            backgroundColor: const Color(0xFF009a73),
-            foregroundColor: Colors.white,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => context.go('/admin'),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: _loadEntryStatuses,
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        FocusScope.of(context).requestFocus(_barcodeFocusNode);
+      },
+      child: MainLayout(
+        child: Column(
+          children: [
+            AppBar(
+              title: const Text('入退室管理'),
+              backgroundColor: const Color(0xFF009a73),
+              foregroundColor: Colors.white,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go('/admin'),
               ),
-            ],
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // バーコードスキャン領域
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'バーコードスキャン',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextField(
-                              controller: _barcodeController,
-                              focusNode: _barcodeFocusNode,
-                              decoration: InputDecoration(
-                                hintText: 'バーコードをスキャンしてください',
-                                border: const OutlineInputBorder(),
-                                errorText: _errorMessage,
-                                suffixIcon: _isProcessing
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              onSubmitted: _onBarcodeSubmitted,
-                              enabled: !_isProcessing,
-                            ),
-                            if (_lastScannedCode != null) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                '最後にスキャンしたコード: $_lastScannedCode',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                            if (_successMessage != null) ...[
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.shade100,
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                                child: Text(
-                                  _successMessage!,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.green.shade800,
-                                  ),
-                                ),
-                              ),
-                            ],
-                            // 追加: スキャンしたユーザー情報と入退室情報の表示
-                            if (_scannedUser != null && _scannedEntryStatus != null) ...[
-                              const SizedBox(height: 16),
-                              const Divider(),
-                              Text(
-                                'ユーザー情報',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              Text('名前: ${_scannedUser!['name'] ?? '不明'}'),
-                              Text('電話番号: '
-                                // phone, tel, telephoneの順で表示
-                                '${_scannedUser!['phone_number'] ?? '不明'}'),
-                              const SizedBox(height: 8),
-                              Text(
-                                '入退室状況',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              Text('ステータス: ${_getStatusText(_scannedEntryStatus!['status'] ?? 'unknown')}'),
-                              Text('入室時刻: ${_scannedEntryStatus!['entry_at'] != null ? _scannedEntryStatus!['entry_at'].toString().replaceFirst("T", " ").substring(0, 19) : '---'}'),
-                              Text('退室時刻: ${_scannedEntryStatus!['exit_at'] != null ? _scannedEntryStatus!['exit_at'].toString().replaceFirst("T", " ").substring(0, 19) : '---'}'),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // 入退室状況のヘッダー
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          '入退室状況',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (_isLoading)
-                          const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    // 入退室状況のリスト
-                    Container(
-                      height: 300, // 必要に応じて調整
-                      child: Builder(
-                        builder: (context) {
-                          // user_idごとに最新のデータだけを残す
-                          final Map<int, Map<String, dynamic>> latestByUser = {};
-                          for (final entry in _entryStatuses) {
-                            final userId = entry['user_id'];
-                            if (!latestByUser.containsKey(userId) ||
-                                DateTime.parse(entry['updated_at']).isAfter(DateTime.parse(latestByUser[userId]!['updated_at']))) {
-                              latestByUser[userId] = entry;
-                            }
-                          }
-                          final latestEntryStatuses = latestByUser.values.toList();
-
-                          if (_isLoading) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (latestEntryStatuses.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                '入退室記録がありません',
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _loadEntryStatuses,
+                ),
+              ],
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // バーコードスキャン領域
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'バーコードスキャン',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            );
-                          } else {
-                            return ListView.builder(
-                              itemCount: latestEntryStatuses.length,
-                              itemBuilder: (context, index) {
-                                final entryStatus = latestEntryStatuses[index];
-                                final status = entryStatus['status'] ?? 'unknown';
-                                final entryAt = entryStatus['entry_at'] != null
-                                    ? DateTime.parse(entryStatus['entry_at'])
-                                    : null;
-                                final exitAt = entryStatus['exit_at'] != null
-                                    ? DateTime.parse(entryStatus['exit_at'])
-                                    : null;
-                                final updatedAt = entryStatus['updated_at'] != null
-                                    ? DateTime.parse(entryStatus['updated_at'])
-                                    : null;
-
-                                return Card(
-                                  margin: const EdgeInsets.only(bottom: 8.0),
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: _getStatusColor(status),
-                                      child: Icon(
-                                        status == 'entry'
-                                            ? Icons.login
-                                            : Icons.logout,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    title: Text(
-                                      'ユーザーID: ${entryStatus['user_id']}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'ステータス: ${_getStatusText(status)}',
-                                          style: TextStyle(
-                                            color: _getStatusColor(status),
-                                            fontWeight: FontWeight.bold,
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller: _barcodeController,
+                                focusNode: _barcodeFocusNode,
+                                decoration: InputDecoration(
+                                  hintText: 'バーコードをスキャンしてください',
+                                  border: const OutlineInputBorder(),
+                                  errorText: _errorMessage,
+                                  suffixIcon: _isProcessing
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
                                           ),
-                                        ),
-                                        if (entryAt != null)
-                                          Text(
-                                            '入室時刻: ${entryAt.toLocal().toString().substring(0, 19)}',
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        if (exitAt != null)
-                                          Text(
-                                            '退室時刻: ${exitAt.toLocal().toString().substring(0, 19)}',
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        if (updatedAt != null)
-                                          Text(
-                                            '更新時刻: ${updatedAt.toLocal().toString().substring(0, 19)}',
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                      ],
+                                        )
+                                      : null,
+                                ),
+                                onSubmitted: _onBarcodeSubmitted,
+                                enabled: !_isProcessing,
+                              ),
+                              if (_lastScannedCode != null) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  '最後にスキャンしたコード: $_lastScannedCode',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                              if (_successMessage != null) ...[
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade100,
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  child: Text(
+                                    _successMessage!,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.green.shade800,
                                     ),
                                   ),
-                                );
-                              },
-                            );
-                          }
-                        },
+                                ),
+                              ],
+                              // 追加: スキャンしたユーザー情報と入退室情報の表示
+                              if (_scannedUser != null && _scannedEntryStatus != null) ...[
+                                const SizedBox(height: 16),
+                                const Divider(),
+                                Text(
+                                  'ユーザー情報',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                Text('名前: ${_scannedUser!['name'] ?? '不明'}'),
+                                Text('電話番号: '
+                                  // phone, tel, telephoneの順で表示
+                                  '${_scannedUser!['phone_number'] ?? '不明'}'),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '入退室状況',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                Text('ステータス: ${_getStatusText(_scannedEntryStatus!['status'] ?? 'unknown')}'),
+                                Text('入室時刻: ${_scannedEntryStatus!['entry_at'] != null ? _scannedEntryStatus!['entry_at'].toString().replaceFirst("T", " ").substring(0, 19) : '---'}'),
+                                Text('退室時刻: ${_scannedEntryStatus!['exit_at'] != null ? _scannedEntryStatus!['exit_at'].toString().replaceFirst("T", " ").substring(0, 19) : '---'}'),
+                              ],
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      // 入退室状況のヘッダー
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            '入退室状況',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (_isLoading)
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // 入退室状況のリスト
+                      Container(
+                        height: 300, // 必要に応じて調整
+                        child: Builder(
+                          builder: (context) {
+                            // user_idごとに最新のデータだけを残す
+                            final Map<int, Map<String, dynamic>> latestByUser = {};
+                            for (final entry in _entryStatuses) {
+                              final userId = entry['user_id'];
+                              if (!latestByUser.containsKey(userId) ||
+                                  DateTime.parse(entry['updated_at']).isAfter(DateTime.parse(latestByUser[userId]!['updated_at']))) {
+                                latestByUser[userId] = entry;
+                              }
+                            }
+                            final latestEntryStatuses = latestByUser.values.toList();
+
+                            if (_isLoading) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (latestEntryStatuses.isEmpty) {
+                              return const Center(
+                                child: Text(
+                                  '入退室記録がありません',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return ListView.builder(
+                                itemCount: latestEntryStatuses.length,
+                                itemBuilder: (context, index) {
+                                  final entryStatus = latestEntryStatuses[index];
+                                  final status = entryStatus['status'] ?? 'unknown';
+                                  final entryAt = entryStatus['entry_at'] != null
+                                      ? DateTime.parse(entryStatus['entry_at'])
+                                      : null;
+                                  final exitAt = entryStatus['exit_at'] != null
+                                      ? DateTime.parse(entryStatus['exit_at'])
+                                      : null;
+                                  final updatedAt = entryStatus['updated_at'] != null
+                                      ? DateTime.parse(entryStatus['updated_at'])
+                                      : null;
+
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 8.0),
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: _getStatusColor(status),
+                                        child: Icon(
+                                          status == 'entry'
+                                              ? Icons.login
+                                              : Icons.logout,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        'ユーザーID: ${entryStatus['user_id']}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'ステータス: ${_getStatusText(status)}',
+                                            style: TextStyle(
+                                              color: _getStatusColor(status),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          if (entryAt != null)
+                                            Text(
+                                              '入室時刻: ${entryAt.toLocal().toString().substring(0, 19)}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          if (exitAt != null)
+                                            Text(
+                                              '退室時刻: ${exitAt.toLocal().toString().substring(0, 19)}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          if (updatedAt != null)
+                                            Text(
+                                              '更新時刻: ${updatedAt.toLocal().toString().substring(0, 19)}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
