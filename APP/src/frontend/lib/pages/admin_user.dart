@@ -45,7 +45,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
     }
   }
 
-  Widget _buildUserCard(Map<String, dynamic> user, int? currentUserId) {
+  Widget _buildUserCard(Map<String, dynamic> user) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12.0),
       child: Padding(
@@ -87,13 +87,6 @@ class _AdminUserPageState extends State<AdminUserPage> {
                     ],
                   ),
                 ),
-                if (user['id'] != currentUserId)
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      context.go('/admin/user/${user['id']}');
-                    },
-                  ),
               ],
             ),
             const SizedBox(height: 12.0),
@@ -154,8 +147,6 @@ class _AdminUserPageState extends State<AdminUserPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = context.watch<AuthProvider>().userId;
-
     return MainLayout(
       child: Column(
         children: [
@@ -243,8 +234,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                                     child: ListView.builder(
                                       itemCount: _users.length,
                                       itemBuilder: (context, index) {
-                                        return _buildUserCard(
-                                            _users[index], currentUserId);
+                                        return _buildUserCard(_users[index]);
                                       },
                                     ),
                                   ),

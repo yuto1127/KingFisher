@@ -12,6 +12,7 @@ return [
     'allowed_origins' => [
         '*',
         'http://18.208.63.153',
+        'https://cid-kingfisher.jp',
         // 本番用ドメインもここに追加
     ],
     // 本番はFlutter Webのドメイン指定

@@ -69,35 +69,40 @@ class MapPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                const Text(
-                  '施設一覧',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '施設一覧',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFacilityCard(
+                      name: 'メインホール',
+                      description: '多目的ホール（最大収容人数：500人）',
+                      floor: '1階',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFacilityCard(
+                      name: '会議室A',
+                      description: '小規模会議室（最大収容人数：20人）',
+                      floor: '2階',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFacilityCard(
+                      name: 'レストラン',
+                      description: 'カフェテリア形式のレストラン',
+                      floor: '1階',
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                _buildFacilityCard(
-                  name: 'メインホール',
-                  description: '多目的ホール（最大収容人数：500人）',
-                  floor: '1階',
-                ),
-                const SizedBox(height: 12),
-                _buildFacilityCard(
-                  name: '会議室A',
-                  description: '小規模会議室（最大収容人数：20人）',
-                  floor: '2階',
-                ),
-                const SizedBox(height: 12),
-                _buildFacilityCard(
-                  name: 'レストラン',
-                  description: 'カフェテリア形式のレストラン',
-                  floor: '1階',
-                ),
-              ],
+              ),
             ),
           ),
         ],
