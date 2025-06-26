@@ -171,14 +171,6 @@ class MobileUtils {
     final isMobileDevice = isMobile;
 
     if (isMobileDevice) {
-      // ローカルストレージの確認
-      checkLocalStorageAvailability().then((available) {
-        if (!available) {
-          issues.add('localStorage_unavailable');
-          recommendations.add('プライベートブラウジングモードを無効にしてください');
-        }
-      });
-
       // ネットワーク接続の確認
       final networkInfo = getNetworkInfo();
       if (!networkInfo['online']) {
@@ -202,6 +194,23 @@ class MobileUtils {
       if (!hasTouchSupport) {
         issues.add('no_touch_support');
         recommendations.add('タッチ対応デバイスをご利用ください');
+      }
+
+      // ローカルストレージの確認（同期的にチェック）
+      try {
+        const testKey = 'mobile_storage_test';
+        const testValue = 'test_value';
+        html.window.localStorage[testKey] = testValue;
+        final retrieved = html.window.localStorage[testKey];
+        html.window.localStorage.remove(testKey);
+
+        if (retrieved != testValue) {
+          issues.add('localStorage_unavailable');
+          recommendations.add('プライベートブラウジングモードを無効にしてください');
+        }
+      } catch (e) {
+        issues.add('localStorage_unavailable');
+        recommendations.add('プライベートブラウジングモードを無効にしてください');
       }
     }
 
