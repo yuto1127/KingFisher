@@ -17,12 +17,10 @@ flutter clean
 echo "🔨 Web用にビルド中..."
 flutter build web \
   --release \
-  --web-renderer html \
-  --dart-define=FLUTTER_WEB_USE_SKIA=false \
   --dart-define=FLUTTER_WEB_AUTO_DETECT=true \
-  --dart-define=FLUTTER_WEB_USE_CANVASKIT=false \
   --base-href "/" \
-  --pwa-strategy offline-first
+  --pwa-strategy offline-first \
+  --optimization-level 4
 
 # ビルドファイルをコピー
 echo "Webサーバーに転送"

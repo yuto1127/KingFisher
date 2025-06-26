@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:universal_html/html.dart' as html;
+import 'dart:html' as html;
+import 'dart:js' as js;
 import 'browser_utils.dart';
 
 class BrowserTestUtils {
@@ -72,10 +73,10 @@ class BrowserTestUtils {
     results['fetch'] = html.window.fetch != null;
 
     // Promise テスト
-    results['promise'] = html.window.Promise != null;
+    results['promise'] = js.context.hasProperty('Promise');
 
     // WebAssembly テスト
-    results['webAssembly'] = html.window.WebAssembly != null;
+    results['webAssembly'] = js.context.hasProperty('WebAssembly');
 
     // Canvas テスト
     try {
@@ -89,7 +90,8 @@ class BrowserTestUtils {
     // WebGL テスト
     try {
       final canvas = html.CanvasElement();
-      final gl = canvas.getContext('webgl') ?? canvas.getContext('experimental-webgl');
+      final gl =
+          canvas.getContext('webgl') ?? canvas.getContext('experimental-webgl');
       results['webgl'] = gl != null;
     } catch (e) {
       results['webgl'] = false;
@@ -117,7 +119,8 @@ class BrowserTestUtils {
     final results = <String, dynamic>{};
 
     // メモリ使用量（利用可能な場合）
-    if (html.window.performance != null && html.window.performance.memory != null) {
+    if (html.window.performance != null &&
+        html.window.performance.memory != null) {
       final memory = html.window.performance.memory!;
       results['memory'] = {
         'used': memory.usedJSHeapSize,
@@ -135,7 +138,8 @@ class BrowserTestUtils {
         'effectiveType': connection.effectiveType,
         'downlink': connection.downlink,
         'rtt': connection.rtt,
-        'saveData': connection.saveData,
+        'saveData':
+            js.context.hasProperty('saveData') ? js.context['saveData'] : false,
       };
     } else {
       results['connection'] = 'unavailable';
@@ -176,7 +180,8 @@ class BrowserTestUtils {
     switch (browser) {
       case 'firefox':
         if (!testResults['webgl']!) {
-          recommendations.add('FirefoxでWebGLが無効になっています。about:configでwebgl.disabledをfalseに設定してください。');
+          recommendations.add(
+              'FirefoxでWebGLが無効になっています。about:configでwebgl.disabledをfalseに設定してください。');
         }
         break;
       case 'safari':
@@ -185,7 +190,8 @@ class BrowserTestUtils {
         }
         break;
       case 'yahoo':
-        recommendations.add('Yahoo!ブラウザを使用しています。Chromeベースですが、一部機能が制限される場合があります。');
+        recommendations
+            .add('Yahoo!ブラウザを使用しています。Chromeベースですが、一部機能が制限される場合があります。');
         break;
     }
 
@@ -210,22 +216,22 @@ class BrowserTestUtils {
     if (!kIsWeb) return;
 
     final report = generateCompatibilityReport();
-    
+
     print('=== ブラウザ互換性レポート ===');
     print('ブラウザ: ${report['browserInfo']['browser']}');
     print('バージョン: ${report['browserInfo']['version']}');
     print('サポート状況: ${report['isSupported']}');
-    
+
     if (report['warningMessage'] != null) {
       print('警告: ${report['warningMessage']}');
     }
-    
+
     print('機能テスト結果:');
     final testResults = report['testResults'] as Map<String, bool>;
     testResults.forEach((key, value) {
       print('  $key: ${value ? '✅' : '❌'}');
     });
-    
+
     if (report['recommendations'].isNotEmpty) {
       print('推奨事項:');
       for (final recommendation in report['recommendations']) {
@@ -234,4 +240,4 @@ class BrowserTestUtils {
     }
     print('==============================');
   }
-} 
+}

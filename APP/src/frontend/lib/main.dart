@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'router.dart';
 import 'package:provider/provider.dart';
@@ -12,12 +13,12 @@ import 'utils/browser_test_utils.dart';
 void main() {
   // ブラウザ設定を適用
   BrowserUtils.applyBrowserSettings();
-  
+
   // デバッグモードでブラウザ情報をログ出力
   if (kDebugMode) {
     BrowserTestUtils.logDebugInfo();
   }
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -114,7 +115,8 @@ class _BrowserWarningOverlay extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close, color: Colors.orange.shade800, size: 20),
+                  icon: Icon(Icons.close,
+                      color: Colors.orange.shade800, size: 20),
                   onPressed: () {
                     // 警告を閉じる処理（必要に応じて実装）
                   },

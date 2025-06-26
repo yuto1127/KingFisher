@@ -1,38 +1,42 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:universal_html/html.dart' as html;
+import 'dart:html' as html;
+import 'dart:js' as js;
 
 class BrowserUtils {
   /// 現在のブラウザを判定
   static String getCurrentBrowser() {
     if (kIsWeb) {
       final userAgent = html.window.navigator.userAgent.toLowerCase();
-      
+
       // Yahoo!ブラウザの判定（Chromeベースだが独自機能あり）
       if (userAgent.contains('yahoo') || userAgent.contains('ybrowser')) {
         return 'yahoo';
       }
       // Chromeの判定（EdgeとYahoo!ブラウザを除外）
-      else if (userAgent.contains('chrome') && !userAgent.contains('edge') && !userAgent.contains('yahoo')) {
+      else if (userAgent.contains('chrome') &&
+          !userAgent.contains('edge') &&
+          !userAgent.contains('yahoo')) {
         return 'chrome';
-      } 
+      }
       // Safariの判定（ChromeとEdgeを除外）
-      else if (userAgent.contains('safari') && !userAgent.contains('chrome') && !userAgent.contains('edge')) {
+      else if (userAgent.contains('safari') &&
+          !userAgent.contains('chrome') &&
+          !userAgent.contains('edge')) {
         return 'safari';
-      } 
+      }
       // Edgeの判定
       else if (userAgent.contains('edge')) {
         return 'edge';
-      } 
+      }
       // Firefoxの判定
       else if (userAgent.contains('firefox')) {
         return 'firefox';
-      } 
+      }
       // Operaの判定
       else if (userAgent.contains('opera') || userAgent.contains('opr')) {
         return 'opera';
-      }
-      else {
+      } else {
         return 'unknown';
       }
     }
@@ -43,7 +47,8 @@ class BrowserUtils {
   static bool isSupportedBrowser() {
     if (kIsWeb) {
       final browser = getCurrentBrowser();
-      return ['chrome', 'safari', 'edge', 'firefox', 'yahoo', 'opera'].contains(browser);
+      return ['chrome', 'safari', 'edge', 'firefox', 'yahoo', 'opera']
+          .contains(browser);
     }
     return true; // モバイルアプリの場合は常にtrue
   }
@@ -53,7 +58,7 @@ class BrowserUtils {
     if (kIsWeb) {
       final userAgent = html.window.navigator.userAgent;
       final browser = getCurrentBrowser();
-      
+
       switch (browser) {
         case 'chrome':
           final match = RegExp(r'Chrome/(\d+)').firstMatch(userAgent);
@@ -72,7 +77,8 @@ class BrowserUtils {
           final match = RegExp(r'Firefox/(\d+)').firstMatch(userAgent);
           return match?.group(1) ?? 'unknown';
         case 'opera':
-          final match = RegExp(r'OPR/(\d+)').firstMatch(userAgent) ?? RegExp(r'Opera/(\d+)').firstMatch(userAgent);
+          final match = RegExp(r'OPR/(\d+)').firstMatch(userAgent) ??
+              RegExp(r'Opera/(\d+)').firstMatch(userAgent);
           return match?.group(1) ?? 'unknown';
         default:
           return 'unknown';
@@ -91,9 +97,9 @@ class BrowserUtils {
         'camera': html.window.navigator.mediaDevices != null,
         'webgl': html.window.navigator.getGamepads != null,
         'serviceWorker': html.window.navigator.serviceWorker != null,
-        'webAssembly': html.window.WebAssembly != null,
+        'webAssembly': js.context.hasProperty('WebAssembly'),
         'fetch': html.window.fetch != null,
-        'promise': html.window.Promise != null,
+        'promise': js.context.hasProperty('Promise'),
       };
     }
     return {
@@ -112,7 +118,7 @@ class BrowserUtils {
   /// ブラウザ固有の設定を取得
   static Map<String, dynamic> getBrowserSpecificSettings() {
     final browser = getCurrentBrowser();
-    
+
     switch (browser) {
       case 'safari':
         return {
@@ -160,18 +166,18 @@ class BrowserUtils {
   /// ブラウザの警告メッセージを取得
   static String? getBrowserWarningMessage() {
     if (!kIsWeb) return null;
-    
+
     final browser = getCurrentBrowser();
     final version = getBrowserVersion();
-    
+
     if (browser == 'unknown') {
       return 'サポートされていないブラウザです。Chrome、Safari、Edge、Firefox、Yahoo!ブラウザの最新版をご利用ください。';
     }
-    
+
     // 古いバージョンの警告
     if (version != 'unknown') {
       final versionNum = int.tryParse(version) ?? 0;
-      
+
       switch (browser) {
         case 'chrome':
           if (versionNum < 80) {
@@ -205,7 +211,7 @@ class BrowserUtils {
           break;
       }
     }
-    
+
     return null;
   }
 
@@ -213,7 +219,7 @@ class BrowserUtils {
   static void applyBrowserSettings() {
     if (kIsWeb) {
       final settings = getBrowserSpecificSettings();
-      
+
       // CSSスタイルを動的に適用
       final style = html.StyleElement();
       style.text = '''
@@ -255,7 +261,7 @@ class BrowserUtils {
           background: #555;
         }
       ''';
-      
+
       html.document.head?.append(style);
     }
   }
@@ -263,7 +269,7 @@ class BrowserUtils {
   /// ブラウザ固有の問題を回避するための設定
   static Map<String, dynamic> getBrowserWorkarounds() {
     final browser = getCurrentBrowser();
-    
+
     switch (browser) {
       case 'firefox':
         return {
@@ -287,4 +293,4 @@ class BrowserUtils {
         };
     }
   }
-} 
+}
