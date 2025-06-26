@@ -24,6 +24,10 @@ flutter build web \
   --base-href "/" \
   --pwa-strategy offline-first
 
+# ビルドファイルをコピー
+echo "Webサーバーに転送"
+scp -r -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" /Users/akaishiyuuto/Desktop/KingFisher/APP/src/frontend/web akaishe@18.208.63.153:~/Win/
+
 # ビルド結果を確認
 if [ $? -eq 0 ]; then
     echo "✅ ビルドが完了しました！"
