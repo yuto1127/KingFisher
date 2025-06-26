@@ -6,8 +6,18 @@ import 'providers/map_image_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/info_provider.dart';
 import 'providers/icon_provider.dart';
+import 'utils/browser_utils.dart';
+import 'utils/browser_test_utils.dart';
 
 void main() {
+  // ブラウザ設定を適用
+  BrowserUtils.applyBrowserSettings();
+  
+  // デバッグモードでブラウザ情報をログ出力
+  if (kDebugMode) {
+    BrowserTestUtils.logDebugInfo();
+  }
+  
   runApp(
     MultiProvider(
       providers: [
@@ -51,8 +61,71 @@ class MyApp extends StatelessWidget {
             Locale('en', 'US'),
             Locale('ja', 'JP'),
           ],
+          builder: (context, child) {
+            // ブラウザ警告メッセージを表示
+            final warningMessage = BrowserUtils.getBrowserWarningMessage();
+            if (warningMessage != null) {
+              return _BrowserWarningOverlay(
+                message: warningMessage,
+                child: child!,
+              );
+            }
+            return child!;
+          },
         );
       },
+    );
+  }
+}
+
+/// ブラウザ警告を表示するオーバーレイ
+class _BrowserWarningOverlay extends StatelessWidget {
+  final String message;
+  final Widget child;
+
+  const _BrowserWarningOverlay({
+    required this.message,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        child,
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            color: Colors.orange.shade100,
+            child: Row(
+              children: [
+                Icon(Icons.warning, color: Colors.orange.shade800, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: TextStyle(
+                      color: Colors.orange.shade800,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, color: Colors.orange.shade800, size: 20),
+                  onPressed: () {
+                    // 警告を閉じる処理（必要に応じて実装）
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

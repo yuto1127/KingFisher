@@ -1,13 +1,16 @@
 {
-    "name": "frontend",
-    "short_name": "frontend",
+    "name": "KingFisher - イベント管理システム",
+    "short_name": "KingFisher",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "イベント管理システム - 参加者管理、入場管理、ヘルプデスク機能を提供",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "scope": "/",
+    "lang": "ja",
+    "categories": ["business", "productivity"],
     "icons": [
         {
             "src": "icons/Icon-192.png",

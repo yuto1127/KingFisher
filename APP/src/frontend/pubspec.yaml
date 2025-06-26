@@ -1,5 +1,5 @@
 name: frontend
-description: "A new Flutter project."
+description: "KingFisher - イベント管理システム"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -43,6 +43,10 @@ dependencies:
   provider: ^6.1.2
   mobile_scanner: ^3.5.6
   http: ^1.4.0
+  # Web用の依存関係
+  universal_html: ^2.2.4
+  js: ^0.6.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

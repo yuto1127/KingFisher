@@ -18,30 +18,131 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="KingFisher - イベント管理システム">
+  
+  <!-- ブラウザ互換性のための設定 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  
+  <!-- クロスブラウザ対応 -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="frontend">
+  <meta name="apple-mobile-web-app-title" content="KingFisher">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>frontend</title>
+  <title>KingFisher</title>
   <link rel="manifest" href="manifest.json">
 
   <script>
     // The value below is injected by flutter build, do not touch.
     const serviceWorkerVersion = null;
   </script>
+  
+  <!-- Polyfill for older browsers -->
+  <script>
+    // ES6 Promise polyfill for older browsers
+    if (!window.Promise) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
+    }
+    
+    // Fetch polyfill for older browsers
+    if (!window.fetch) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js"><\/script>');
+    }
+    
+    // WebAssembly polyfill for older browsers
+    if (!window.WebAssembly) {
+      console.warn('WebAssembly is not supported in this browser');
+    }
+    
+    // Object.assign polyfill for older browsers
+    if (!Object.assign) {
+      Object.assign = function(target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      };
+    }
+  </script>
+  
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
 <body>
   <script>
+    // ブラウザ互換性チェック
+    function checkBrowserCompatibility() {
+      const userAgent = navigator.userAgent;
+      const isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent) && !/Yahoo/.test(userAgent);
+      const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+      const isEdge = /Edge/.test(userAgent);
+      const isFirefox = /Firefox/.test(userAgent);
+      const isYahoo = /Yahoo/.test(userAgent) || /YBrowser/.test(userAgent);
+      const isOpera = /Opera/.test(userAgent) || /OPR/.test(userAgent);
+      
+      // サポートされているブラウザかチェック
+      if (!isChrome && !isSafari && !isEdge && !isFirefox && !isYahoo && !isOpera) {
+        document.body.innerHTML = `
+          <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+            <h2>ブラウザがサポートされていません</h2>
+            <p>このアプリケーションは以下のブラウザで動作します：</p>
+            <ul style="list-style: none; padding: 0;">
+              <li>Google Chrome (推奨)</li>
+              <li>Microsoft Edge</li>
+              <li>Safari</li>
+              <li>Firefox</li>
+              <li>Yahoo!ブラウザ</li>
+              <li>Opera</li>
+            </ul>
+            <p>最新のブラウザにアップデートしてください。</p>
+          </div>
+        `;
+        return false;
+      }
+      return true;
+    }
+
+    // ブラウザ固有の設定を適用
+    function applyBrowserSpecificSettings() {
+      const userAgent = navigator.userAgent;
+      const isFirefox = /Firefox/.test(userAgent);
+      const isYahoo = /Yahoo/.test(userAgent) || /YBrowser/.test(userAgent);
+      
+      // Firefox用の設定
+      if (isFirefox) {
+        document.documentElement.style.setProperty('scrollbar-width', 'thin');
+        document.documentElement.style.setProperty('scrollbar-color', '#888 #f1f1f1');
+      }
+      
+      // Yahoo!ブラウザ用の設定
+      if (isYahoo) {
+        // Yahoo!ブラウザ固有の設定があれば追加
+        console.log('Yahoo!ブラウザで動作中');
+      }
+    }
+
     window.addEventListener('load', function(ev) {
+      // ブラウザ互換性チェック
+      if (!checkBrowserCompatibility()) {
+        return;
+      }
+      
+      // ブラウザ固有の設定を適用
+      applyBrowserSpecificSettings();
+      
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
@@ -50,7 +151,30 @@
         onEntrypointLoaded: function(engineInitializer) {
           engineInitializer.initializeEngine().then(function(appRunner) {
             appRunner.runApp();
+          }).catch(function(error) {
+            console.error('Flutter initialization failed:', error);
+            document.body.innerHTML = `
+              <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                <h2>アプリケーションの読み込みに失敗しました</h2>
+                <p>ページを再読み込みしてください。</p>
+                <button onclick="location.reload()" style="padding: 10px 20px; margin: 10px; cursor: pointer;">
+                  再読み込み
+                </button>
+              </div>
+            `;
           });
+        },
+        onEntrypointLoadError: function(error) {
+          console.error('Entrypoint load error:', error);
+          document.body.innerHTML = `
+            <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+              <h2>アプリケーションの読み込みに失敗しました</h2>
+              <p>ネットワーク接続を確認してください。</p>
+              <button onclick="location.reload()" style="padding: 10px 20px; margin: 10px; cursor: pointer;">
+                再読み込み
+              </button>
+            </div>
+          `;
         }
       });
     });
