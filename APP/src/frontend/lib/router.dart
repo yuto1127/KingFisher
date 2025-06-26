@@ -60,7 +60,7 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
       errorBuilder: (context, state) => Scaffold(
         appBar: AppBar(
           title: const Text('エラー'),
-          backgroundColor: Color(0xFF009a73),
+          backgroundColor: const Color(0xFF009a73),
           foregroundColor: Colors.white,
         ),
         body: Center(

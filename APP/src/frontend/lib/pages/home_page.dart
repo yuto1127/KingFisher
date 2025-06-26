@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
           // アプリバー（上部のナビゲーションバー）
           AppBar(
             title: const Text('ホーム'),
-            backgroundColor: Color(0xFF009a73), // 緑色のテーマカラー
+            backgroundColor: const Color(0xFF009a73), // 緑色のテーマカラー
             foregroundColor: Colors.white, // テキストを白色に
             actions: [
               // 管理者ページへの遷移ボタン

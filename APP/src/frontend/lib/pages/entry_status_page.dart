@@ -165,28 +165,20 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
       final userData = await AuthApi.getUser(value);
       Map<String, dynamic>? entryStatusData;
 
-      if (userData != null) {
-        // 入退室状況を切り替え
-        final result = await EntryStatusesApi.toggleEntryStatus(userData['id']);
-        // 最新の入退室状況を取得
-        entryStatusData = await EntryStatusesApi.getUserEntryStatus(userData['id']);
+      // 入退室状況を切り替え
+      final result = await EntryStatusesApi.toggleEntryStatus(userData['id']);
+      // 最新の入退室状況を取得
+      entryStatusData = await EntryStatusesApi.getUserEntryStatus(userData['id']);
 
-        setState(() {
-          _lastScannedCode = value;
-          _successMessage = '${userData['name']}さんの${result['message']}';
-          _scannedUser = userData;
-          _scannedEntryStatus = entryStatusData;
-        });
+      setState(() {
+        _lastScannedCode = value;
+        _successMessage = '${userData['name']}さんの${result['message']}';
+        _scannedUser = userData;
+        _scannedEntryStatus = entryStatusData;
+      });
 
-        await _loadEntryStatuses();
-      } else {
-        setState(() {
-          _scannedUser = null;
-          _scannedEntryStatus = null;
-        });
-        _showError('ユーザーが見つかりません');
-      }
-    } catch (e) {
+      await _loadEntryStatuses();
+        } catch (e) {
       setState(() {
         _scannedUser = null;
         _scannedEntryStatus = null;
@@ -327,7 +319,7 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
                               if (_scannedUser != null && _scannedEntryStatus != null) ...[
                                 const SizedBox(height: 16),
                                 const Divider(),
-                                Text(
+                                const Text(
                                   'ユーザー情報',
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
@@ -336,7 +328,7 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
                                   // phone, tel, telephoneの順で表示
                                   '${_scannedUser!['phone_number'] ?? '不明'}'),
                                 const SizedBox(height: 8),
-                                Text(
+                                const Text(
                                   '入退室状況',
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
@@ -370,7 +362,7 @@ class _EntryStatusPageState extends State<EntryStatusPage> {
                       ),
                       const SizedBox(height: 16),
                       // 入退室状況のリスト
-                      Container(
+                      SizedBox(
                         height: 300, // 必要に応じて調整
                         child: Builder(
                           builder: (context) {

@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(message, style: const TextStyle(fontSize: 14)),
               );
-            }).toList(),
+            }),
             const SizedBox(height: 16),
             const Text(
               'これらの問題を解決してからログインを試行してください。',

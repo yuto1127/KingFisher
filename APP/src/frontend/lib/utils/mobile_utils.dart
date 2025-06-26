@@ -82,7 +82,7 @@ class MobileUtils {
 
     try {
       // テスト用のキーでローカルストレージをテスト
-      final testKey = 'mobile_storage_test';
+      const testKey = 'mobile_storage_test';
       final testValue = 'test_value_${DateTime.now().millisecondsSinceEpoch}';
 
       html.window.localStorage[testKey] = testValue;
@@ -100,7 +100,7 @@ class MobileUtils {
     if (!kIsWeb) return false;
 
     try {
-      final testKey = 'mobile_session_test';
+      const testKey = 'mobile_session_test';
       final testValue = 'test_value_${DateTime.now().millisecondsSinceEpoch}';
 
       html.window.sessionStorage[testKey] = testValue;

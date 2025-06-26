@@ -42,7 +42,7 @@ class MainLayout extends StatelessWidget {
                   label: 'プロフィール',
                 ),
               ],
-              selectedItemColor: Color(0xFF009a73),
+              selectedItemColor: const Color(0xFF009a73),
             )
           : null,
     );

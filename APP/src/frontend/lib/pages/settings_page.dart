@@ -12,7 +12,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           AppBar(
             title: const Text('設定'),
-            backgroundColor: Color(0xFF009a73),
+            backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
           ),
           Expanded(

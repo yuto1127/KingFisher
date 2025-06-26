@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../layouts/main_layout.dart';
 import 'package:go_router/go_router.dart';
 import '../services/users_api.dart';
-import '../providers/auth_provider.dart';
 
 /// ユーザー管理ページ
 /// 管理者がユーザー情報を管理するためのページ

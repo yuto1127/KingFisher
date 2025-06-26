@@ -119,8 +119,7 @@ class BrowserTestUtils {
     final results = <String, dynamic>{};
 
     // メモリ使用量（利用可能な場合）
-    if (html.window.performance != null &&
-        html.window.performance.memory != null) {
+    if (html.window.performance.memory != null) {
       final memory = html.window.performance.memory!;
       results['memory'] = {
         'used': memory.usedJSHeapSize,

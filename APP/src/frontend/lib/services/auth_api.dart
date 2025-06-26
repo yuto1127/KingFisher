@@ -124,10 +124,7 @@ class AuthApi {
       if (kIsWeb) {
         // まずローカルストレージから取得を試行
         String? token = html.window.localStorage[tokenKey];
-        if (token == null) {
-          // ローカルストレージにない場合はセッションストレージから取得
-          token = html.window.sessionStorage[tokenKey];
-        }
+        token ??= html.window.sessionStorage[tokenKey];
         return token;
       } else {
         return await _storage.read(key: tokenKey);
@@ -182,10 +179,7 @@ class AuthApi {
       if (kIsWeb) {
         // まずローカルストレージから取得を試行
         String? jsonData = html.window.localStorage[userKey];
-        if (jsonData == null) {
-          // ローカルストレージにない場合はセッションストレージから取得
-          jsonData = html.window.sessionStorage[userKey];
-        }
+        jsonData ??= html.window.sessionStorage[userKey];
 
         if (jsonData != null) {
           return jsonDecode(jsonData);
@@ -254,7 +248,7 @@ class AuthApi {
       } else {
         throw _handleErrorResponse(response);
       }
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_errorMessages['network_error']!);
     } catch (e) {
       if (e is Exception) rethrow;
@@ -289,7 +283,7 @@ class AuthApi {
       } else {
         throw _handleErrorResponse(response);
       }
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_errorMessages['network_error']!);
     } catch (e) {
       if (e is Exception) rethrow;
@@ -422,7 +416,7 @@ class AuthApi {
       } else {
         throw _handleErrorResponse(response);
       }
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       // エラーが発生してもローカルストレージはクリア
       await deleteToken();
       await deleteUserData();
@@ -510,7 +504,7 @@ class AuthApi {
       if (response.statusCode != 200) {
         throw _handleErrorResponse(response);
       }
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       throw Exception(_errorMessages['network_error']!);
     } catch (e) {
       if (e is Exception) rethrow;

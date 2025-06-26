@@ -11,12 +11,12 @@ class LostItemPage extends StatelessWidget {
         children: [
           AppBar(
             title: const Text('落とし物管理'),
-            backgroundColor: Color(0xFF009a73),
+            backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
           ),
           Container(
             height: 180,
-            color: Color(0xFFf5f5f5),
+            color: const Color(0xFFf5f5f5),
             child: const Center(
               child: Text(
                 '落とし物の登録・管理ができます',

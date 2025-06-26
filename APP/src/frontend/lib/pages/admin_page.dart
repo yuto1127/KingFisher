@@ -19,7 +19,7 @@ class AdminPage extends StatelessWidget {
           // アプリバー（上部のナビゲーションバー）
           AppBar(
             title: const Text('管理者ページ'),
-            backgroundColor: Color(0xFF009a73), // 緑色のテーマカラー
+            backgroundColor: const Color(0xFF009a73), // 緑色のテーマカラー
             foregroundColor: Colors.white, // テキストを白色に
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
@@ -87,7 +87,7 @@ class AdminPage extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF009a73),
+        backgroundColor: const Color(0xFF009a73),
         foregroundColor: Colors.white,
         padding: const EdgeInsets.all(16.0),
         shape: RoundedRectangleBorder(

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'dart:html' as html;
 import 'dart:js' as js;

@@ -14,7 +14,7 @@ class MapPage extends StatelessWidget {
         children: [
           AppBar(
             title: const Text('マップ'),
-            backgroundColor: Color(0xFF009a73),
+            backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
           ),
           SizedBox(
@@ -40,7 +40,7 @@ class MapPage extends StatelessWidget {
                           top: 24,
                           right: 24,
                           child: IconButton(
-                            icon: Icon(Icons.close,
+                            icon: const Icon(Icons.close,
                                 color: Colors.white, size: 30),
                             onPressed: () => Navigator.of(context).pop(),
                           ),

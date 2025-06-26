@@ -43,7 +43,7 @@ class _AdminContentPageState extends State<AdminContentPage> {
         children: [
           AppBar(
             title: const Text('コンテンツ管理'),
-            backgroundColor: Color(0xFF009a73),
+            backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
@@ -97,17 +97,17 @@ class _AdminContentPageState extends State<AdminContentPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ListTile(
-              leading: const Icon(
+            const ListTile(
+              leading: Icon(
                 Icons.business,
                 color: Color(0xFF009a73),
                 size: 32,
               ),
-              title: const Text(
+              title: Text(
                 'マップ',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: const Text('施設の詳細情報の編集'),
+              subtitle: Text('施設の詳細情報の編集'),
             ),
             if (_mapImageBytes != null) ...[
               const SizedBox(height: 8),
@@ -127,7 +127,7 @@ class _AdminContentPageState extends State<AdminContentPage> {
                 icon: const Icon(Icons.upload_file),
                 label: const Text('画像をアップロード'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF009a73),
+                  backgroundColor: const Color(0xFF009a73),
                   foregroundColor: Colors.white,
                 ),
               ),
@@ -148,7 +148,7 @@ class _AdminContentPageState extends State<AdminContentPage> {
       child: ListTile(
         leading: Icon(
           icon,
-          color: Color(0xFF009a73),
+          color: const Color(0xFF009a73),
           size: 32,
         ),
         title: Text(
