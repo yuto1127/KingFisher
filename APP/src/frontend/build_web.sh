@@ -15,14 +15,18 @@ echo "🧹 古いビルドファイルをクリーンアップ中..."
 flutter clean
 
 # Web用にビルド（モバイルデバイス対応強化）
+# echo "🔨 Web用にビルド中（モバイル対応強化）..."
+# flutter build web \
+#   --release \
+#   --dart-define=FLUTTER_WEB_AUTO_DETECT=true \
+#   --base-href "/" \
+#   --pwa-strategy offline-first \
+#   --optimization-level 4 \
+#   --source-maps
 echo "🔨 Web用にビルド中（モバイル対応強化）..."
 flutter build web \
   --release \
-  --dart-define=FLUTTER_WEB_AUTO_DETECT=true \
-  --base-href "/" \
-  --pwa-strategy offline-first \
-  --optimization-level 4 \
-  --source-maps
+  --base-href "/" 
 
 # ビルド結果を確認
 if [ $? -eq 0 ]; then
