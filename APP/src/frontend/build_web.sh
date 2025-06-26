@@ -28,8 +28,15 @@ flutter build web \
 if [ $? -eq 0 ]; then
     echo "✅ ビルドが完了しました！"
     echo "📁 ビルドファイル: build/web/"
-    # 自動アップロード
-    scp -r -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" /Users/akaishiyuuto/Desktop/KingFisher/APP/src/frontend/build/web/* akaishe@18.208.63.153:~/Win/
+
+    # --- ここから変更 ---
+    # リモートの ~/Win/ の下に web/ フォルダごとコピーする
+    # 既存の ~/Win/web/ を一度削除してからコピーすることで、クリーンな状態を保つ
+    echo "🔗 リモートサーバーへファイルを転送中..."
+    ssh -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" akaishe@18.208.63.153 "rm -rf ~/Win/web"
+    scp -r -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" /Users/akaishiyuuto/Desktop/KingFisher/APP/src/frontend/build/web akaishe@18.208.63.153:~/Win/
+    # --- 変更ここまで ---
+
     echo ""
     echo "🌐 デプロイ手順:"
     echo "1. build/web/ フォルダの内容をWebサーバーにアップロード"
@@ -63,7 +70,6 @@ if [ $? -eq 0 ]; then
     echo "- Edge 80+ ✅"
     echo "- Firefox 75+ ✅"
     echo "- Yahoo!ブラウザ 80+ ✅"
-    echo "- Opera 67+ ✅"
     echo "- モバイルChrome ✅"
     echo "- モバイルSafari ✅"
     echo "- モバイルFirefox ✅"
@@ -85,4 +91,4 @@ if [ $? -eq 0 ]; then
 else
     echo "❌ ビルドに失敗しました"
     exit 1
-fi 
+fi
