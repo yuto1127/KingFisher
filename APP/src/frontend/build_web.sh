@@ -24,17 +24,17 @@ flutter build web \
   --optimization-level 4 \
   --source-maps
 
-# ビルドファイルをコピー
-echo "Webサーバーに転送"
-scp -r -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" /Users/akaishiyuuto/Desktop/KingFisher/APP/src/frontend/web akaishe@18.208.63.153:~/Win/
-
 # ビルド結果を確認
 if [ $? -eq 0 ]; then
     echo "✅ ビルドが完了しました！"
     echo "📁 ビルドファイル: build/web/"
+    # 自動アップロード
+    scp -r -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" build/web/* akaishe@18.208.63.153:/var/www/html/
     echo ""
     echo "🌐 デプロイ手順:"
     echo "1. build/web/ フォルダの内容をWebサーバーにアップロード"
+    echo "   例: rsync -avz build/web/ ユーザー名@サーバーIP:/var/www/html/"
+    echo "   または: scp -r build/web/* ユーザー名@サーバーIP:/var/www/html/"
     echo "2. サーバーで以下のMIMEタイプを設定:"
     echo "   - .js: application/javascript"
     echo "   - .wasm: application/wasm"
