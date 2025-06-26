@@ -9,14 +9,23 @@ import 'providers/info_provider.dart';
 import 'providers/icon_provider.dart';
 import 'utils/browser_utils.dart';
 import 'utils/browser_test_utils.dart';
+import 'utils/mobile_utils.dart';
 
 void main() {
   // ブラウザ設定を適用
   BrowserUtils.applyBrowserSettings();
 
+  // モバイルデバイス対応を初期化
+  if (kIsWeb) {
+    MobileUtils.applyMobileOptimizations();
+  }
+
   // デバッグモードでブラウザ情報をログ出力
   if (kDebugMode) {
     BrowserTestUtils.logDebugInfo();
+    if (kIsWeb) {
+      MobileUtils.logMobileDebugInfo();
+    }
   }
 
   runApp(

@@ -4,12 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:html' as html;
 import '../utils/network_utils.dart';
+import '../utils/mobile_utils.dart';
 import '../models/registration_model.dart';
 import '../models/login_model.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthApi {
-
   static const String baseUrl = 'https://cid-kingfisher.jp/api';
 
   static const String tokenKey = 'auth_token';
@@ -25,6 +25,7 @@ class AuthApi {
     'server_error': 'サーバーエラーが発生しました',
     'timeout_error': 'サーバーへの接続がタイムアウトしました',
     'unknown_error': '予期せぬエラーが発生しました',
+    'mobile_storage_error': 'モバイルデバイスでのストレージエラーが発生しました',
   };
 
   static const _storage = FlutterSecureStorage();
@@ -49,77 +50,176 @@ class AuthApi {
   // 日付データの処理
   static Map<String, dynamic> _processDateFields(Map<String, dynamic> data) {
     final processed = Map<String, dynamic>.from(data);
-    if (processed['barth_day'] != null) {
-      processed['barth_day'] = DateTime.parse(processed['barth_day']);
+
+    if (processed['user'] != null) {
+      final user = Map<String, dynamic>.from(processed['user']);
+
+      // 日付フィールドを処理
+      if (user['created_at'] != null) {
+        user['created_at'] =
+            DateTime.parse(user['created_at']).toIso8601String();
+      }
+      if (user['updated_at'] != null) {
+        user['updated_at'] =
+            DateTime.parse(user['updated_at']).toIso8601String();
+      }
+      if (user['barth_day'] != null) {
+        user['barth_day'] = DateTime.parse(user['barth_day']).toIso8601String();
+      }
+
+      processed['user'] = user;
     }
-    if (processed['last_login_at'] != null) {
-      processed['last_login_at'] = DateTime.parse(processed['last_login_at']);
-    }
+
     return processed;
   }
 
-  // トークンを保存
-  static Future<void> saveToken(String token) async {
-    if (kIsWeb) {
-      html.window.localStorage[tokenKey] = token;
-    } else {
-      await _storage.write(key: tokenKey, value: token);
-    }
-  }
-
-  // トークンを取得
-  static Future<String?> getToken() async {
-    if (kIsWeb) {
-      return html.window.localStorage[tokenKey];
-    } else {
-      return await _storage.read(key: tokenKey);
-    }
-  }
-
-  // トークンを削除
-  static Future<void> deleteToken() async {
-    if (kIsWeb) {
-      html.window.localStorage.remove(tokenKey);
-    } else {
-      await _storage.delete(key: tokenKey);
-    }
-    await deleteUserData();
-  }
-
-  // ユーザーデータを保存
-  static Future<void> saveUserData(Map<String, dynamic> userData) async {
-    if (kIsWeb) {
-      html.window.localStorage[userKey] = jsonEncode(userData);
-    } else {
-      await _storage.write(key: userKey, value: jsonEncode(userData));
-    }
-  }
-
-  // ユーザーデータを取得
-  static Future<Map<String, dynamic>?> getUserData() async {
-    String? data;
-    if (kIsWeb) {
-      data = html.window.localStorage[userKey];
-    } else {
-      data = await _storage.read(key: userKey);
-    }
-    if (data == null) return null;
-    return _processDateFields(jsonDecode(data));
-  }
-
-  // ユーザーデータを削除
-  static Future<void> deleteUserData() async {
-    if (kIsWeb) {
-      html.window.localStorage.remove(userKey);
-    } else {
-      await _storage.delete(key: userKey);
-    }
-  }
-
-  // ネットワーク接続を確認
+  // 接続チェック（モバイル対応）
   static Future<void> _checkConnection() async {
-    if (!await NetworkUtils.isConnected()) {
-      throw Exception(_errorMessages['network_error']!);
+    if (!kIsWeb) return;
+
+    // モバイルデバイスの場合、追加のチェックを行う
+    if (MobileUtils.isMobile) {
+      final networkInfo = MobileUtils.getNetworkInfo();
+      if (!networkInfo['online']) {
+        throw Exception('インターネット接続がありません。接続を確認してください。');
+      }
+
+      // ローカルストレージの可用性をチェック
+      final localStorageAvailable =
+          await MobileUtils.checkLocalStorageAvailability();
+      if (!localStorageAvailable) {
+        throw Exception('プライベートブラウジングモードが有効になっている可能性があります。通常モードでアクセスしてください。');
+      }
+    }
+
+    // 通常の接続チェック
+    final isConnected = await NetworkUtils.isConnected();
+    if (!isConnected) {
+      throw Exception('サーバーに接続できません。しばらく待ってから再試行してください。');
+    }
+  }
+
+  // トークンを保存（モバイル対応）
+  static Future<void> saveToken(String token) async {
+    try {
+      if (kIsWeb) {
+        // Webの場合はローカルストレージとセッションストレージの両方に保存
+        html.window.localStorage[tokenKey] = token;
+        html.window.sessionStorage[tokenKey] = token;
+      } else {
+        await _storage.write(key: tokenKey, value: token);
+      }
+    } catch (e) {
+      // モバイルデバイスでのストレージエラーの場合
+      if (MobileUtils.isMobile) {
+        throw Exception(_errorMessages['mobile_storage_error']!);
+      }
+      rethrow;
+    }
+  }
+
+  // トークンを取得（モバイル対応）
+  static Future<String?> getToken() async {
+    try {
+      if (kIsWeb) {
+        // まずローカルストレージから取得を試行
+        String? token = html.window.localStorage[tokenKey];
+        if (token == null) {
+          // ローカルストレージにない場合はセッションストレージから取得
+          token = html.window.sessionStorage[tokenKey];
+        }
+        return token;
+      } else {
+        return await _storage.read(key: tokenKey);
+      }
+    } catch (e) {
+      // モバイルデバイスでのストレージエラーの場合
+      if (MobileUtils.isMobile) {
+        print('モバイルデバイスでのトークン取得エラー: $e');
+        return null;
+      }
+      rethrow;
+    }
+  }
+
+  // トークンを削除（モバイル対応）
+  static Future<void> deleteToken() async {
+    try {
+      if (kIsWeb) {
+        html.window.localStorage.remove(tokenKey);
+        html.window.sessionStorage.remove(tokenKey);
+      } else {
+        await _storage.delete(key: tokenKey);
+      }
+    } catch (e) {
+      // エラーが発生しても処理を続行
+      print('トークン削除エラー: $e');
+    }
+  }
+
+  // ユーザーデータを保存（モバイル対応）
+  static Future<void> saveUserData(Map<String, dynamic> userData) async {
+    try {
+      if (kIsWeb) {
+        final jsonData = jsonEncode(userData);
+        html.window.localStorage[userKey] = jsonData;
+        html.window.sessionStorage[userKey] = jsonData;
+      } else {
+        await _storage.write(key: userKey, value: jsonEncode(userData));
+      }
+    } catch (e) {
+      // モバイルデバイスでのストレージエラーの場合
+      if (MobileUtils.isMobile) {
+        throw Exception(_errorMessages['mobile_storage_error']!);
+      }
+      rethrow;
+    }
+  }
+
+  // ユーザーデータを取得（モバイル対応）
+  static Future<Map<String, dynamic>?> getUserData() async {
+    try {
+      if (kIsWeb) {
+        // まずローカルストレージから取得を試行
+        String? jsonData = html.window.localStorage[userKey];
+        if (jsonData == null) {
+          // ローカルストレージにない場合はセッションストレージから取得
+          jsonData = html.window.sessionStorage[userKey];
+        }
+
+        if (jsonData != null) {
+          return jsonDecode(jsonData);
+        }
+        return null;
+      } else {
+        final jsonData = await _storage.read(key: userKey);
+        if (jsonData != null) {
+          return jsonDecode(jsonData);
+        }
+        return null;
+      }
+    } catch (e) {
+      // モバイルデバイスでのストレージエラーの場合
+      if (MobileUtils.isMobile) {
+        print('モバイルデバイスでのユーザーデータ取得エラー: $e');
+        return null;
+      }
+      rethrow;
+    }
+  }
+
+  // ユーザーデータを削除（モバイル対応）
+  static Future<void> deleteUserData() async {
+    try {
+      if (kIsWeb) {
+        html.window.localStorage.remove(userKey);
+        html.window.sessionStorage.remove(userKey);
+      } else {
+        await _storage.delete(key: userKey);
+      }
+    } catch (e) {
+      // エラーが発生しても処理を続行
+      print('ユーザーデータ削除エラー: $e');
     }
   }
 
@@ -137,10 +237,12 @@ class AuthApi {
       final headers = await getAuthHeaders(); // 認証トークンを取得
       headers['Accept'] = 'application/json'; // Acceptヘッダーも追加
 
-      final response = await http.get(
+      final response = await http
+          .get(
         Uri.parse('$baseUrl/users/$barcode'),
         headers: headers, // トークン付きでリクエスト
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 10),
         onTimeout: () {
           throw Exception(_errorMessages['timeout_error']!);
