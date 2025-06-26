@@ -42,7 +42,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = null;
+    var serviceWorkerVersion = '{{flutter_service_worker_version}}';
   </script>
   
   <!-- Polyfill for older browsers -->
@@ -143,39 +143,26 @@
       // ブラウザ固有の設定を適用
       applyBrowserSpecificSettings();
       
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
+      // Flutterアプリケーションを読み込み（最新のAPIを使用）
+      _flutter.loader.load({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          }).catch(function(error) {
-            console.error('Flutter initialization failed:', error);
-            document.body.innerHTML = `
-              <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-                <h2>アプリケーションの読み込みに失敗しました</h2>
-                <p>ページを再読み込みしてください。</p>
-                <button onclick="location.reload()" style="padding: 10px 20px; margin: 10px; cursor: pointer;">
-                  再読み込み
-                </button>
-              </div>
-            `;
-          });
-        },
-        onEntrypointLoadError: function(error) {
-          console.error('Entrypoint load error:', error);
-          document.body.innerHTML = `
-            <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-              <h2>アプリケーションの読み込みに失敗しました</h2>
-              <p>ネットワーク接続を確認してください。</p>
-              <button onclick="location.reload()" style="padding: 10px 20px; margin: 10px; cursor: pointer;">
-                再読み込み
-              </button>
-            </div>
-          `;
         }
+      }).then(function(engineInitializer) {
+        return engineInitializer.initializeEngine();
+      }).then(function(appRunner) {
+        return appRunner.runApp();
+      }).catch(function(error) {
+        console.error('Flutter initialization failed:', error);
+        document.body.innerHTML = `
+          <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+            <h2>アプリケーションの読み込みに失敗しました</h2>
+            <p>ページを再読み込みしてください。</p>
+            <button onclick="location.reload()" style="padding: 10px 20px; margin: 10px; cursor: pointer;">
+              再読み込み
+            </button>
+          </div>
+        `;
       });
     });
   </script>

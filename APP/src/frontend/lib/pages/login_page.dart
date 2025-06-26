@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart' show kDebugMode; // デバッグモード判定用
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb; // デバッグモード判定用
 import 'package:provider/provider.dart';
 import '../models/login_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/icon_provider.dart';
+import '../utils/mobile_utils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,6 +20,92 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
   bool _obscurePassword = true;
+  Map<String, dynamic>? _mobileDiagnosis;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeMobileDiagnosis();
+  }
+
+  // モバイルデバイスの診断を初期化
+  void _initializeMobileDiagnosis() {
+    if (kIsWeb) {
+      // モバイル最適化を適用
+      MobileUtils.applyMobileOptimizations();
+
+      // デバッグモードでモバイル診断情報を出力
+      if (kDebugMode) {
+        MobileUtils.logMobileDebugInfo();
+      }
+
+      // モバイルデバイスの場合、診断を実行
+      if (MobileUtils.isMobile) {
+        _mobileDiagnosis = MobileUtils.diagnoseMobileIssues();
+
+        // 問題がある場合は警告を表示
+        if (_mobileDiagnosis!['issues'].isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showMobileWarningDialog();
+          });
+        }
+      }
+    }
+  }
+
+  // モバイル警告ダイアログを表示
+  void _showMobileWarningDialog() {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('モバイルデバイスでの注意事項'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('以下の問題が検出されました:'),
+            const SizedBox(height: 8),
+            ...(_mobileDiagnosis!['issues'] as List<String>).map((issue) {
+              String message = '';
+              switch (issue) {
+                case 'localStorage_unavailable':
+                  message = '• プライベートブラウジングモードが有効になっている可能性があります';
+                  break;
+                case 'network_offline':
+                  message = '• インターネット接続を確認してください';
+                  break;
+                case 'data_saver_enabled':
+                  message = '• データセーバーを無効にしてください';
+                  break;
+                case 'unsupported_browser':
+                  message = '• Chrome、Safari、Firefoxの最新版をご利用ください';
+                  break;
+                default:
+                  message = '• 不明な問題が発生しています';
+              }
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(message, style: const TextStyle(fontSize: 14)),
+              );
+            }).toList(),
+            const SizedBox(height: 16),
+            const Text(
+              'これらの問題を解決してからログインを試行してください。',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('了解'),
+          ),
+        ],
+      ),
+    );
+  }
 
   // アイコン選択ダイアログを表示
   void _showIconSelectionDialog(BuildContext context) {
@@ -109,6 +196,20 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
+      // モバイルデバイスの場合、追加のチェックを行う
+      if (kIsWeb && MobileUtils.isMobile) {
+        final networkInfo = MobileUtils.getNetworkInfo();
+        if (!networkInfo['online']) {
+          throw Exception('インターネット接続がありません。接続を確認してください。');
+        }
+
+        final localStorageAvailable =
+            await MobileUtils.checkLocalStorageAvailability();
+        if (!localStorageAvailable) {
+          throw Exception('プライベートブラウジングモードが有効になっている可能性があります。通常モードでアクセスしてください。');
+        }
+      }
+
       // AuthProviderのloginメソッドを使用（ローカルストレージの保存も含む）
       await Provider.of<AuthProvider>(context, listen: false)
           .login(_model.email, _model.password);
@@ -120,8 +221,22 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          final msg = e.toString().replaceFirst('Exception: ', '').trim();
-          _errorMessage = msg.isEmpty ? 'ログインに失敗しました。' : msg;
+          String errorMsg = e.toString().replaceFirst('Exception: ', '').trim();
+
+          // モバイルデバイス固有のエラーメッセージを改善
+          if (kIsWeb && MobileUtils.isMobile) {
+            if (errorMsg.contains('CORS')) {
+              errorMsg = 'サーバーとの接続に問題があります。しばらく待ってから再試行してください。';
+            } else if (errorMsg.contains('timeout')) {
+              errorMsg = 'サーバーへの接続がタイムアウトしました。ネットワーク接続を確認してください。';
+            } else if (errorMsg.contains('network')) {
+              errorMsg = 'ネットワークエラーが発生しました。インターネット接続を確認してください。';
+            } else if (errorMsg.contains('mobile_storage_error')) {
+              errorMsg = 'モバイルデバイスでのストレージエラーが発生しました。プライベートブラウジングモードを無効にしてください。';
+            }
+          }
+
+          _errorMessage = errorMsg.isEmpty ? 'ログインに失敗しました。' : errorMsg;
         });
       }
     } finally {
@@ -194,7 +309,8 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (_errorMessage != null && _errorMessage!.isNotEmpty)
+                              if (_errorMessage != null &&
+                                  _errorMessage!.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 16.0),
                                   child: Text(
