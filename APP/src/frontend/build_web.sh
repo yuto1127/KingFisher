@@ -29,7 +29,7 @@ if [ $? -eq 0 ]; then
     echo "✅ ビルドが完了しました！"
     echo "📁 ビルドファイル: build/web/"
     # 自動アップロード
-    scp -r -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" /Users/akaishiyuuto/Desktop/KingFisher/APP/src/frontend/build/web/* akaishe@18.208.63.153:/var/www/html/
+    scp -r -i "/Users/akaishiyuuto/Desktop/CID/KingFisher.pem" /Users/akaishiyuuto/Desktop/KingFisher/APP/src/frontend/build/web/ akaishe@18.208.63.153:/var/www/html/
     echo ""
     echo "🌐 デプロイ手順:"
     echo "1. build/web/ フォルダの内容をWebサーバーにアップロード"
