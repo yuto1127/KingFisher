@@ -117,6 +117,10 @@ class _HomePageState extends State<HomePage> {
                       child: TextButton(
                         onPressed: () => context.go('/admin'),
                         child: const Text('管理者'),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color(0xFF009a73),
+                        ),
                       ),
                     );
                   }
