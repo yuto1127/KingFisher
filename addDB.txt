@@ -29,6 +29,7 @@ php artisan db:seed --class=HelpDesksSeeder
 php artisan db:seed --class=CustomersSeeder
 php artisan db:seed --class=EventsSeeder
 php artisan db:seed --class=EntryStatusesSeeder
+php artisan db:seed --class=Points
 
 sudo git pull origin main
 php artisan optimize:clear
