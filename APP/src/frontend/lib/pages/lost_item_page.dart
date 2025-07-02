@@ -16,7 +16,6 @@ class LostItemPage extends StatelessWidget {
             title: const Text('落とし物管理'),
             backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
-
           ),
           Container(
             height: 180,
@@ -51,12 +50,51 @@ class LostItemPage extends StatelessWidget {
                       builder: (context, provider, child) {
                         // 初回読み込み
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (provider.lostItems.isEmpty) {
-                            provider.loadLostItems();
+                          if (provider.lostItems.isEmpty && !provider.isLoading) {
+                            provider.loadRecentLostItems();
                           }
                         });
                         
+                        if (provider.isLoading) {
+                          return const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: Color(0xFF009a73),
+                                ),
+                                SizedBox(height: 16),
+                                Text('データを読み込み中...'),
+                              ],
+                            ),
+                          );
+                        }
+                        
                         final recentItems = provider.recentLostItems;
+                        
+                        if (recentItems.isEmpty) {
+                          return const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.inventory_outlined,
+                                  size: 64,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  '落とし物がありません',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        
                         return ListView.builder(
                           itemCount: recentItems.length,
                           itemBuilder: (context, index) {
@@ -82,8 +120,6 @@ class LostItemPage extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildLostItemCard({required LostItem item}) {
     return Card(
       elevation: 2,
@@ -100,10 +136,33 @@ class LostItemPage extends StatelessWidget {
           children: [
             Text(item.description),
             const SizedBox(height: 4),
-            Text(
-              item.time,
-              style: const TextStyle(
-                color: Colors.grey,
+            Row(
+              children: [
+                Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                const SizedBox(width: 4),
+                Text(
+                  item.location,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+                const SizedBox(width: 16),
+                Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                const SizedBox(width: 4),
+                Text(
+                  item.time,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: _getStatusColor(item.status),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                item.status,
+                style: const TextStyle(color: Colors.white, fontSize: 10),
               ),
             ),
           ],
@@ -111,5 +170,18 @@ class LostItemPage extends StatelessWidget {
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case '保管中':
+        return Colors.orange;
+      case '返却済み':
+        return Colors.green;
+      case '廃棄':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 }

@@ -88,22 +88,29 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
               child: const Text('キャンセル'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (titleController.text.isNotEmpty) {
-                                     final newItem = LostItem(
-                     id: DateTime.now().millisecondsSinceEpoch.toString(),
-                     title: titleController.text,
-                     description: descriptionController.text,
-                     time: DateTime.now().toString().substring(0, 19),
-                     location: locationController.text,
-                     status: selectedStatus,
-                     icon: LostItem.getIconFromTitle(titleController.text),
-                   );
-                  context.read<LostItemProvider>().addLostItem(newItem);
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('落とし物を追加しました')),
+                  final newItem = LostItem(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    title: titleController.text,
+                    description: descriptionController.text,
+                    time: DateTime.now().toString().substring(0, 19),
+                    location: locationController.text,
+                    status: selectedStatus,
+                    icon: LostItem.getIconFromTitle(titleController.text),
                   );
+                  
+                  try {
+                    await context.read<LostItemProvider>().addLostItem(newItem);
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('落とし物を追加しました')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('エラーが発生しました: $e')),
+                    );
+                  }
                 }
               },
               child: const Text('追加'),
@@ -178,22 +185,29 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
               child: const Text('キャンセル'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (titleController.text.isNotEmpty) {
-                                     final updatedItem = LostItem(
-                     id: item.id,
-                     title: titleController.text,
-                     description: descriptionController.text,
-                     time: item.time,
-                     location: locationController.text,
-                     status: selectedStatus,
-                     icon: LostItem.getIconFromTitle(titleController.text),
-                   );
-                  context.read<LostItemProvider>().updateLostItem(updatedItem);
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('落とし物を更新しました')),
+                  final updatedItem = LostItem(
+                    id: item.id,
+                    title: titleController.text,
+                    description: descriptionController.text,
+                    time: item.time,
+                    location: locationController.text,
+                    status: selectedStatus,
+                    icon: LostItem.getIconFromTitle(titleController.text),
                   );
+                  
+                  try {
+                    await context.read<LostItemProvider>().updateLostItem(updatedItem);
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('落とし物を更新しました')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('エラーが発生しました: $e')),
+                    );
+                  }
                 }
               },
               child: const Text('更新'),
@@ -217,12 +231,18 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
               child: const Text('キャンセル'),
             ),
             ElevatedButton(
-              onPressed: () {
-                context.read<LostItemProvider>().removeLostItem(item.id);
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('落とし物を削除しました')),
-                );
+              onPressed: () async {
+                try {
+                  await context.read<LostItemProvider>().removeLostItem(item.id);
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('落とし物を削除しました')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('エラーが発生しました: $e')),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: const Text('削除'),
@@ -284,12 +304,67 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
           Expanded(
             child: Consumer<LostItemProvider>(
               builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: Color(0xFF009a73),
+                        ),
+                        SizedBox(height: 16),
+                        Text('データを読み込み中...'),
+                      ],
+                    ),
+                  );
+                }
+
+                if (provider.error.isNotEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'エラーが発生しました: ${provider.error}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => provider.loadLostItems(),
+                          child: const Text('再試行'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
                 final lostItems = provider.lostItems;
                 return lostItems.isEmpty
                     ? const Center(
-                        child: Text(
-                          '落とし物が見つかりません',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.inventory_outlined,
+                              size: 64,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              '落とし物がありません',
+                              style: TextStyle(fontSize: 18, color: Colors.grey),
+                            ),
+                          ],
                         ),
                       )
                     : ListView.builder(
