@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\HelpDesksController;
 use App\Http\Controllers\Api\CustomersController;
 use App\Http\Controllers\Api\EventsController;
 use App\Http\Controllers\Api\EntryStatusesController;
+use App\Http\Controllers\Api\LostItemsController;
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Hash;
 
@@ -172,6 +173,18 @@ Route::middleware('auth:sanctum')->group(function () {
         // バーコードスキャンによる入退室処理
         Route::post('/toggle', [EntryStatusesController::class, 'toggleEntryStatus']);
         Route::get('/user/{userId}', [EntryStatusesController::class, 'getUserEntryStatus']);
+    });
+
+    // lost-items
+    Route::prefix('lost-items')->group(function () {
+        Route::get('/', [LostItemsController::class, 'index']);
+        Route::get('/recent', [LostItemsController::class, 'recent']);
+        Route::get('/search', [LostItemsController::class, 'search']);
+        Route::post('/', [LostItemsController::class, 'store']);
+        Route::get('/{id}', [LostItemsController::class, 'show']);
+        Route::put('/{id}', [LostItemsController::class, 'update']);
+        Route::delete('/{id}', [LostItemsController::class, 'destroy']);
+        Route::patch('/{id}/status', [LostItemsController::class, 'updateStatus']);
     });
 });
 
