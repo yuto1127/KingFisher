@@ -13,6 +13,7 @@ import 'pages/entry_status_page.dart';
 import 'pages/registration_page.dart';
 import 'pages/login_page.dart';
 import 'pages/lost_item_page.dart';
+import 'pages/admin_lost_item.dart';
 import 'pages/profile_page.dart';
 
 // 認証が必要なルート
@@ -27,6 +28,7 @@ final _authenticatedRoutes = {
   '/admin/user',
   '/admin/user/:userId',
   '/admin/entry-status',
+  '/admin/lost-item',
   '/profile',
 };
 
@@ -139,6 +141,10 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
         GoRoute(
           path: '/admin/entry-status',
           builder: (context, state) => const EntryStatusPage(),
+        ),
+        GoRoute(
+          path: '/admin/lost-item',
+          builder: (context, state) => const AdminLostItemPage(),
         ),
         GoRoute(
           path: '/lost-item',

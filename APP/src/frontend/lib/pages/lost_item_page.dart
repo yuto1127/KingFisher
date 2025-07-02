@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../layouts/main_layout.dart';
+import '../models/lostitembox.dart';
 
 class LostItemPage extends StatelessWidget {
   const LostItemPage({super.key});
@@ -13,6 +14,7 @@ class LostItemPage extends StatelessWidget {
             title: const Text('落とし物管理'),
             backgroundColor: const Color(0xFF009a73),
             foregroundColor: Colors.white,
+
           ),
           Container(
             height: 180,
@@ -43,26 +45,18 @@ class LostItemPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: ListView(
-                      children: [
-                        _buildLostItemCard(
-                          title: '黒い財布',
-                          time: '2024-06-17 10:00',
-                          description: '受付で預かっています',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildLostItemCard(
-                          title: '青い傘',
-                          time: '2024-06-16 15:30',
-                          description: 'ロビーで発見されました',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildLostItemCard(
-                          title: 'スマートフォン',
-                          time: '2024-06-15 18:20',
-                          description: 'スタッフルームで保管中',
-                        ),
-                      ],
+                    child: ListView.builder(
+                      itemCount: LostItemBox.getRecentLostItems().length,
+                      itemBuilder: (context, index) {
+                        final item = LostItemBox.getRecentLostItems()[index];
+                        return Column(
+                          children: [
+                            _buildLostItemCard(item: item),
+                            if (index < LostItemBox.getRecentLostItems().length - 1)
+                              const SizedBox(height: 12),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -74,17 +68,15 @@ class LostItemPage extends StatelessWidget {
     );
   }
 
-  Widget _buildLostItemCard({
-    required String title,
-    required String time,
-    required String description,
-  }) {
+
+
+  Widget _buildLostItemCard({required LostItem item}) {
     return Card(
       elevation: 2,
       child: ListTile(
-        leading: const Icon(Icons.umbrella, color: Color(0xFF009a73)),
+        leading: Icon(item.icon, color: const Color(0xFF009a73)),
         title: Text(
-          title,
+          item.title,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -92,10 +84,10 @@ class LostItemPage extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(description),
+            Text(item.description),
             const SizedBox(height: 4),
             Text(
-              time,
+              item.time,
               style: const TextStyle(
                 color: Colors.grey,
               ),

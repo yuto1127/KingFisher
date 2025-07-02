@@ -64,6 +64,13 @@ class AdminPage extends StatelessWidget {
                     },
                   ),
                   _buildAdminButton(
+                    icon: Icons.inventory,
+                    label: '落とし物\n管理',
+                    onPressed: () {
+                      context.go('/admin/lost-item');
+                    },
+                  ),
+                  _buildAdminButton(
                     icon: Icons.settings,
                     label: 'システム\n設定',
                     onPressed: () {
