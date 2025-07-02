@@ -7,6 +7,7 @@ import 'providers/map_image_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/info_provider.dart';
 import 'providers/icon_provider.dart';
+import 'providers/lost_item_provider.dart';
 import 'utils/browser_utils.dart';
 import 'utils/browser_test_utils.dart';
 import 'utils/mobile_utils.dart';
@@ -35,6 +36,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => MapImageProvider()),
         ChangeNotifierProvider(create: (_) => InfoProvider()),
         ChangeNotifierProvider(create: (_) => IconProvider()),
+        ChangeNotifierProvider(create: (_) => LostItemProvider()),
       ],
       child: const MyApp(),
     ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../layouts/main_layout.dart';
 import '../models/lostitembox.dart';
+import '../providers/lost_item_provider.dart';
 
 class AdminLostItemPage extends StatefulWidget {
   const AdminLostItemPage({super.key});
@@ -11,23 +13,14 @@ class AdminLostItemPage extends StatefulWidget {
 }
 
 class _AdminLostItemPageState extends State<AdminLostItemPage> {
-  List<LostItem> _lostItems = [];
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _loadLostItems();
-  }
-
-  void _loadLostItems() {
-    setState(() {
-      if (_searchQuery.isEmpty) {
-        _lostItems = LostItemBox.getAllLostItems();
-      } else {
-        _lostItems = LostItemBox.searchLostItemsByTitle(_searchQuery);
-      }
+    // 初回読み込み
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LostItemProvider>().loadLostItems();
     });
   }
 
@@ -106,8 +99,7 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
                      status: selectedStatus,
                      icon: LostItem.getIconFromTitle(titleController.text),
                    );
-                  LostItemBox.addLostItem(newItem);
-                  _loadLostItems();
+                  context.read<LostItemProvider>().addLostItem(newItem);
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('落とし物を追加しました')),
@@ -197,10 +189,7 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
                      status: selectedStatus,
                      icon: LostItem.getIconFromTitle(titleController.text),
                    );
-                  // 既存のアイテムを削除して新しいアイテムを追加
-                  LostItemBox.removeLostItem(item.id);
-                  LostItemBox.addLostItem(updatedItem);
-                  _loadLostItems();
+                  context.read<LostItemProvider>().updateLostItem(updatedItem);
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('落とし物を更新しました')),
@@ -229,8 +218,7 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                LostItemBox.removeLostItem(item.id);
-                _loadLostItems();
+                context.read<LostItemProvider>().removeLostItem(item.id);
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('落とし物を削除しました')),
@@ -272,122 +260,126 @@ class _AdminLostItemPageState extends State<AdminLostItemPage> {
               decoration: InputDecoration(
                 labelText: '落とし物を検索',
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
+                suffixIcon: Consumer<LostItemProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.searchQuery.isNotEmpty) {
+                      return IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          setState(() {
-                            _searchQuery = '';
-                          });
-                          _loadLostItems();
+                          provider.clearSearch();
                         },
-                      )
-                    : null,
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
                 border: const OutlineInputBorder(),
               ),
               onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-                _loadLostItems();
+                context.read<LostItemProvider>().setSearchQuery(value);
               },
             ),
           ),
           Expanded(
-            child: _lostItems.isEmpty
-                ? const Center(
-                    child: Text(
-                      '落とし物が見つかりません',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _lostItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _lostItems[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        child: ListTile(
-                          leading: Icon(item.icon, color: const Color(0xFF009a73)),
-                          title: Text(
-                            item.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item.description),
-                              const SizedBox(height: 4),
-                              Row(
+            child: Consumer<LostItemProvider>(
+              builder: (context, provider, child) {
+                final lostItems = provider.lostItems;
+                return lostItems.isEmpty
+                    ? const Center(
+                        child: Text(
+                          '落とし物が見つかりません',
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: lostItems.length,
+                        itemBuilder: (context, index) {
+                          final item = lostItems[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            child: ListTile(
+                              leading: Icon(item.icon, color: const Color(0xFF009a73)),
+                              title: Text(
+                                item.title,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    item.location,
-                                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                  Text(item.description),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        item.location,
+                                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        item.time,
+                                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 16),
-                                  Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    item.time,
-                                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                  const SizedBox(height: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: _getStatusColor(item.status),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      item.status,
+                                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: _getStatusColor(item.status),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  item.status,
-                                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                                ),
+                              trailing: PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'edit':
+                                      _showEditLostItemDialog(item);
+                                      break;
+                                    case 'delete':
+                                      _showDeleteConfirmation(item);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  const PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit),
+                                        SizedBox(width: 8),
+                                        Text('編集'),
+                                      ],
+                                    ),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete, color: Colors.red),
+                                        SizedBox(width: 8),
+                                        Text('削除', style: TextStyle(color: Colors.red)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          trailing: PopupMenuButton<String>(
-                            onSelected: (value) {
-                              switch (value) {
-                                case 'edit':
-                                  _showEditLostItemDialog(item);
-                                  break;
-                                case 'delete':
-                                  _showDeleteConfirmation(item);
-                                  break;
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              const PopupMenuItem(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.edit),
-                                    SizedBox(width: 8),
-                                    Text('編集'),
-                                  ],
-                                ),
-                              ),
-                              const PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.delete, color: Colors.red),
-                                    SizedBox(width: 8),
-                                    Text('削除', style: TextStyle(color: Colors.red)),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       );
-                    },
-                  ),
+              },
+            ),
           ),
         ],
       ),

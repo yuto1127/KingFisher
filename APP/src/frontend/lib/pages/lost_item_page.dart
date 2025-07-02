@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../layouts/main_layout.dart';
 import '../models/lostitembox.dart';
+import '../providers/lost_item_provider.dart';
 
 class LostItemPage extends StatelessWidget {
   const LostItemPage({super.key});
@@ -45,16 +47,28 @@ class LostItemPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: LostItemBox.getRecentLostItems().length,
-                      itemBuilder: (context, index) {
-                        final item = LostItemBox.getRecentLostItems()[index];
-                        return Column(
-                          children: [
-                            _buildLostItemCard(item: item),
-                            if (index < LostItemBox.getRecentLostItems().length - 1)
-                              const SizedBox(height: 12),
-                          ],
+                    child: Consumer<LostItemProvider>(
+                      builder: (context, provider, child) {
+                        // 初回読み込み
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (provider.lostItems.isEmpty) {
+                            provider.loadLostItems();
+                          }
+                        });
+                        
+                        final recentItems = provider.recentLostItems;
+                        return ListView.builder(
+                          itemCount: recentItems.length,
+                          itemBuilder: (context, index) {
+                            final item = recentItems[index];
+                            return Column(
+                              children: [
+                                _buildLostItemCard(item: item),
+                                if (index < recentItems.length - 1)
+                                  const SizedBox(height: 12),
+                              ],
+                            );
+                          },
                         );
                       },
                     ),
