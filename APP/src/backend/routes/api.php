@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\CustomersController;
 use App\Http\Controllers\Api\EventsController;
 use App\Http\Controllers\Api\EntryStatusesController;
 use App\Http\Controllers\Api\LostItemsController;
+use App\Http\Controllers\Api\PointsController;
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Hash;
 
@@ -185,6 +186,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [LostItemsController::class, 'update']);
         Route::delete('/{id}', [LostItemsController::class, 'destroy']);
         Route::patch('/{id}/status', [LostItemsController::class, 'updateStatus']);
+    });
+
+    // points
+    Route::prefix('points')->group(function () {
+        Route::get('/user', [PointsController::class, 'getUserPoints']);
+        Route::get('/history', [PointsController::class, 'getPointHistory']);
     });
 });
 

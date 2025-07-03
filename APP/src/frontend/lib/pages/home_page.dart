@@ -10,6 +10,8 @@ import '../layouts/main_layout.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'package:flutter/foundation.dart';
+// ポイントAPI
+import '../services/points_api.dart';
 
 /// アプリケーションのホームページ
 /// メインのナビゲーションとQRコード表示機能を提供
@@ -25,6 +27,11 @@ class _HomePageState extends State<HomePage> {
   static const int _requiredClicks = 10;
   final _passwordController = TextEditingController();
   static const String _adminPassword = 'cid'; // 管理者パスワード
+
+  // ポイント関連の状態
+  int _userPoints = 0;
+  bool _isLoadingPoints = false;
+  String? _pointsError;
 
   void _handleAdminClick() {
     setState(() {
@@ -80,9 +87,43 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserPoints();
+  }
+
+  @override
   void dispose() {
     _passwordController.dispose();
     super.dispose();
+  }
+
+  /// ユーザーのポイントを読み込み
+  Future<void> _loadUserPoints() async {
+    setState(() {
+      _isLoadingPoints = true;
+      _pointsError = null;
+    });
+
+    try {
+      final result = await PointsApi.getUserPoints();
+      if (result['success']) {
+        setState(() {
+          _userPoints = result['points'] ?? 0;
+          _isLoadingPoints = false;
+        });
+      } else {
+        setState(() {
+          _pointsError = result['error'];
+          _isLoadingPoints = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _pointsError = 'ポイントの取得に失敗しました: $e';
+        _isLoadingPoints = false;
+      });
+    }
   }
 
   @override
@@ -162,6 +203,46 @@ class _HomePageState extends State<HomePage> {
                           size: 200.0, // QRコードのサイズ（ピクセル）
                         );
                       },
+                    ),
+                    const SizedBox(height: 20), // 垂直方向の余白
+
+                    // ポイント表示カード
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            const Text(
+                              '現在のポイント',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            if (_isLoadingPoints)
+                              const CircularProgressIndicator()
+                            else if (_pointsError != null)
+                              Text(
+                                _pointsError!,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              )
+                            else
+                              Text(
+                                '$_userPoints pt',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF009a73),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20), // 垂直方向の余白
 
