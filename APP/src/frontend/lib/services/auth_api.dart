@@ -78,4 +78,28 @@ class AuthApi {
     await deleteToken();
     await deleteUserData();
   }
+
+  /// 認証付きヘッダーを取得
+  static Future<Map<String, String>> getAuthHeaders() async {
+    final token = await getToken();
+    if (token == null) throw Exception('認証トークンがありません');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+
+  /// バーコードでユーザー情報を取得
+  static Future<Map<String, dynamic>> getUser(String barcode) async {
+    final headers = await getAuthHeaders();
+    final response = await http.get(
+      Uri.parse('${NetworkUtils.baseUrl}/api/users/barcode/$barcode'),
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('ユーザー情報の取得に失敗しました: ${response.statusCode}');
+    }
+  }
 }
