@@ -212,12 +212,10 @@ class _LoginPageState extends State<LoginPage> {
 
       // AuthProviderのloginメソッドを使用（ローカルストレージの保存も含む）
       await Provider.of<AuthProvider>(context, listen: false)
-          .login(_model.email, _model.password);
-
-      if (mounted) {
-        // ログイン成功後、ホームページに遷移
-        context.go('/');
-      }
+          .login(context, _model.email, _model.password);
+      if (!mounted) return;
+      // ログイン成功後、ホームページに遷移
+      context.go('/');
     } catch (e) {
       if (mounted) {
         setState(() {

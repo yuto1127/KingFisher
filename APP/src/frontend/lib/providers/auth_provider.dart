@@ -61,12 +61,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // ログイン処理
-  Future<void> login(String email, String password) async {
+  Future<void> login(
+      BuildContext context, String email, String password) async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      final response = await AuthApi.login(email, password);
+      final response = await AuthApi.login(context, email, password);
 
       if (response['token'] != null) {
         _token = response['token'];
@@ -131,10 +132,10 @@ class AuthProvider extends ChangeNotifier {
   void debugLogin() {
     // 開発環境でのみ使用可能
     assert(() {
-    _token = 'debug_token';
-    _userData = {'email': 'debug@example.com', 'name': 'Debug User'};
-    _isAuthenticated = true;
-    notifyListeners();
+      _token = 'debug_token';
+      _userData = {'email': 'debug@example.com', 'name': 'Debug User'};
+      _isAuthenticated = true;
+      notifyListeners();
       return true;
     }());
   }
