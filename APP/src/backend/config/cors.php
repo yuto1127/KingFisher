@@ -3,7 +3,7 @@
 return [
 
     // CORSを有効にするパス。ここではAPI全体とSanctumのCSRF用クッキー取得に対応。
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'login','logout','sanctum/csrf-cookie'],
 
     // 許可するHTTPメソッド。['GET', 'POST']のように個別指定も可能。['*']で全て許可。
     'allowed_methods' => ['*'],
