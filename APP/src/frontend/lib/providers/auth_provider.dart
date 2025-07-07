@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_api.dart';
+import 'package:go_router/go_router.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
@@ -73,6 +74,9 @@ class AuthProvider extends ChangeNotifier {
         _token = response['token'];
         _userData = response['user'];
         _isAuthenticated = true;
+        if (context.mounted) {
+          context.go('/home');
+        }
       } else {
         throw Exception('トークンが取得できませんでした');
       }
