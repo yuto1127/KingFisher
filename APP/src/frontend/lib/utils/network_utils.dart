@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 
 class NetworkUtils {
-  static const String baseUrl = 'https://cid-kingfisher.jp/';
+  static const String baseUrl = 'https://cid-kingfisher.jp';
   
   static Future<bool> isConnected() async {
     try {

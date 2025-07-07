@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'auth_api.dart';
 
 class RolesApi {
-  static const String baseUrl = 'https://cid-kingfisher.jp/';
+  static const String baseUrl = 'https://cid-kingfisher.jp/api';
   // エラーメッセージのマッピング
   static const Map<String, String> _errorMessages = {
     'validation_error': '入力内容に誤りがあります',

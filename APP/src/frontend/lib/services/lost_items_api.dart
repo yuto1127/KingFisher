@@ -4,7 +4,7 @@ import '../models/lostitembox.dart';
 import 'auth_api.dart';
 
 class LostItemsApi {
-  static const String baseUrl = 'http://localhost:8000/api'; // バックエンドのURL
+  static const String baseUrl = 'https://cid-kingfisher.jp/api'; // バックエンドのURL
 
   // 認証トークンを取得
   static Future<String?> _getAuthToken() async {
