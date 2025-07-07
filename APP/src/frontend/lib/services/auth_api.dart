@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:html' as html;
 import 'package:http/http.dart' as http;
 import '../utils/network_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AuthApi {
   static const String baseUrl = NetworkUtils.baseUrl;
@@ -52,7 +54,7 @@ class AuthApi {
 
   /// ログインAPI
   static Future<Map<String, dynamic>> login(
-      String email, String password) async {
+      BuildContext context, String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/login'),
       headers: {'Content-Type': 'application/json'},
@@ -65,6 +67,9 @@ class AuthApi {
       }
       if (data['user'] != null) {
         await saveUserData(data['user']);
+      }
+      if (context.mounted) {
+        context.go('/home');
       }
       return {'success': true, 'data': data};
     } else {
