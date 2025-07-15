@@ -14,7 +14,7 @@ class EntryStatusesSeeder extends Seeder
     public function run(): void
     {
         //
-        $users = [1,2,3];
+        $users = [1,2,3,4];
         foreach ($users as $user) {
             EntryStatus::create([
                 'user_id' => $user,

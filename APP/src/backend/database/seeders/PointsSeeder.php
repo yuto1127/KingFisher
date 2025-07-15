@@ -14,7 +14,7 @@ class PointsSeeder extends Seeder
     public function run(): void
     {
         //
-        $user_ids = [1,2,3];
+        $user_ids = [1,2,3,4];
         foreach ($user_ids as $user_id) {
             Point::create([
                 'user_id' => $user_id,

@@ -14,8 +14,8 @@ class UserPassesSeeder extends Seeder
      */
     public function run(): void
     {
-        $emails = ['kingfisher@gmail.com', 'helpdesk@gmail.com', 'customer@gmail.com'];
-        $passwords = ['password', 'password', 'password'];
+        $emails = ['kingfisher@gmail.com', 'helpdesk@gmail.com', 'customer@gmail.com', 'guest@gmail.com'];
+        $passwords = ['password', 'password', 'password', 'password'];
         foreach ($emails as $index => $email) {
             UserPass::create([
                 'user_id' => $index + 1,

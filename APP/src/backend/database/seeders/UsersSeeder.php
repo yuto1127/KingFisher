@@ -49,6 +49,18 @@ class UsersSeeder extends Seeder
                 'address_line1' => '栄3-3-3',
                 'address_line2' => 'カスタマーハイツ303',
                 'is_active' => true
+            ],
+            [
+                'name' => 'Guest',
+                'gender' => '男性',
+                'barth_day' => '2025-05-22',
+                'phone_number' => '090-1234-5678',
+                'postal_code' => '370-0001',
+                'prefecture' => '群馬県',
+                'city' => '前橋市',
+                'address_line1' => '前橋1-1-1',
+                'address_line2' => 'ゲストハイツ101',
+                'is_active' => true
             ]
         ];
 
