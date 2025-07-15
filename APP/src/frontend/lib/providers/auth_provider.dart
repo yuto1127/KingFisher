@@ -75,7 +75,7 @@ class AuthProvider extends ChangeNotifier {
         _userData = response['user'];
         _isAuthenticated = true;
         if (context.mounted) {
-          context.go('/home');
+          context.go('/');
         }
       } else {
         throw Exception('トークンが取得できませんでした');

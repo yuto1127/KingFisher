@@ -69,7 +69,7 @@ class AuthApi {
         await saveUserData(data['user']);
       }
       if (context.mounted) {
-        context.go('/home');
+        context.go('/');
       }
       return {'success': true, 'data': data};
     } else {

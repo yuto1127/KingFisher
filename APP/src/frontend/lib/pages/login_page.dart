@@ -214,8 +214,6 @@ class _LoginPageState extends State<LoginPage> {
       await Provider.of<AuthProvider>(context, listen: false)
           .login(context, _model.email, _model.password);
       if (!mounted) return;
-      // ログイン成功後、ホームページに遷移
-      context.go('/');
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -375,7 +373,6 @@ class _LoginPageState extends State<LoginPage> {
                                     Provider.of<AuthProvider>(context,
                                             listen: false)
                                         .debugLogin();
-                                    context.go('/');
                                   },
                                   style: TextButton.styleFrom(
                                     foregroundColor: Colors.grey,
