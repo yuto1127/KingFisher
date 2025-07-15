@@ -29,7 +29,10 @@ class HelpDesksSeeder extends Seeder
         ];
 
         foreach ($helpDesks as $helpDesk) {
-            HelpDesk::create($helpDesk);
+            HelpDesk::updateOrCreate(
+                ['user_id' => $helpDesk['user_id']],
+                $helpDesk
+            );
         }
     }
 }

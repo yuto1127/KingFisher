@@ -14,10 +14,13 @@ class EventsSeeder extends Seeder
     public function run(): void
     {
         //
-        Event::create([
-            'title' => 'テストイベント',
-            'start_date' => '2025-01-01',
-            'end_date' => '2025-12-31',
-        ]);
+        Event::updateOrCreate(
+            ['title' => 'テストイベント'],
+            [
+                'title' => 'テストイベント',
+                'start_date' => '2025-01-01',
+                'end_date' => '2025-12-31',
+            ]
+        );
     }
 }

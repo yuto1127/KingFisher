@@ -14,11 +14,19 @@ return new class extends Migration
         Schema::table('entry_statuses', function (Blueprint $table) {
             // 外部キー制約が存在する場合のみ削除
             if (Schema::hasColumn('entry_statuses', 'event_id')) {
-                // 外部キー制約を削除
-                $table->dropForeign(['event_id']);
+                // 外部キー制約を削除（存在する場合のみ）
+                try {
+                    $table->dropForeign(['event_id']);
+                } catch (Exception $e) {
+                    // 外部キー制約が存在しない場合は無視
+                }
                 
-                // ユニーク制約を削除（event_idとuser_idの組み合わせ）
-                $table->dropUnique(['event_id', 'user_id']);
+                // ユニーク制約を削除（存在する場合のみ）
+                try {
+                    $table->dropUnique(['event_id', 'user_id']);
+                } catch (Exception $e) {
+                    // ユニーク制約が存在しない場合は無視
+                }
                 
                 // event_idカラムを削除
                 $table->dropColumn('event_id');
@@ -32,18 +40,21 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('entry_statuses', function (Blueprint $table) {
-            // event_idカラムを追加
-            $table->unsignedBigInteger('event_id')->after('id');
-            
-            // 外部キー制約を追加
-            $table->foreign('event_id')
-                ->references('id')
-                ->on('events')
-                ->onDelete('restrict')
-                ->onUpdate('cascade');
-            
-            // ユニーク制約を追加
-            $table->unique(['event_id', 'user_id']);
+            // event_idカラムが存在しない場合のみ追加
+            if (!Schema::hasColumn('entry_statuses', 'event_id')) {
+                // event_idカラムを追加
+                $table->unsignedBigInteger('event_id')->after('id');
+                
+                // 外部キー制約を追加
+                $table->foreign('event_id')
+                    ->references('id')
+                    ->on('events')
+                    ->onDelete('restrict')
+                    ->onUpdate('cascade');
+                
+                // ユニーク制約を追加
+                $table->unique(['event_id', 'user_id']);
+            }
         });
     }
 };
