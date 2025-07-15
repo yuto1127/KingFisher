@@ -211,9 +211,38 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       // AuthProviderのloginメソッドを使用（ローカルストレージの保存も含む）
+      if (kDebugMode) {
+        print('LoginPage: Starting login process');
+      }
+
       await Provider.of<AuthProvider>(context, listen: false)
           .login(context, _model.email, _model.password);
-      if (!mounted) return;
+
+      if (kDebugMode) {
+        print('LoginPage: Login successful, preparing to navigate');
+      }
+
+      // ログイン成功後の処理
+      if (mounted) {
+        // 成功メッセージを表示
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('ログインに成功しました'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ),
+        );
+
+        // 少し待ってからホームページに遷移
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (mounted) {
+          if (kDebugMode) {
+            print('LoginPage: Navigating to home page');
+          }
+          context.go('/');
+        }
+      }
     } catch (e) {
       if (mounted) {
         setState(() {

@@ -68,13 +68,11 @@ class AuthApi {
       if (data['user'] != null) {
         await saveUserData(data['user']);
       }
-      if (context.mounted) {
-        context.go('/');
-      }
-      return {'success': true, 'data': data};
+      return data;
     } else {
       final errorData = jsonDecode(utf8.decode(response.bodyBytes));
-      return {'success': false, 'error': errorData['error'] ?? 'ログインに失敗しました'};
+      throw Exception(
+          errorData['message'] ?? errorData['error'] ?? 'ログインに失敗しました');
     }
   }
 

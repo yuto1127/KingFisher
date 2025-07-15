@@ -15,6 +15,7 @@ import 'pages/login_page.dart';
 import 'pages/lost_item_page.dart';
 import 'pages/admin_lost_item.dart';
 import 'pages/profile_page.dart';
+import 'package:flutter/foundation.dart';
 
 // 認証が必要なルート
 final _authenticatedRoutes = {
@@ -45,13 +46,27 @@ GoRouter createRouter(AuthProvider authProvider) => GoRouter(
         final isLoginRoute = state.fullPath == '/login';
         final isRegisterRoute = state.fullPath == '/register';
 
+        // デバッグ用ログ（開発時のみ）
+        if (kDebugMode) {
+          print(
+              'Router redirect: isAuthenticated=$isAuthenticated, path=${state.fullPath}');
+        }
+
         // 未ログインで認証が必要なルートにアクセスした場合
         if (!isAuthenticated && isAuthRoute) {
+          if (kDebugMode) {
+            print(
+                'Redirecting to login: unauthenticated user accessing protected route');
+          }
           return '/login';
         }
 
         // ログイン済みでログインページまたは登録ページにアクセスした場合
         if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
+          if (kDebugMode) {
+            print(
+                'Redirecting to home: authenticated user accessing auth pages');
+          }
           return '/';
         }
 
