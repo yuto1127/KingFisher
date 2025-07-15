@@ -15,9 +15,10 @@ class RolesSeeder extends Seeder
     {
         $names = ['admin', 'helpdesk', 'customer'];
         foreach ($names as $name) {
-            Role::create([
-                'name' => $name
-            ]);
+            Role::updateOrCreate(
+                ['name' => $name],
+                ['name' => $name]
+            );
         }
     }
 }

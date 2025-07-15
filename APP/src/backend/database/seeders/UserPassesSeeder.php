@@ -17,11 +17,14 @@ class UserPassesSeeder extends Seeder
         $emails = ['kingfisher@gmail.com', 'helpdesk@gmail.com', 'customer@gmail.com', 'guest@gmail.com'];
         $passwords = ['password', 'password', 'password', 'password'];
         foreach ($emails as $index => $email) {
-            UserPass::create([
-                'user_id' => $index + 1,
-                'email' => $email,
-                'password' => Hash::make($passwords[$index]),
-            ]);
+            UserPass::updateOrCreate(
+                ['email' => $email],
+                [
+                    'user_id' => $index + 1,
+                    'email' => $email,
+                    'password' => Hash::make($passwords[$index]),
+                ]
+            );
         }
         //
     }

@@ -12,14 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('entry_statuses', function (Blueprint $table) {
-            // 外部キー制約を削除
-            $table->dropForeign(['event_id']);
-            
-            // ユニーク制約を削除（event_idとuser_idの組み合わせ）
-            $table->dropUnique(['event_id', 'user_id']);
-            
-            // event_idカラムを削除
-            $table->dropColumn('event_id');
+            // 外部キー制約が存在する場合のみ削除
+            if (Schema::hasColumn('entry_statuses', 'event_id')) {
+                // 外部キー制約を削除
+                $table->dropForeign(['event_id']);
+                
+                // ユニーク制約を削除（event_idとuser_idの組み合わせ）
+                $table->dropUnique(['event_id', 'user_id']);
+                
+                // event_idカラムを削除
+                $table->dropColumn('event_id');
+            }
         });
     }
 

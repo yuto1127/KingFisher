@@ -16,12 +16,15 @@ class EntryStatusesSeeder extends Seeder
         //
         $users = [1,2,3,4];
         foreach ($users as $user) {
-            EntryStatus::create([
-                'user_id' => $user,
-                'status' => 'exit',
-                'entry_at' => '2025-01-01 00:00:00',
-                'exit_at' => '2025-01-01 00:00:00',
-            ]);
+            EntryStatus::updateOrCreate(
+                ['user_id' => $user],
+                [
+                    'user_id' => $user,
+                    'status' => 'exit',
+                    'entry_at' => '2025-01-01 00:00:00',
+                    'exit_at' => '2025-01-01 00:00:00',
+                ]
+            );
         }
     }
 }
